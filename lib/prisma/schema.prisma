@@ -18,20 +18,20 @@ model Review {
   createdAt DateTime @default(now())
 }
 
- model Books {
-   id          String   @id @default(uuid())
-   title       String
-   author      String
-   publishedAt DateTime
-   isbn        String   @unique
-   createdAt   DateTime @default(now())
-   updatedAt   DateTime @updatedAt
- }
-
- model Cart {
-  id          String   @id @default(uuid()) @db.Uuid
-  items       Json     // store items as JSON array [{name, price, quantity}, ...]
-  totalPrice  Float
+model Books {
+  id          String   @id @default(uuid())
+  title       String
+  author      String
+  publishedAt DateTime
+  isbn        String   @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Cart {
+  id         String   @id @default(uuid()) @db.Uuid
+  items      Json // store items as JSON array [{name, price, quantity}, ...]
+  totalPrice Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

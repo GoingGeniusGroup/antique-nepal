@@ -26,3 +26,8 @@ export type Review = Prisma.ReviewModel
  * 
  */
 export type Books = Prisma.BooksModel
+/**
+ * Model Cart
+ * 
+ */
+export type Cart = Prisma.CartModel

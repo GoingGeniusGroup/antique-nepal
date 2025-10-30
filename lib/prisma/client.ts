@@ -40,8 +40,8 @@ export { Prisma }
 
 
 // file annotations for bundling tools to include these files
-path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node")
-path.join(process.cwd(), "lib/prisma/libquery_engine-debian-openssl-3.0.x.so.node")
+path.join(__dirname, "libquery_engine-rhel-openssl-3.0.x.so.node")
+path.join(process.cwd(), "lib/prisma/libquery_engine-rhel-openssl-3.0.x.so.node")
 
 /**
  * Model Review
@@ -53,3 +53,8 @@ export type Review = Prisma.ReviewModel
  * 
  */
 export type Books = Prisma.BooksModel
+/**
+ * Model Cart
+ * 
+ */
+export type Cart = Prisma.CartModel
