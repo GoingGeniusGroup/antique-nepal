@@ -9,4 +9,5 @@
  */
 export type * from './models/Review'
 export type * from './models/Books'
+export type * from './models/Cart'
 export type * from './commonInputTypes'
