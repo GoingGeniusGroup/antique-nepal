@@ -26,6 +26,22 @@ model Cart {
   updatedAt  DateTime
 }
 
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+  posts Post[]
+}
+
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean @default(false)
+  authorId  Int
+  author    User    @relation(fields: [authorId], references: [id])
+}
+
 model Review {
   id        String   @id
   userId    String
@@ -36,8 +52,10 @@ model Review {
 }
 
 model Content {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
+  id        String   @id
+  userId    String
+  productId String
+  rating    Int
+  comment   String?
   createdAt DateTime @default(now())
 }
