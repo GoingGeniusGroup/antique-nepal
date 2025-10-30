@@ -1,12 +1,29 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../lib/prisma"
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+}
+
+model Books {
+  id          String   @id
+  title       String
+  author      String
+  publishedAt DateTime
+  isbn        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
+model Cart {
+  id         String   @id @db.Uuid
+  items      Json
+  totalPrice Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
 }
 
 model Review {
@@ -18,20 +35,9 @@ model Review {
   createdAt DateTime @default(now())
 }
 
- model Books {
-   id          String   @id @default(uuid())
-   title       String
-   author      String
-   publishedAt DateTime
-   isbn        String   @unique
-   createdAt   DateTime @default(now())
-   updatedAt   DateTime @updatedAt
- }
-
- model Cart {
-  id          String   @id @default(uuid()) @db.Uuid
-  items       Json     // store items as JSON array [{name, price, quantity}, ...]
-  totalPrice  Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Content {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
 }
