@@ -104,6 +104,7 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                   First Name
                 </label>
                 <Input
+                  name="firstName"
                   type="text"
                   placeholder=""
                   value={formData.firstName || ""}
@@ -123,6 +124,7 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                   Last Name
                 </label>
                 <Input
+                  name="lastName"
                   type="text"
                   placeholder=""
                   value={formData.lastName || ""}
@@ -143,6 +145,7 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                 Phone
               </label>
               <Input
+                name="phone"
                 type="tel"
                 placeholder=""
                 value={formData.phone || ""}
@@ -158,6 +161,7 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                 Email
               </label>
               <Input
+                name="email"
                 type="email"
                 placeholder=""
                 value={formData.email || ""}
@@ -173,6 +177,7 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                 Password
               </label>
               <Input
+                name="password"
                 type="password"
                 placeholder=""
                 value={formData.password || ""}
@@ -194,7 +199,6 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
             >
               {loading ? "Creating..." : "Create account"} <span>→</span>
             </button>
-            r
           </form>
 
           <div className="mt-4 text-center">
