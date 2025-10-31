@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FacebookIcon, Chrome as Google, X } from "lucide-react";
+import GoogleSignin from "./goole-sign-in";
 
 interface SignupDialogProps {
   open?: boolean;
@@ -42,10 +43,7 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
 
           <div className="mt-8 space-y-3">
             {/* OAuth Buttons */}
-            <button className="w-full bg-hemp hover:bg-opacity-80 text-primary font-sans font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 border border-primary border-opacity-20">
-              <Google className="w-5 h-5" />
-              Continue with Google
-            </button>
+            <GoogleSignin />
             <button className="w-full bg-hemp hover:bg-opacity-80 text-primary font-sans font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 border border-primary border-opacity-20">
               <FacebookIcon className="w-5 h-5" />
               Continue with Facebook
