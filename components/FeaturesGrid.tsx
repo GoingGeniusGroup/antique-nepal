@@ -69,10 +69,10 @@ export const FeaturesGrid = () => {
                 <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mb-4 group-hover:bg-secondary/30 transition-colors">
                   <feature.icon className="w-8 h-8 text-secondary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3 text-foreground">
+                <h3 className="text-xl font-semibold mb-3 text-foreground font-inter">
                   {feature.title}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed font-inter">
                   {feature.description}
                 </p>
               </div>
