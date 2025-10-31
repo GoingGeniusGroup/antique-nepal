@@ -13,17 +13,20 @@ interface SignupDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-const Signup = ({ open = true, onOpenChange }: SignupDialogProps) => {
+const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full max-w-md bg-paper border-mountain border-2">
-        {/* <button
+      <DialogContent
+        showCloseButton={false}
+        className="w-full max-w-md bg-paper border-mountain border-2"
+      >
+        <button
           onClick={() => onOpenChange?.(false)}
           className="absolute right-4 top-4 text-primary hover:text-terracotta transition-colors"
           aria-label="Close"
         >
           <X className="w-6 h-6" />
-        </button> */}
+        </button>
 
         <div className="pt-6 pb-6">
           <DialogTitle asChild>
