@@ -1,5 +1,13 @@
+import ProductsBannerSection from "@/components/products/ProductsBannerSection";
+
 const ProductsPage = () => {
-  return <div>ProductsPage</div>;
+  return (
+    <>
+      <main>
+        <ProductsBannerSection />
+      </main>
+    </>
+  );
 };
 
 export default ProductsPage;
