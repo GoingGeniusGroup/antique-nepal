@@ -52,7 +52,7 @@ export const FeaturesGrid = () => {
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground font-cinzel">
             Why Choose Antique Nepal
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-inter">
             Authenticity, sustainability, and craftsmanship in every bag
           </p>
         </div>
@@ -69,10 +69,10 @@ export const FeaturesGrid = () => {
                 <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mb-4 group-hover:bg-secondary/30 transition-colors">
                   <feature.icon className="w-8 h-8 text-secondary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3 text-foreground">
+                <h3 className="text-xl font-semibold mb-3 text-foreground font-inter">
                   {feature.title}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed font-inter">
                   {feature.description}
                 </p>
               </div>
