@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-context";
 import { ProductCard } from "@/components/product-card";
+import Link from "next/link";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -29,6 +30,7 @@ const itemVariants = {
 
 export function FeaturedCollection() {
   const { theme, isReady } = useTheme();
+  const MotionLink = motion(Link);
 
   return (
     <section
@@ -131,6 +133,7 @@ export function FeaturedCollection() {
           </motion.div>
         </motion.div>
 
+       
         <motion.div
           className="mt-12 flex justify-center"
           initial={{ opacity: 0, y: 20 }}
@@ -138,8 +141,8 @@ export function FeaturedCollection() {
           viewport={{ once: false, amount: 0.5 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <motion.a
-            href="#"
+          <MotionLink
+            href="/products"
             className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-emerald-600 to-emerald-500 text-white px-6 py-3 text-sm font-medium shadow-lg shadow-emerald-500/20 group cursor-pointer"
             whileHover={{
               scale: 1.08,
@@ -169,8 +172,9 @@ export function FeaturedCollection() {
                 d="M17 8l4 4m0 0l-4 4m4-4H3"
               />
             </motion.svg>
-          </motion.a>
+          </MotionLink>
         </motion.div>
+        
       </div>
     </section>
   );
