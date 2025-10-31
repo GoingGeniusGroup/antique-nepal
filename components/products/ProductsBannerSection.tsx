@@ -11,11 +11,11 @@ export default function ProductsBannerSection() {
     >
       <div className="absolute inset-0 bg-black/60" />
       <div className="relative z-10 text-white px-4">
-        <h2 className="text-3xl md:text-5xl font-semibold mb-3">
+        <h2 className="text-3xl md:text-5xl font-semibold mb-3 font-cinzel">
           {" "}
           Our Hemp Collection{" "}
         </h2>
-        <p className="text-sm md:text-lg max-w-2xl mx-auto">
+        <p className="text-sm md:text-lg max-w-2xl mx-auto font-inter">
           {" "}
           Discover handcrafted accessories made from sustainable hemp fiber by
           skilled artisans in the Himalayan foothills.{" "}
