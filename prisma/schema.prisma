@@ -618,6 +618,7 @@ model NewsletterSubscriber {
   @@index([status])
   @@map("newsletter_subscribers")
 }
+
 // ============================================
 // USER MANAGEMENT & AUTHENTICATION (NextAuth)
 // ============================================
