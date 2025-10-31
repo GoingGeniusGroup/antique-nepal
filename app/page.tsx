@@ -1,4 +1,5 @@
-import { FeaturesGrid } from "@/components/FeaturesGrid";
+import { FeaturedCollection } from "@/components/featured-collection";
+
 import { Hero } from "@/components/hero";
 
 import { WhyChoose } from "@/components/why-choose";
@@ -8,7 +9,7 @@ export default function Home() {
     <div>
       <Hero/>
       <WhyChoose />
-
+      <FeaturedCollection/>
     </div>
   );
 }
