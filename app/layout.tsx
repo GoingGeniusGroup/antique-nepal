@@ -1,12 +1,10 @@
 import type React from "react";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { Cinzel, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import { SessionProvider } from "next-auth/react";
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
 const _cinzel = Cinzel({ subsets: ["latin"], variable: "--font-serif" });
 const _inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -26,8 +24,10 @@ export default function RootLayout({
       <body
         className={`${_cinzel.variable} ${_inter.variable} font-sans antialiased`}
       >
-        {children}
-        <Toaster />
+        <SessionProvider>
+          {children}
+          <Toaster />
+        </SessionProvider>
       </body>
     </html>
   );
