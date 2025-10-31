@@ -80,7 +80,9 @@ const itemVariants = {
 export function WhyChoose() {
   return (
     <section
-      className={"relative py-20 overflow-hidden bg-[#f9f6f3] dark:bg-[#0a0a0a]"}
+      className={
+        "relative py-20 overflow-hidden bg-[#f7f5f2] dark:bg-[#0a0a0a]"
+      }
     >
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -150,10 +152,7 @@ export function WhyChoose() {
               />
             </motion.svg>
 
-            <h2
-              className={"text-center text-3xl sm:text-4xl tracking-[0.12em] font-semibold text-[#2d2520] dark:text-white"}
-              style={{ fontFamily: "var(--font-display)" }}
-            >
+            <h2 className="text-center text-3xl sm:text-4xl lg:text-5xl font-cinzel tracking-[0.12em] font-semibold text-[#2d2520] dark:text-white">
               Why Choose Antique Nepal
             </h2>
 
@@ -242,7 +241,9 @@ export function WhyChoose() {
             />
           </div>
           <p
-            className={"text-center text-sm mb-12 text-neutral-600 dark:text-neutral-400"}
+            className={
+              "text-center text-xl mb-12 text-neutral-600 font-inter dark:text-neutral-400"
+            }
           >
             Authenticity, sustainability, and craftsmanship in every bag
           </p>
@@ -265,7 +266,9 @@ export function WhyChoose() {
                 boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
               }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className={"rounded-xl p-8 shadow-lg hover:shadow-2xl text-center group cursor-pointer transition-all duration-300 bg-white border border-[#e8e0d8] hover:border-emerald-500/50 dark:bg-linear-to-br dark:from-[#1f1f1f] dark:to-[#2a2a2a] dark:border-white/10 dark:hover:border-emerald-500/30"}
+              className={
+                "rounded-xl p-8 shadow-lg hover:shadow-2xl text-center group cursor-pointer transition-all duration-300 bg-white border border-[#e8e0d8] hover:border-emerald-500/50 dark:bg-linear-to-br dark:from-[#1f1f1f] dark:to-[#2a2a2a] dark:border-white/10 dark:hover:border-emerald-500/30"
+              }
             >
               <motion.div
                 className={`mx-auto mb-5 h-16 w-16 rounded-full flex items-center justify-center ${it.bgColor} border ${it.borderColor}`}
@@ -277,12 +280,16 @@ export function WhyChoose() {
                 />
               </motion.div>
               <h3
-                className={"font-semibold text-base mb-2 text-[#2d2520] dark:text-white"}
+                className={
+                  "font-semibold text-xl font-inter mb-2 text-[#2d2520] dark:text-white"
+                }
               >
                 {it.title}
               </h3>
               <p
-                className={"text-sm leading-relaxed text-neutral-600 dark:text-neutral-400"}
+                className={
+                  "text-base leading-relaxed font-inter text-neutral-600 dark:text-neutral-400"
+                }
               >
                 {it.desc}
               </p>

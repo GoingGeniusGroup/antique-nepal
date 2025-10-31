@@ -14,7 +14,7 @@ const cinzel = Cinzel({
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"], // optional — choose what you need
+  weight: ["300", "400"], // optional — choose what you need
 });
 
 export const metadata: Metadata = {
