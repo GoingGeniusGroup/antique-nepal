@@ -1,13 +1,15 @@
 "use client";
 
-import type React from "react";
+import React, { useState } from "react";
 
-import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FacebookIcon, Chrome as Google, X } from "lucide-react";
+import { FacebookIcon, X } from "lucide-react";
+
 import GoogleSignin from "../button/goole-sign-in-button";
+import { registerUser } from "@/app/actions/auth/register";
+import toast from "react-hot-toast";
 
 interface SignupDialogProps {
   open?: boolean;
@@ -15,12 +17,45 @@ interface SignupDialogProps {
 }
 
 const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    password: "",
+  });
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrors({});
+
+    const form = new FormData(e.currentTarget);
+    const result = await registerUser(form);
+
+    setLoading(false);
+
+    if (!result.success) {
+      if (result.errors) {
+        setErrors(result.errors);
+      } else {
+        toast.error(result.message || "Something went wrong");
+      }
+    } else {
+      toast.success(result.message ?? "Account created successfully");
+      onOpenChange?.(false);
+    }
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        showCloseButton={false}
-        className="w-full max-w-md bg-paper border-mountain border-2"
-      >
+      <DialogContent className="w-full max-w-md bg-paper border-mountain border-2">
         <button
           onClick={() => onOpenChange?.(false)}
           className="absolute right-4 top-4 text-primary hover:text-terracotta transition-colors"
@@ -62,7 +97,7 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
           </div>
 
           {/* Form */}
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-sans font-semibold text-primary mb-1">
@@ -71,13 +106,17 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                 <Input
                   type="text"
                   placeholder=""
+                  value={formData.firstName || ""}
+                  onChange={(e) =>
+                    handleInputChange("firstName", e.target.value)
+                  }
                   className="border-mountain border-opacity-30 focus:border-mountain bg-white"
                 />
-                {/* {errors.firstName && (
+                {errors.firstName && (
                   <p className="text-xs text-terracotta mt-1">
                     {errors.firstName}
                   </p>
-                )} */}
+                )}
               </div>
               <div>
                 <label className="block text-sm font-sans font-semibold text-primary mb-1">
@@ -86,16 +125,19 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                 <Input
                   type="text"
                   placeholder=""
+                  value={formData.lastName || ""}
+                  onChange={(e) =>
+                    handleInputChange("lastName", e.target.value)
+                  }
                   className="border-mountain border-opacity-30 focus:border-mountain bg-white"
                 />
-                {/* {errors.lastName && (
+                {errors.lastName && (
                   <p className="text-xs text-terracotta mt-1">
                     {errors.lastName}
                   </p>
-                )} */}
+                )}
               </div>
             </div>
-
             <div>
               <label className="block text-sm font-sans font-semibold text-primary mb-1">
                 Phone
@@ -103,13 +145,14 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
               <Input
                 type="tel"
                 placeholder=""
+                value={formData.phone || ""}
+                onChange={(e) => handleInputChange("phone", e.target.value)}
                 className="border-mountain border-opacity-30 focus:border-mountain bg-white"
               />
-              {/* {errors.phone && (
+              {errors.phone && (
                 <p className="text-xs text-terracotta mt-1">{errors.phone}</p>
-              )} */}
+              )}
             </div>
-
             <div>
               <label className="block text-sm font-sans font-semibold text-primary mb-1">
                 Email
@@ -117,10 +160,14 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
               <Input
                 type="email"
                 placeholder=""
+                value={formData.email || ""}
+                onChange={(e) => handleInputChange("email", e.target.value)}
                 className="border-mountain border-opacity-30 focus:border-mountain bg-white"
               />
+              {errors.email && (
+                <p className="text-xs text-terracotta mt-1">{errors.email}</p>
+              )}
             </div>
-
             <div>
               <label className="block text-sm font-sans font-semibold text-primary mb-1">
                 Password
@@ -128,22 +175,26 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
               <Input
                 type="password"
                 placeholder=""
+                value={formData.password || ""}
+                onChange={(e) => handleInputChange("password", e.target.value)}
                 className="border-mountain border-opacity-30 focus:border-mountain bg-white"
               />
-              {/* {errors.password && (
+              {errors.password && (
                 <p className="text-xs text-terracotta mt-1">
                   {errors.password}
                 </p>
-              )} */}
+              )}
             </div>
-
-            <Button
+            <button
               type="submit"
-              className="w-full bg-primary hover:bg-opacity-90 text-white font-sans font-semibold py-3 rounded-lg transition-colors mt-6 flex items-center justify-center gap-2"
+              disabled={loading}
+              className={`w-full bg-primary hover:bg-primary/90 text-paper font-sans font-semibold py-3 px-4 rounded transition-colors mt-6 flex items-center justify-center gap-2 ${
+                loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              Create account
-              <span>→</span>
-            </Button>
+              {loading ? "Creating..." : "Create account"} <span>→</span>
+            </button>
+            r
           </form>
 
           <div className="mt-4 text-center">
