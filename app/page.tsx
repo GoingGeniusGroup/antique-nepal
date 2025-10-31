@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import SignIn from "@/components/auth/SignIn";
-import SignUp from "@/components/auth/SignUp";
+import SignIn from "@/components/form/signin-form";
+import SignUp from "@/components/form/signup-form";
 
 export default function Home() {
   return (

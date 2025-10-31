@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FacebookIcon, Chrome as Google, X } from "lucide-react";
-import GoogleSignin from "./goole-sign-in";
+import GoogleSignin from "../button/goole-sign-in-button";
 
 interface SignupDialogProps {
   open?: boolean;
