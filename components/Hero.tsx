@@ -59,7 +59,7 @@ export const Hero = () => {
                 size="lg"
                 className="text-lg px-10 py-7 shadow-2xl hover:scale-105 transition-transform bg-primary hover:bg-primary/90"
               >
-                <ShoppingBag className="mr-2 h-5 w-5" />
+                <ShoppingBag className="mr-2 h-5 w-5 " />
                 Explore Collection
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
