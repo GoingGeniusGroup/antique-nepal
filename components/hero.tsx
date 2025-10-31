@@ -146,15 +146,11 @@ export function Hero() {
       </TooltipProvider>
 
       {/* Prayer Flags Animation - Enhanced */}
-      <div className="absolute top-16 left-0 right-0 h-32 overflow-hidden pointer-events-none z-10">
+      <div className="absolute top-16 left-0 right-0 h-32 overflow-hidden pointer-events-none z-10 flex items-start justify-between px-2">
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-16 h-12"
-            style={{
-              left: `${i * 8.33}%`,
-              top: -10,
-            }}
+            className="relative w-16 h-12 -mt-2.5"
             animate={{
               y: [0, 8, 0],
               rotate: [0, 3, 0, -3, 0],
