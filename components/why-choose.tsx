@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Leaf, Recycle, Users, Gem, Globe, Heart } from "lucide-react";
-import { useTheme } from "../contexts/theme-context";
 
 const items = [
   {
@@ -79,13 +78,9 @@ const itemVariants = {
 };
 
 export function WhyChoose() {
-  const { theme } = useTheme();
-
   return (
     <section
-      className={`relative py-20 overflow-hidden ${
-        theme === "dark" ? "bg-[#0a0a0a]" : "bg-[#f9f6f3]"
-      }`}
+      className={"relative py-20 overflow-hidden bg-[#f9f6f3] dark:bg-[#0a0a0a]"}
     >
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -156,9 +151,7 @@ export function WhyChoose() {
             </motion.svg>
 
             <h2
-              className={`text-center text-3xl sm:text-4xl tracking-[0.12em] font-semibold ${
-                theme === "dark" ? "text-white" : "text-[#2d2520]"
-              }`}
+              className={"text-center text-3xl sm:text-4xl tracking-[0.12em] font-semibold text-[#2d2520] dark:text-white"}
               style={{ fontFamily: "var(--font-display)" }}
             >
               Why Choose Antique Nepal
@@ -235,23 +228,21 @@ export function WhyChoose() {
           {/* Decorative Line */}
           <div className="flex items-center justify-center gap-2 mb-3">
             <motion.div
-              className="h-px w-16 bg-gradient-to-r from-transparent to-emerald-600/30"
+              className="h-px w-16 bg-linear-to-r from-transparent to-emerald-600/30"
               initial={{ scaleX: 0 }}
               whileInView={{ scaleX: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             />
             <div className="w-2 h-2 rounded-full bg-emerald-600/40" />
             <motion.div
-              className="h-px w-16 bg-gradient-to-l from-transparent to-emerald-600/30"
+              className="h-px w-16 bg-linear-to-l from-transparent to-emerald-600/30"
               initial={{ scaleX: 0 }}
               whileInView={{ scaleX: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             />
           </div>
           <p
-            className={`text-center text-sm mb-12 ${
-              theme === "dark" ? "text-neutral-400" : "text-neutral-600"
-            }`}
+            className={"text-center text-sm mb-12 text-neutral-600 dark:text-neutral-400"}
           >
             Authenticity, sustainability, and craftsmanship in every bag
           </p>
@@ -274,38 +265,24 @@ export function WhyChoose() {
                 boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
               }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className={`rounded-xl p-8 shadow-lg hover:shadow-2xl text-center group cursor-pointer transition-all duration-300 ${
-                theme === "dark"
-                  ? "bg-gradient-to-br from-[#1f1f1f] to-[#2a2a2a] border border-white/10 hover:border-emerald-500/30"
-                  : "bg-white border border-[#e8e0d8] hover:border-emerald-500/50"
-              }`}
+              className={"rounded-xl p-8 shadow-lg hover:shadow-2xl text-center group cursor-pointer transition-all duration-300 bg-white border border-[#e8e0d8] hover:border-emerald-500/50 dark:bg-linear-to-br dark:from-[#1f1f1f] dark:to-[#2a2a2a] dark:border-white/10 dark:hover:border-emerald-500/30"}
             >
               <motion.div
-                className={`mx-auto mb-5 h-16 w-16 rounded-full flex items-center justify-center ${
-                  theme === "dark"
-                    ? `${it.bgColor} border ${it.borderColor}`
-                    : `${it.bgColor} border ${it.borderColor}`
-                }`}
+                className={`mx-auto mb-5 h-16 w-16 rounded-full flex items-center justify-center ${it.bgColor} border ${it.borderColor}`}
                 whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.15 }}
                 transition={{ duration: 0.5 }}
               >
                 <it.icon
-                  className={`h-7 w-7 transition-transform group-hover:scale-110 ${
-                    theme === "dark" ? it.iconColor : "text-[#4a7c59]"
-                  }`}
+                  className={`h-7 w-7 transition-transform group-hover:scale-110 text-[#4a7c59] dark:${it.iconColor}`}
                 />
               </motion.div>
               <h3
-                className={`font-semibold text-base mb-2 ${
-                  theme === "dark" ? "text-white" : "text-[#2d2520]"
-                }`}
+                className={"font-semibold text-base mb-2 text-[#2d2520] dark:text-white"}
               >
                 {it.title}
               </h3>
               <p
-                className={`text-sm leading-relaxed ${
-                  theme === "dark" ? "text-neutral-400" : "text-neutral-600"
-                }`}
+                className={"text-sm leading-relaxed text-neutral-600 dark:text-neutral-400"}
               >
                 {it.desc}
               </p>

@@ -5,7 +5,6 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { useTheme } from "@/contexts/theme-context";
 
 type Props = {
   title: string;
@@ -17,7 +16,6 @@ type Props = {
 
 export function ProductCard({ title, price, img, tag, description }: Props) {
   const [isHovered, setIsHovered] = useState(false);
-  const { theme } = useTheme();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -59,22 +57,16 @@ export function ProductCard({ title, price, img, tag, description }: Props) {
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className="group perspective-1000 scale-90 sm:scale-100"
     >
-      <Card className={`relative overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 p-0 ${
-        theme === "dark"
-          ? "border border-white/10 bg-gradient-to-br from-[#1f1f1f] to-[#2a2a2a] hover:shadow-emerald-500/10 hover:border-emerald-500/30"
-          : "border border-[#e0d5c7] bg-white hover:border-emerald-500/50"
-      }`} style={{ transformStyle: "preserve-3d" }}>
+      <Card className={"relative overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 p-0 border border-[#e0d5c7] bg-white hover:border-emerald-500/50 dark:border-white/10 dark:bg-linear-to-br dark:from-[#1f1f1f] dark:to-[#2a2a2a] dark:hover:shadow-emerald-500/10 dark:hover:border-emerald-500/30"} style={{ transformStyle: "preserve-3d" }}>
         {/* Shimmer effect */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+          className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent"
           animate={isHovered ? { x: ["-100%", "200%"] } : {}}
           transition={{ duration: 1.5, ease: "easeInOut" }}
           style={{ transform: "translateZ(1px)" }}
         />
         
-        <div className={`relative aspect-square overflow-hidden rounded-t-xl ${
-          theme === "dark" ? "bg-black/40" : "bg-[#f5f0ea]"
-        }`}>
+        <div className={"relative aspect-square overflow-hidden rounded-t-xl bg-[#f5f0ea] dark:bg-black/40"}>
           <motion.div
             animate={isHovered ? { scale: 1.15 } : { scale: 1 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
@@ -90,7 +82,7 @@ export function ProductCard({ title, price, img, tag, description }: Props) {
           </motion.div>
           {tag && (
             <motion.div 
-              className="absolute left-4 top-4 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-medium px-3 py-1 shadow-lg shadow-emerald-500/30 flex items-center gap-1"
+              className="absolute left-4 top-4 rounded-full bg-linear-to-r from-emerald-500 to-emerald-600 text-white text-xs font-medium px-3 py-1 shadow-lg shadow-emerald-500/30 flex items-center gap-1"
               animate={isHovered ? { scale: [1, 1.1, 1] } : {}}
               transition={{ duration: 0.5 }}
             >
@@ -100,34 +92,22 @@ export function ProductCard({ title, price, img, tag, description }: Props) {
           )}
         </div>
         <CardContent className="p-4 sm:p-6" style={{ transform: "translateZ(20px)" }}>
-          <h3 className={`text-base sm:text-lg font-semibold mb-1 ${
-            theme === "dark" ? "text-white" : "text-[#2d2520]"
-          }`}>{title}</h3>
-          <p className={`text-xs sm:text-sm mb-3 sm:mb-4 ${
-            theme === "dark" ? "text-neutral-400" : "text-neutral-600"
-          }`}>{description || "Handwoven with traditional patterns"}</p>
+          <h3 className={"text-base sm:text-lg font-semibold mb-1 text-[#2d2520] dark:text-white"}>{title}</h3>
+          <p className={"text-xs sm:text-sm mb-3 sm:mb-4 text-neutral-600 dark:text-neutral-400"}>{description || "Handwoven with traditional patterns"}</p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
             <motion.div 
-              className={`text-lg sm:text-xl font-bold ${
-                theme === "dark" ? "text-emerald-400" : "text-[#2d2520]"
-              }`}
+              className={"text-lg sm:text-xl font-bold text-[#2d2520] dark:text-emerald-400"}
               animate={isHovered ? { scale: 1.1 } : { scale: 1 }}
             >
               Rs. {price}
             </motion.div>
             <motion.button 
-              className={`group/btn relative overflow-hidden inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 w-full sm:w-auto justify-center ${
-                theme === "dark"
-                  ? "text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500 hover:text-white"
-                  : "text-[#c85a3c] bg-white border border-[#c85a3c] hover:bg-[#c85a3c] hover:text-white"
-              }`}
+              className={"group/btn relative overflow-hidden inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 w-full sm:w-auto justify-center text-[#c85a3c] bg-white border border-[#c85a3c] hover:bg-[#c85a3c] hover:text-white dark:text-emerald-400 dark:bg-emerald-500/10 dark:border dark:border-emerald-500/30 dark:hover:bg-emerald-500 dark:hover:text-white"}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <motion.div
-                className={`absolute inset-0 ${
-                  theme === "dark" ? "bg-emerald-500" : "bg-[#c85a3c]"
-                }`}
+                className={"absolute inset-0 bg-[#c85a3c] dark:bg-emerald-500"}
                 initial={{ x: "-100%" }}
                 whileHover={{ x: 0 }}
                 transition={{ duration: 0.3 }}
