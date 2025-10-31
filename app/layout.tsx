@@ -3,10 +3,20 @@ import type { Metadata } from "next";
 import { Cinzel, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+
 import { SessionProvider } from "next-auth/react";
 
-const _cinzel = Cinzel({ subsets: ["latin"], variable: "--font-serif" });
-const _inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"], // optional — choose what you need
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"], // optional — choose what you need
+});
 
 export const metadata: Metadata = {
   title: "v0 App",
@@ -21,13 +31,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${_cinzel.variable} ${_inter.variable} font-sans antialiased`}
-      >
-        <SessionProvider>
-          {children}
-          <Toaster />
-        </SessionProvider>
+      <body className={`${cinzel.variable} ${inter.variable} antialiased`}>
+        {children}
+        <Toaster />
       </body>
     </html>
   );
