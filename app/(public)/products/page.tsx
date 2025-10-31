@@ -177,7 +177,9 @@ const ProductsPage = () => {
         <ProductsBannerSection />
         <div className="flex flex-col gap-8 p-6 mx-3 lg:mx-16 md:p-8">
           <div className="flex flex-col gap-4">
-            <h1 className="text-4xl font-bold text-foreground">PRODUCTS</h1>
+            <h1 className="text-4xl font-bold text-foreground font-inter">
+              PRODUCTS
+            </h1>
 
             <ProductControls
               selectedCategory={selectedCategory}
