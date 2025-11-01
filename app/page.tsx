@@ -1,4 +1,5 @@
 import { FeaturedCollection } from "@/components/featured-collection";
+import Heritage from "@/components/Heritage";
 
 import { Hero } from "@/components/hero";
 import ProductShowcase from "@/components/ProductShowcase";
@@ -12,6 +13,7 @@ export default function Home() {
       <WhyChoose />
       <FeaturedCollection />
       <ProductShowcase />
+      <Heritage />
     </div>
   );
 }
