@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FacebookIcon, X } from "lucide-react";
 
@@ -55,10 +55,10 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full max-w-md bg-paper border-mountain border-2">
+      <DialogContent className="w-full max-w-md bg-[hsl(var(--paper))] border-[hsl(var(--mountain-light))] border-2 rounded-lg shadow-lg">
         <button
           onClick={() => onOpenChange?.(false)}
-          className="absolute right-4 top-4 text-primary hover:text-terracotta transition-colors"
+          className="absolute right-4 top-4 text-primary hover:text-[hsl(var(--terracotta))] transition-colors duration-200"
           aria-label="Close"
         >
           <X className="w-6 h-6" />
@@ -67,10 +67,10 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
         <div className="pt-6 pb-6">
           <DialogTitle asChild>
             <div className="text-center">
-              <h1 className="text-3xl font-serif font-bold text-primary mb-2">
+              <h1 className="text-3xl font-cinzel font-bold text-primary mb-2">
                 CREATE AN ACCOUNT
               </h1>
-              <p className="text-sm text-gray-600 font-sans">
+              <p className="text-sm text-muted-foreground font-sans">
                 Get started with your free account
               </p>
             </div>
@@ -79,7 +79,7 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
           <div className="mt-8 space-y-3">
             {/* OAuth Buttons */}
             <GoogleSignin />
-            <button className="w-full bg-hemp hover:bg-opacity-80 text-primary font-sans font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 border border-primary border-opacity-20">
+            <button className="w-full bg-[hsl(var(--hemp))] hover:bg-[hsl(var(--hemp-dark))] text-primary font-sans font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 border border-primary border-opacity-20">
               <FacebookIcon className="w-5 h-5" />
               Continue with Facebook
             </button>
@@ -87,10 +87,10 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-[hsl(var(--mountain-light))]"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-paper text-gray-500 font-sans">
+              <span className="px-2 bg-[hsl(var(--paper))] text-muted-foreground font-sans">
                 Or continue with email or phone
               </span>
             </div>
@@ -111,10 +111,10 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                   onChange={(e) =>
                     handleInputChange("firstName", e.target.value)
                   }
-                  className="border-mountain border-opacity-30 focus:border-mountain bg-white"
+                  className="border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))] bg-white"
                 />
                 {errors.firstName && (
-                  <p className="text-xs text-terracotta mt-1">
+                  <p className="text-xs text-[hsl(var(--terracotta))] mt-1">
                     {errors.firstName}
                   </p>
                 )}
@@ -131,10 +131,10 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                   onChange={(e) =>
                     handleInputChange("lastName", e.target.value)
                   }
-                  className="border-mountain border-opacity-30 focus:border-mountain bg-white"
+                  className="border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))] bg-white"
                 />
                 {errors.lastName && (
-                  <p className="text-xs text-terracotta mt-1">
+                  <p className="text-xs text-[hsl(var(--terracotta))] mt-1">
                     {errors.lastName}
                   </p>
                 )}
@@ -150,10 +150,12 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                 placeholder=""
                 value={formData.phone || ""}
                 onChange={(e) => handleInputChange("phone", e.target.value)}
-                className="border-mountain border-opacity-30 focus:border-mountain bg-white"
+                className="border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))] bg-white"
               />
               {errors.phone && (
-                <p className="text-xs text-terracotta mt-1">{errors.phone}</p>
+                <p className="text-xs text-[hsl(var(--terracotta))] mt-1">
+                  {errors.phone}
+                </p>
               )}
             </div>
             <div>
@@ -166,10 +168,12 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                 placeholder=""
                 value={formData.email || ""}
                 onChange={(e) => handleInputChange("email", e.target.value)}
-                className="border-mountain border-opacity-30 focus:border-mountain bg-white"
+                className="border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))] bg-white"
               />
               {errors.email && (
-                <p className="text-xs text-terracotta mt-1">{errors.email}</p>
+                <p className="text-xs text-[hsl(var(--terracotta))] mt-1">
+                  {errors.email}
+                </p>
               )}
             </div>
             <div>
@@ -182,10 +186,10 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                 placeholder=""
                 value={formData.password || ""}
                 onChange={(e) => handleInputChange("password", e.target.value)}
-                className="border-mountain border-opacity-30 focus:border-mountain bg-white"
+                className="border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))] bg-white"
               />
               {errors.password && (
-                <p className="text-xs text-terracotta mt-1">
+                <p className="text-xs text-[hsl(var(--terracotta))] mt-1">
                   {errors.password}
                 </p>
               )}
@@ -193,7 +197,7 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-primary hover:bg-primary/90 text-paper font-sans font-semibold py-3 px-4 rounded transition-colors mt-6 flex items-center justify-center gap-2 ${
+              className={`w-full bg-primary hover:bg-[hsl(var(--earth))] text-[hsl(var(--paper))] font-sans font-semibold py-3 px-4 rounded transition-all duration-200 mt-6 flex items-center justify-center gap-2 ${
                 loading ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
@@ -202,9 +206,9 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
           </form>
 
           <div className="mt-4 text-center">
-            <p className="text-sm font-sans text-gray-600">
+            <p className="text-sm font-sans text-muted-foreground">
               Already have an account?{" "}
-              <button className="text-mountain font-semibold hover:text-terracotta transition-colors">
+              <button className="text-[hsl(var(--mountain))] font-semibold hover:text-[hsl(var(--terracotta))] transition-colors duration-200">
                 Sign in
               </button>
             </p>

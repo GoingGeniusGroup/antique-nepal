@@ -6,7 +6,6 @@ import { WhyChoose } from "@/components/why-choose";
 export default function Home() {
   return (
     <div>
-      <FeaturesGrid />
       <Hero />
       <WhyChoose />
     </div>
