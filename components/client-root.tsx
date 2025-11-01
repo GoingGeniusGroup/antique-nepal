@@ -1,37 +1,40 @@
 "use client";
 
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useState, useEffect } from "react";
 import { useTheme } from "@/contexts/theme-context";
-import { motion, AnimatePresence } from "framer-motion";
+import { NavigationProvider, useNavigation } from "@/contexts/navigation-context";
+import { LoadingScreen } from "@/components/loading-screen";
 
-export function ClientRoot({ children }: PropsWithChildren) {
+function ClientRootContent({ children }: PropsWithChildren) {
   const { isReady } = useTheme();
+  const { isNavigating } = useNavigation();
+  const [initialLoad, setInitialLoad] = useState(true);
+
+  useEffect(() => {
+    if (isReady) {
+      // Delay hiding initial load to ensure smooth transition
+      const timer = setTimeout(() => setInitialLoad(false), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [isReady]);
+
+  const showLoading = initialLoad || isNavigating;
 
   return (
     <div className="relative">
-      {children}
-      <AnimatePresence>
-        {!isReady && (
-          <motion.div
-            key="splash"
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35 }}
-            className="fixed inset-0 z-100 bg-black flex items-center justify-center"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-white text-3xl tracking-[0.18em]"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              ANTIQUE NEPAL
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <LoadingScreen isLoading={showLoading} />
+      {/* Always render children, loading screen overlays on top */}
+      <div className={showLoading ? "opacity-0 pointer-events-none" : "opacity-100 transition-opacity duration-300"}>
+        {children}
+      </div>
     </div>
+  );
+}
+
+export function ClientRoot({ children }: PropsWithChildren) {
+  return (
+    <NavigationProvider>
+      <ClientRootContent>{children}</ClientRootContent>
+    </NavigationProvider>
   );
 }
