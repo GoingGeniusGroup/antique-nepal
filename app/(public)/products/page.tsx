@@ -11,6 +11,7 @@ const ProductsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   // mock data
@@ -129,6 +130,16 @@ const ProductsPage = () => {
   const filteredProducts = useMemo(() => {
     let filtered = allProducts;
 
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(query) ||
+          p.category.toLowerCase().includes(query) ||
+          p.badge.toLowerCase().includes(query)
+      );
+    }
+
     if (selectedCategory) {
       filtered = filtered.filter((p) => p.category === selectedCategory);
     }
@@ -147,7 +158,7 @@ const ProductsPage = () => {
     }
 
     return filtered;
-  }, [selectedCategory, inStockOnly, sortBy]);
+  }, [selectedCategory, inStockOnly, sortBy, searchQuery]);
 
   // pagination
   const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
@@ -171,9 +182,14 @@ const ProductsPage = () => {
     setSortBy(value);
     setCurrentPage(1);
   };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
   return (
     <>
-      <main>
+      <main className="pt-16 md:pt-20">
         <ProductsBannerSection />
         <div className="flex flex-col gap-8 p-6 mx-3 lg:mx-16 md:p-8">
           <div className="flex flex-col gap-4">
@@ -188,6 +204,8 @@ const ProductsPage = () => {
               onInStockChange={handleInStockChange}
               sortBy={sortBy}
               onSortChange={handleSortChange}
+              searchQuery={searchQuery}
+              onSearchChange={handleSearchChange}
             />
           </div>
 

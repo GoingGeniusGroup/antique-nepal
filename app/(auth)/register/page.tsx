@@ -5,7 +5,7 @@ import React from "react";
 
 const RegisterPage = () => {
   return (
-    <div>
+    <div className="pt-16 md:pt-20">
       <Signup />
       <Link href={"/auth-buttons"}>
         <Button value={"back"} />
