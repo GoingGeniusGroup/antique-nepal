@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Cinzel, Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
+import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "@/contexts/theme-context";
 import Script from "next/script";
 import { ClientRoot } from "../components/client-root";
+import { auth } from "@/lib/auth";
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
@@ -22,11 +25,12 @@ export const metadata: Metadata = {
   description: "Handcrafted Hemp Bags Woven with Himalayan Heritage",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
   return (
     <html lang="en">
       <head>
@@ -48,9 +52,12 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${cinzel.variable} ${inter.variable} antialiased bg-background text-foreground`}
       >
-        <ThemeProvider>
-          <ClientRoot>{children}</ClientRoot>
-        </ThemeProvider>
+        <SessionProvider session={session}>
+          <ThemeProvider>
+            <ClientRoot>{children}</ClientRoot>
+            <Toaster />
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );
