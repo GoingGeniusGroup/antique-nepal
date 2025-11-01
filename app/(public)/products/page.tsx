@@ -4,6 +4,9 @@ import { ProductControls } from "@/components/products/product-controls";
 import { ProductGrid } from "@/components/products/product-grid";
 import ProductsBannerSection from "@/components/products/ProductsBannerSection";
 import { useMemo, useState } from "react";
+import { useTheme } from "@/contexts/theme-context";
+import { motion } from "framer-motion";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const PRODUCTS_PER_PAGE = 8;
 
@@ -187,13 +190,31 @@ const ProductsPage = () => {
     setSearchQuery(query);
     setCurrentPage(1);
   };
+
+  const { theme, isReady } = useTheme();
+  const isDark = isReady && theme === "dark";
+
   return (
     <>
-      <main className="pt-16 md:pt-20">
+      <main className="pt-16 md:pt-20 min-h-screen bg-[#f7f5f2] dark:bg-[#0a0a0a] relative">
+        {/* Theme Toggle */}
+        <ThemeToggle
+          variant="fixed"
+          position="right-4 md:right-8 top-24 md:top-28"
+          animationType="scale"
+          animationDelay={0.3}
+          zIndex={30}
+        />
+
         <ProductsBannerSection />
         <div className="flex flex-col gap-8 p-6 mx-3 lg:mx-16 md:p-8">
-          <div className="flex flex-col gap-4">
-            <h1 className="text-4xl font-bold text-foreground font-inter">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col gap-4"
+          >
+            <h1 className={`text-4xl font-bold font-inter ${isDark ? "text-white" : "text-[#2d2520]"}`}>
               PRODUCTS
             </h1>
 
@@ -207,10 +228,15 @@ const ProductsPage = () => {
               searchQuery={searchQuery}
               onSearchChange={handleSearchChange}
             />
-          </div>
+          </motion.div>
 
           {/* products section */}
-          <div className="flex-1">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="flex-1"
+          >
             <ProductGrid products={paginatedProducts} />
 
             {/* pagination */}
@@ -221,7 +247,7 @@ const ProductsPage = () => {
                 onPageChange={setCurrentPage}
               />
             )}
-          </div>
+          </motion.div>
         </div>
       </main>
     </>
