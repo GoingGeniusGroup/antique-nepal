@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-context";
 import { ProductCard } from "@/components/product-card";
-import Link from "next/link";
+import { NavigationLink } from "@/components/navigation-link";
 import {
   containerVariants,
   itemVariants,
@@ -30,7 +30,6 @@ const itemVariantsCustom = {
 
 export function FeaturedCollection() {
   const { theme, isReady } = useTheme();
-  const MotionLink = motion(Link);
 
   return (
     <section
@@ -141,38 +140,39 @@ export function FeaturedCollection() {
           viewport={{ once: false, amount: 0.5 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <MotionLink
-            href="/products"
-            className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-emerald-600 to-emerald-500 text-white px-6 py-3 text-sm font-medium shadow-lg shadow-emerald-500/20 group cursor-pointer"
-            whileHover={{
-              scale: 1.08,
-              boxShadow: "0 15px 40px rgba(107,74,50,0.4)",
-              y: -3,
-            }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-          >
-            View Full Collection
-            <motion.svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              animate={{ x: [0, 5, 0] }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut",
+          <NavigationLink href="/products">
+            <motion.div
+              className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-emerald-600 to-emerald-500 text-white px-6 py-3 text-sm font-medium shadow-lg shadow-emerald-500/20 group cursor-pointer"
+              whileHover={{
+                scale: 1.08,
+                boxShadow: "0 15px 40px rgba(107,74,50,0.4)",
+                y: -3,
               }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.2 }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </motion.svg>
-          </MotionLink>
+              View Full Collection
+              <motion.svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                animate={{ x: [0, 5, 0] }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
+              </motion.svg>
+            </motion.div>
+          </NavigationLink>
         </motion.div>
         
       </div>

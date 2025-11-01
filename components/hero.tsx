@@ -12,6 +12,7 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
+import { NavigationLink } from "@/components/navigation-link";
 import {
   Tooltip,
   TooltipContent,
@@ -321,18 +322,20 @@ export function Hero() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mb-16">
             <motion.div {...ANIMATION_CONFIG.hoverScale}>
-              <Button className="relative overflow-hidden rounded-md h-11 px-7 text-lg font-inter font-medium group text-white bg-primary hover:bg-[#b44f36] dark:bg-emerald-600 dark:hover:bg-emerald-500">
-                <span className="relative flex items-center">
-                  <ShoppingBag className="mr-2 h-4 w-4" />
-                  Explore Collection
-                  <motion.span
-                    animate={{ x: [0, 3, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </motion.span>
-                </span>
-              </Button>
+              <NavigationLink href="/products">
+                <Button className="relative overflow-hidden rounded-md h-11 px-7 text-lg font-inter font-medium group text-white bg-primary hover:bg-[#b44f36] dark:bg-emerald-600 dark:hover:bg-emerald-500">
+                  <span className="relative flex items-center">
+                    <ShoppingBag className="mr-2 h-4 w-4" />
+                    Explore Collection
+                    <motion.span
+                      animate={{ x: [0, 3, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </motion.span>
+                  </span>
+                </Button>
+              </NavigationLink>
             </motion.div>
             <motion.div {...ANIMATION_CONFIG.hoverScale}>
               <Button
