@@ -4,6 +4,7 @@ import { PropsWithChildren, useState, useEffect } from "react";
 import { useTheme } from "@/contexts/theme-context";
 import { NavigationProvider, useNavigation } from "@/contexts/navigation-context";
 import { LoadingScreen } from "@/components/loading-screen";
+import { Navbar } from "@/components/navbar";
 
 function ClientRootContent({ children }: PropsWithChildren) {
   const { isReady } = useTheme();
@@ -22,6 +23,7 @@ function ClientRootContent({ children }: PropsWithChildren) {
 
   return (
     <div className="relative">
+      <Navbar />
       <LoadingScreen isLoading={showLoading} />
       {/* Always render children, loading screen overlays on top */}
       <div className={showLoading ? "opacity-0 pointer-events-none" : "opacity-100 transition-opacity duration-300"}>

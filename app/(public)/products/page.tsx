@@ -189,7 +189,7 @@ const ProductsPage = () => {
   };
   return (
     <>
-      <main>
+      <main className="pt-16 md:pt-20">
         <ProductsBannerSection />
         <div className="flex flex-col gap-8 p-6 mx-3 lg:mx-16 md:p-8">
           <div className="flex flex-col gap-4">

@@ -169,7 +169,7 @@ export function Hero() {
       </TooltipProvider>
 
       {/* Prayer Flags Animation - Enhanced */}
-      <div className="absolute top-16 left-0 right-0 h-32 overflow-hidden pointer-events-none z-10 flex items-start justify-between px-2">
+      <div className="absolute top-0 left-0 right-0 h-32 overflow-hidden pointer-events-none z-10 flex items-start justify-between px-2">
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
@@ -301,7 +301,7 @@ export function Hero() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.7 }}
               viewport={{ once: true }}
-              className="max-w-2xl mx-auto text-3xl sm:text-3xl md:text-3xl font-inter font-light text-primary-foreground"
+              className="max-w-2xl mx-auto text-3xl sm:text-3xl md:text-3xl font-inter font-light text-white"
             >
               Handcrafted Hemp Bags Woven with Himalayan Heritage
             </motion.p>

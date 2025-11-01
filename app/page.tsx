@@ -12,7 +12,7 @@ import { WhyChoose } from "@/components/landing/why-choose";
 
 export default function Home() {
   return (
-    <div>
+    <div className="pt-16 md:pt-20">
       <Hero />
       <WhyChoose />
       <FeaturedCollection />
