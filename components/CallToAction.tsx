@@ -3,14 +3,24 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, ShoppingBag } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  viewportConfigHeader,
+  viewportConfig,
+  fadeInUp,
+} from "./landing-utils";
 
 export const CallToAction = () => {
   return (
     <section className="py-20 bg-primary text-primary-foreground">
-      <div className="container px-4">
+      <div className="container px-4 mx-auto">
         <div className="max-w-4xl mx-auto">
           {/* Main CTA */}
-          <div className="text-center mb-16 animate-fade-in">
+          <motion.div
+            className="text-center mb-16"
+            {...fadeInUp}
+            viewport={viewportConfigHeader}
+          >
             <h2
               className="text-4xl md:text-5xl font-bold mb-6"
               style={{ fontFamily: "Cinzel, serif" }}
@@ -21,20 +31,44 @@ export const CallToAction = () => {
               Explore our collection of handcrafted hemp bags and bring a piece
               of Himalayan heritage into your life.
             </p>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="text-lg px-10 py-6  font-inter shadow-medium hover:shadow-soft transition-all"
+            <motion.div
+              whileHover={{ scale: 1.05, y: -4 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              <ShoppingBag className="mr-2 h-5 w-5" />
-              Shop Now
-            </Button>
-          </div>
+              <Button
+                size="lg"
+                variant="secondary"
+                className="text-lg px-10 py-6 font-inter shadow-medium hover:shadow-soft transition-all"
+              >
+                <ShoppingBag className="mr-2 h-5 w-5" />
+                Shop Now
+              </Button>
+            </motion.div>
+          </motion.div>
 
           {/* Newsletter */}
-          <div className="bg-primary-foreground/10 backdrop-blur-sm p-8 md:p-10 rounded-2xl border border-primary-foreground/20 animate-slide-up">
-            <div className="text-center mb-6">
-              <Mail className="w-12 h-12 mx-auto mb-4 text-primary-foreground" />
+          <motion.div
+            className="bg-primary-foreground/10 backdrop-blur-sm p-8 md:p-10 rounded-2xl border border-primary-foreground/20"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewportConfig}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{ scale: 1.02 }}
+          >
+            <motion.div
+              className="text-center mb-6"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+              >
+                <Mail className="w-12 h-12 mx-auto mb-4 text-primary-foreground" />
+              </motion.div>
               <h3
                 className="text-2xl font-semibold mb-2"
                 style={{ fontFamily: "Cinzel, serif" }}
@@ -45,23 +79,29 @@ export const CallToAction = () => {
                 Subscribe to receive updates on new collections and artisan
                 stories
               </p>
-            </div>
+            </motion.div>
 
             <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="bg-primary-foreground  font-inter text-primary border-none flex-1"
+                className="bg-primary-foreground font-inter text-primary border-none flex-1"
               />
-              <Button
-                type="submit"
-                variant="secondary"
-                className="whitespace-nowrap font-inter"
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2 }}
               >
-                Subscribe
-              </Button>
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  className="whitespace-nowrap font-inter"
+                >
+                  Subscribe
+                </Button>
+              </motion.div>
             </form>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

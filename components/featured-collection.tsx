@@ -4,11 +4,18 @@ import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-context";
 import { ProductCard } from "@/components/product-card";
 import Link from "next/link";
+import {
+  containerVariants,
+  itemVariants,
+  viewportConfig,
+  viewportConfigHeader,
+} from "./landing-utils";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
+// Custom variants with different timing
+const containerVariantsCustom = {
+  ...containerVariants,
   visible: {
-    opacity: 1,
+    ...containerVariants.visible,
     transition: {
       staggerChildren: 0.2,
       delayChildren: 0.1,
@@ -16,16 +23,9 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut" as any,
-    },
-  },
+const itemVariantsCustom = {
+  ...itemVariants,
+  hidden: { ...itemVariants.hidden, y: 40 },
 };
 
 export function FeaturedCollection() {
@@ -69,7 +69,7 @@ export function FeaturedCollection() {
         <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: false, margin: "-100px", amount: 0.3 }}
+          viewport={viewportConfigHeader}
           transition={{ duration: 0.6 }}
         >
           <h2
@@ -99,12 +99,12 @@ export function FeaturedCollection() {
 
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-sm md:max-w-none font-inter mx-auto"
-          variants={containerVariants}
+          variants={containerVariantsCustom}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: false, margin: "-50px", amount: 0.2 }}
+          viewport={viewportConfig}
         >
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariantsCustom}>
             <ProductCard
               title="Traditional Weave Tote"
               price="300"
@@ -113,7 +113,7 @@ export function FeaturedCollection() {
               description="Handwoven with traditional patterns"
             />
           </motion.div>
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariantsCustom}>
             <ProductCard
               title="Minimalist Hemp Bag"
               price="300"
@@ -122,7 +122,7 @@ export function FeaturedCollection() {
               description="Clean lines, maximum durability"
             />
           </motion.div>
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariantsCustom}>
             <ProductCard
               title="Mountain Explorer Pack"
               price="300"

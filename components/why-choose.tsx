@@ -2,7 +2,15 @@
 
 import { motion } from "framer-motion";
 import { Leaf, Recycle, Users, Gem, Globe, Heart } from "lucide-react";
+import {
+  containerVariants,
+  itemVariants,
+  viewportConfig,
+  viewportConfigHeader,
+  hoverScale,
+} from "./landing-utils";
 
+// Feature items data
 const items = [
   {
     icon: Leaf,
@@ -54,25 +62,14 @@ const items = [
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
+// Custom container variant with different delay timing
+const containerVariantsCustom = {
+  ...containerVariants,
   visible: {
-    opacity: 1,
+    ...containerVariants.visible,
     transition: {
       staggerChildren: 0.15,
       delayChildren: 0.2,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: [0.22, 1, 0.36, 1] as any,
     },
   },
 };
@@ -88,7 +85,7 @@ export function WhyChoose() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: "-100px", amount: 0.3 }}
+          viewport={viewportConfigHeader}
           transition={{ duration: 0.6 }}
           className="relative"
         >
@@ -251,16 +248,17 @@ export function WhyChoose() {
 
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          variants={containerVariants}
+          variants={containerVariantsCustom}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: false, margin: "-50px", amount: 0.2 }}
+          viewport={viewportConfig}
         >
           {items.map((it, index) => (
             <motion.div
               key={it.title}
               variants={itemVariants}
               whileHover={{
+                ...hoverScale,
                 y: -12,
                 scale: 1.03,
                 boxShadow: "0 20px 40px rgba(0,0,0,0.15)",

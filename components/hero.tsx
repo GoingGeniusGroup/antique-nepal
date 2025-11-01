@@ -9,8 +9,6 @@ import {
   Award,
   ShoppingBag,
   ArrowRight,
-  Lightbulb,
-  LightbulbOff,
   Sun,
   Moon,
 } from "lucide-react";
