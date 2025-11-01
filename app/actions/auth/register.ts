@@ -25,7 +25,10 @@ export async function registerUser(formData: FormData) {
     });
 
     if (existingUser) {
-      return { success: false, message: "User already exists" };
+      return {
+        success: false,
+        message: "User already exists with this email or phone",
+      };
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);

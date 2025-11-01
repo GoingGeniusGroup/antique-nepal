@@ -10,11 +10,8 @@ export default function Home() {
     <div>
       <Hero />
       <WhyChoose />
-<<<<<<< HEAD
-=======
       <FeaturedCollection />
       <ProductShowcase />
->>>>>>> main
     </div>
   );
 }

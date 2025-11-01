@@ -111,10 +111,14 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                   onChange={(e) =>
                     handleInputChange("firstName", e.target.value)
                   }
-                  className="border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))] bg-white"
+                  className={`bg-white transition-all ${
+                    errors.firstName
+                      ? "border-[hsl(var(--terracotta))] border-2 focus:border-[hsl(var(--terracotta))]"
+                      : "border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))]"
+                  }`}
                 />
                 {errors.firstName && (
-                  <p className="text-xs text-[hsl(var(--terracotta))] mt-1">
+                  <p className="text-xs text-[hsl(var(--terracotta))] mt-1 h-4">
                     {errors.firstName}
                   </p>
                 )}
@@ -131,10 +135,14 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                   onChange={(e) =>
                     handleInputChange("lastName", e.target.value)
                   }
-                  className="border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))] bg-white"
+                  className={`bg-white transition-all ${
+                    errors.lastName
+                      ? "border-[hsl(var(--terracotta))] border-2 focus:border-[hsl(var(--terracotta))]"
+                      : "border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))]"
+                  }`}
                 />
                 {errors.lastName && (
-                  <p className="text-xs text-[hsl(var(--terracotta))] mt-1">
+                  <p className="text-xs text-[hsl(var(--terracotta))] mt-1 h-4">
                     {errors.lastName}
                   </p>
                 )}
@@ -150,7 +158,11 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                 placeholder=""
                 value={formData.phone || ""}
                 onChange={(e) => handleInputChange("phone", e.target.value)}
-                className="border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))] bg-white"
+                className={`bg-white transition-all ${
+                  errors.phone
+                    ? "border-[hsl(var(--terracotta))] border-2 focus:border-[hsl(var(--terracotta))]"
+                    : "border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))]"
+                }`}
               />
               {errors.phone && (
                 <p className="text-xs text-[hsl(var(--terracotta))] mt-1">
@@ -159,7 +171,7 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
               )}
             </div>
             <div>
-              <label className="block text-sm font-sans font-semibold text-primary mb-1">
+              <label className="block text-sm font-sans font-semibold text-primary mb-1 h-4">
                 Email
               </label>
               <Input
@@ -168,10 +180,14 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                 placeholder=""
                 value={formData.email || ""}
                 onChange={(e) => handleInputChange("email", e.target.value)}
-                className="border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))] bg-white"
+                className={`bg-white transition-all ${
+                  errors.email
+                    ? "border-[hsl(var(--terracotta))] border-2 focus:border-[hsl(var(--terracotta))]"
+                    : "border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))]"
+                }`}
               />
               {errors.email && (
-                <p className="text-xs text-[hsl(var(--terracotta))] mt-1">
+                <p className="text-xs text-[hsl(var(--terracotta))] mt-1 h-4">
                   {errors.email}
                 </p>
               )}
@@ -186,10 +202,14 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                 placeholder=""
                 value={formData.password || ""}
                 onChange={(e) => handleInputChange("password", e.target.value)}
-                className="border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))] bg-white"
+                className={`bg-white transition-all ${
+                  errors.password
+                    ? "border-[hsl(var(--terracotta))] border-2 focus:border-[hsl(var(--terracotta))]"
+                    : "border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain))]"
+                }`}
               />
               {errors.password && (
-                <p className="text-xs text-[hsl(var(--terracotta))] mt-1">
+                <p className="text-xs text-[hsl(var(--terracotta))] mt-1 h-4">
                   {errors.password}
                 </p>
               )}
@@ -201,7 +221,13 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
                 loading ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
-              {loading ? "Creating..." : "Create account"} <span>→</span>
+              {loading ? (
+                "Creating..."
+              ) : (
+                <>
+                  Create account <span>→</span>
+                </>
+              )}
             </button>
           </form>
 
@@ -220,3 +246,5 @@ const Signup = ({ open, onOpenChange }: SignupDialogProps) => {
 };
 
 export default Signup;
+
+export { Signup as SignupD };

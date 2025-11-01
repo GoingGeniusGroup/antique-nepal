@@ -9,7 +9,7 @@ import prisma from "@/lib/prisma";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: {
-    strategy: "database",
+    strategy: "jwt",
   },
   providers: [
     Google({
@@ -58,13 +58,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
-        (session.user as any).phone = (user as any).phone;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.phone = (user as any).phone;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user && token) {
+        session.user.id = token.id as string;
+        (session.user as any).phone = token.phone;
       }
       return session;
     },
   },
-  // REMOVE the entire jwt.encode section
+  pages: {
+    signIn: "/",
+  },
 });

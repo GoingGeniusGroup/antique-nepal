@@ -2,11 +2,10 @@
 
 import type React from "react";
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { FacebookIcon, X } from "lucide-react";
-
 import GoogleSignin from "../button/goole-sign-in-button";
 import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
@@ -21,6 +20,7 @@ const SignIn = ({ open, onOpenChange }: SigninDialogProps) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const router = useRouter();
 
   const handleFacebookSignIn = async () => {
     try {
@@ -76,6 +76,10 @@ const SignIn = ({ open, onOpenChange }: SigninDialogProps) => {
       setErrors({});
       toast.success("Signed in successfully");
       onOpenChange?.(false);
+
+      setTimeout(() => {
+        router.refresh();
+      }, 500);
     }
   };
 
@@ -103,7 +107,6 @@ const SignIn = ({ open, onOpenChange }: SigninDialogProps) => {
           </DialogTitle>
 
           <div className="mt-8 space-y-3">
-            {/* OAuth Buttons */}
             <GoogleSignin />
             <button
               onClick={handleFacebookSignIn}
@@ -126,7 +129,6 @@ const SignIn = ({ open, onOpenChange }: SigninDialogProps) => {
             </div>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-sans font-semibold text-primary mb-1">
@@ -194,7 +196,10 @@ const SignIn = ({ open, onOpenChange }: SigninDialogProps) => {
           <div className="mt-4 text-center">
             <p className="text-sm font-sans text-muted-foreground">
               Don't have an account?{" "}
-              <button className="text-[hsl(var(--mountain))] font-semibold hover:text-[hsl(var(--terracotta))] transition-colors duration-200">
+              <button
+                className="text-[hsl(var(--mountain))] font-semibold hover:text-[hsl(var(--terracotta))] transition-colors duration-200"
+                onClick={() => {}}
+              >
                 Sign up
               </button>
             </p>
