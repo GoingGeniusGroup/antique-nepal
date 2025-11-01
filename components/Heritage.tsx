@@ -1,9 +1,25 @@
-"use client"; // Needed if you're using animations or interactive classes
+"use client";
 
 import Image from "next/image";
 import paperTexture from "@/public/paper-texture.jpg";
+import { motion } from "framer-motion";
 
 export default function Heritage() {
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.8 } },
+  };
+
+  const slideUp = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+  };
+
+  const scaleIn = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.8, ease: "easeOut" } },
+  };
+
   return (
     <section
       id="heritage"
@@ -23,7 +39,13 @@ export default function Heritage() {
       <div className="container px-4 relative z-10">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-12 animate-fade-in">
+          <motion.div
+            className="text-center mb-12"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeIn}
+          >
             <h2
               className="text-4xl md:text-5xl font-bold mb-6 text-foreground"
               style={{ fontFamily: "Cinzel, serif" }}
@@ -31,10 +53,16 @@ export default function Heritage() {
               Rooted in Nepali Heritage
             </h2>
             <div className="w-24 h-1 bg-accent mx-auto mb-8" />
-          </div>
+          </motion.div>
 
           {/* Two-Column Section */}
-          <div className="grid md:grid-cols-2 gap-8 animate-slide-up">
+          <motion.div
+            className="grid md:grid-cols-2 gap-8"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={slideUp}
+          >
             <div className="bg-card p-8 rounded-2xl shadow-soft border border-border">
               <h3
                 className="text-2xl font-semibold mb-4 text-foreground"
@@ -72,12 +100,16 @@ export default function Heritage() {
                 communities.
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Quote Section */}
-          <div
-            className="mt-12 text-center text-primary-foreground p-10 rounded-2xl animate-scale-in"
+          <motion.div
+            className="mt-12 text-center text-primary-foreground p-10 rounded-2xl"
             style={{ background: "var(--gradient-mountain)" }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={scaleIn}
           >
             <p
               className="text-xl md:text-2xl leading-relaxed"
@@ -86,7 +118,7 @@ export default function Heritage() {
               "Every bag carries the spirit of the mountains and the warmth of
               Nepali craftsmanship."
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
