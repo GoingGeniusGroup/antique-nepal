@@ -35,6 +35,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as Theme | null;
     if (savedTheme === "light" || savedTheme === "dark") setTheme(savedTheme);
+    const root = document.documentElement;
+    if (savedTheme === "dark") {
+      root.classList.add("dark");
+    } else if (savedTheme === "light") {
+      root.classList.remove("dark");
+    }
     const t = setTimeout(() => setIsReady(true), 350);
     return () => clearTimeout(t);
   }, []);
@@ -43,6 +49,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
+    const root = document.documentElement;
+    if (newTheme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
   };
 
   return (

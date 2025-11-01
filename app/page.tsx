@@ -1,5 +1,7 @@
-import { FeaturesGrid } from "@/components/FeaturesGrid";
+import { FeaturedCollection } from "@/components/featured-collection";
+
 import { Hero } from "@/components/hero";
+import ProductShowcase from "@/components/ProductShowcase";
 
 import { WhyChoose } from "@/components/why-choose";
 
@@ -8,6 +10,11 @@ export default function Home() {
     <div>
       <Hero />
       <WhyChoose />
+<<<<<<< HEAD
+=======
+      <FeaturedCollection />
+      <ProductShowcase />
+>>>>>>> main
     </div>
   );
 }

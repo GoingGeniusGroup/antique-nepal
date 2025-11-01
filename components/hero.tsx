@@ -3,8 +3,23 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Leaf, Users, Award, ShoppingBag, ArrowRight, Lightbulb, LightbulbOff, Sun, Moon } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Leaf,
+  Users,
+  Award,
+  ShoppingBag,
+  ArrowRight,
+  Lightbulb,
+  LightbulbOff,
+  Sun,
+  Moon,
+} from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { LucideIcon } from "lucide-react";
 import { useTheme } from "@/contexts/theme-context";
 
@@ -94,25 +109,25 @@ const particles = [
 export function Hero() {
   const { theme, isReady, toggleTheme } = useTheme();
   return (
-    <section className="relative min-h-screen w-full overflow-hidden">
+    <section className="relative background-cover min-h-screen w-full overflow-hidden">
       {/* Original Image Background */}
       <Image
         src="/hero-mountains%201.png"
         alt="Himalayan mountains"
         fill
         priority
-        className="object-cover"
+        className="object-cover opacity-100"
       />
-      
+
       {(() => {
         const overlayClass = !isReady
           ? "bg-black/60"
           : theme === "dark"
-            ? "bg-black/65"
-            : "bg-black/30";
-        return <div className={`absolute inset-0 ${overlayClass}`}/>;
+          ? "bg-black/65"
+          : "bg-black/50";
+        return <div className={`absolute inset-0 ${overlayClass}`} />;
       })()}
-      
+
       {/* Theme Toggle - Right side floating */}
       <TooltipProvider>
         <Tooltip>
@@ -123,9 +138,15 @@ export function Hero() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
               className={`group absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 rounded-full p-3 md:p-3.5 backdrop-blur-md shadow-[0_10px_28px_rgba(0,0,0,0.28)] border ${
-                isReady && theme === "dark" ? "bg-white/20 border-white/30" : "bg-white/15 border-white/25"
+                isReady && theme === "dark"
+                  ? "bg-white/20 border-white/30"
+                  : "bg-white/15 border-white/25"
               }`}
-              aria-label={isReady && theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              aria-label={
+                isReady && theme === "dark"
+                  ? "Switch to light mode"
+                  : "Switch to dark mode"
+              }
               aria-pressed={isReady && theme === "dark"}
             >
               {isReady ? (
@@ -139,22 +160,21 @@ export function Hero() {
               )}
             </motion.button>
           </TooltipTrigger>
-          <TooltipContent side="left" className="backdrop-blur bg-white/20 text-white border-white/30">
+          <TooltipContent
+            side="left"
+            className="backdrop-blur bg-white/20 text-white border-white/30"
+          >
             {isReady && theme === "dark" ? "Light mode" : "Dark mode"}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
 
       {/* Prayer Flags Animation - Enhanced */}
-      <div className="absolute top-16 left-0 right-0 h-32 overflow-hidden pointer-events-none z-10">
+      <div className="absolute top-16 left-0 right-0 h-32 overflow-hidden pointer-events-none z-10 flex items-start justify-between px-2">
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-16 h-12"
-            style={{
-              left: `${i * 8.33}%`,
-              top: -10,
-            }}
+            className="relative w-16 h-12 -mt-2.5"
             animate={{
               y: [0, 8, 0],
               rotate: [0, 3, 0, -3, 0],
@@ -257,11 +277,11 @@ export function Hero() {
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
               viewport={{ once: true }}
-              className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-[0.18em] font-bold"
+              className="relative text-4xl sm:text-8xl md:text-8xl lg:text-8xl tracking-[0.18em] font-bold"
               style={{ fontFamily: "var(--font-cinzel)" }}
             >
               <motion.span
-                className="bg-linear-to-r from-amber-100 via-white to-amber-100 bg-clip-text text-transparent"
+                className="bg-linear-to-r from-primary-foreground via-white to-amber-100 bg-clip-text text-transparent"
                 animate={{
                   backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                 }}
@@ -282,7 +302,7 @@ export function Hero() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.7 }}
               viewport={{ once: true }}
-              className="max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-white/95 font-medium"
+              className="max-w-2xl mx-auto text-3xl sm:text-3xl md:text-3xl font-inter font-light text-primary-foreground"
             >
               Handcrafted Hemp Bags Woven with Himalayan Heritage
             </motion.p>
@@ -291,7 +311,7 @@ export function Hero() {
               whileInView={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.7 }}
               viewport={{ once: true }}
-              className="max-w-2xl mx-auto text-sm sm:text-base text-white/85 leading-relaxed px-4"
+              className="max-w-2xl mx-auto text-lg font-inter font-light sm:text-lg text-white/85 leading-relaxed px-4"
             >
               Every bag tells a story. Crafted by master artisans using
               centuries-old techniques, sustainable hemp, and adorned with
@@ -303,7 +323,7 @@ export function Hero() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mb-16">
             <motion.div {...ANIMATION_CONFIG.hoverScale}>
-              <Button className="relative overflow-hidden bg-primary hover:bg-[#059669] rounded-md h-11 px-7 text-sm font-medium group">
+              <Button className="relative overflow-hidden rounded-md h-11 px-7 text-lg font-inter font-medium group text-white bg-primary hover:bg-[#b44f36] dark:bg-emerald-600 dark:hover:bg-emerald-500">
                 <span className="relative flex items-center">
                   <ShoppingBag className="mr-2 h-4 w-4" />
                   Explore Collection
@@ -319,7 +339,7 @@ export function Hero() {
             <motion.div {...ANIMATION_CONFIG.hoverScale}>
               <Button
                 variant="outline"
-                className="relative overflow-hidden rounded-md h-11 px-7 text-sm font-medium border-white/50 bg-white/5 text-white hover:bg-white/15 hover:text-white backdrop-blur-sm"
+                className="relative overflow-hidden rounded-md h-11 px-7 text-lg font-medium border-white/50 bg-white/5 text-white hover:bg-white/15 hover:text-white backdrop-blur-sm"
               >
                 <motion.div
                   className="absolute inset-0 bg-white/10"
@@ -327,7 +347,7 @@ export function Hero() {
                   whileHover={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.3 }}
                 />
-                <span className="relative">Discover Our Story</span>
+                <span className="relative font-inter">Discover Our Story</span>
               </Button>
             </motion.div>
           </div>
@@ -359,10 +379,10 @@ export function Hero() {
                       <Icon className={`h-6 w-6 ${card.iconColor}`} />
                     </motion.div>
                     <div className="text-white relative z-10">
-                      <div className="text-base font-semibold text-white mb-1">
+                      <div className="text-lg font-semibold font-inter text-white mb-1">
                         {card.title}
                       </div>
-                      <div className="text-sm text-white/80">
+                      <div className="text-sm font-inter text-white/80">
                         {card.description}
                       </div>
                     </div>
