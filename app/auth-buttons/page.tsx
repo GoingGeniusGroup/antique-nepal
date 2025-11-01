@@ -1,43 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import SignIn from "@/components/form/signin-form";
-import SignUp from "@/components/form/signup-form";
 import { useSession, signOut } from "next-auth/react";
 import { Loader2 } from "lucide-react"; // Optional: for loading icon
+import Link from "next/link";
 
 const AuthButton = () => {
-  const [isSignInOpen, setSignInOpen] = useState(false);
-  const [isSignUpOpen, setSignUpOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const { data: session, status } = useSession();
 
   console.log(status);
 
-  const openSignIn = () => {
-    setSignUpOpen(false);
-    setSignInOpen(true);
-  };
-
-  const openSignUp = () => {
-    setSignInOpen(false);
-    setSignUpOpen(true);
-  };
-
-  const switchToSignUp = () => {
-    setSignInOpen(false);
-    setSignUpOpen(true);
-  };
-
-  const switchToSignIn = () => {
-    setSignUpOpen(false);
-    setSignInOpen(true);
-  };
-
   const handleSignOut = async () => {
     try {
       setIsSigningOut(true);
-      await signOut({ callbackUrl: "/" });
+      await signOut({ callbackUrl: "/auth-buttons" });
     } catch (error) {
       console.error("Sign out error:", error);
       setIsSigningOut(false);
@@ -81,23 +58,17 @@ const AuthButton = () => {
   return (
     <>
       <div className="flex gap-3">
-        <button
-          onClick={openSignIn}
-          className="border px-4 py-2 rounded hover:bg-muted transition-colors"
-        >
-          Sign In
-        </button>
-        <button
-          onClick={openSignUp}
-          className="border px-4 py-2 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-        >
-          Sign Up
-        </button>
+        <Link href={"/login"}>
+          <button className="border px-4 py-2 rounded hover:bg-muted transition-colors">
+            Sign In
+          </button>
+        </Link>
+        <Link href={"/register"}>
+          <button className="border px-4 py-2 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+            Sign Up
+          </button>
+        </Link>
       </div>
-
-      {/* Dialogs */}
-      <SignIn open={isSignInOpen} onOpenChange={setSignInOpen} />
-      <SignUp open={isSignUpOpen} onOpenChange={setSignUpOpen} />
     </>
   );
 };
