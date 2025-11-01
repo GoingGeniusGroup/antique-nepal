@@ -8,6 +8,7 @@ import { FacebookIcon, X } from "lucide-react";
 import GoogleSignin from "../button/goole-sign-in-button";
 import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 const SignIn = () => {
   const [identifier, setIdentifier] = useState("");
@@ -182,12 +183,14 @@ const SignIn = () => {
         <div className="mt-4 text-center">
           <p className="text-sm font-sans text-muted-foreground">
             Don't have an account?{" "}
-            <button
-              className="text-[hsl(var(--mountain))] font-semibold hover:text-[hsl(var(--terracotta))] transition-colors duration-200"
-              onClick={() => {}}
-            >
-              Sign up
-            </button>
+            <Link href={"/register"}>
+              <button
+                className="text-[hsl(var(--mountain))] font-semibold hover:text-[hsl(var(--terracotta))] transition-colors duration-200"
+                onClick={() => {}}
+              >
+                Sign up
+              </button>
+            </Link>
           </p>
         </div>
       </div>
