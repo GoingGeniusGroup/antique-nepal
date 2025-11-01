@@ -1,13 +1,14 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --font-cinzel: var(--font-cinzel);
+  --font-inter: var(--font-inter);
+  --gradient-mountain: hsl(var(--gradient-mountain));
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -21,22 +22,22 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
+  --color-ring: hsl(var(--ring));
+  --color-input: hsl(var(--input));
+  --color-border: hsl(var(--border));
+  --color-destructive: hsl(var(--destructive));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card: hsl(var(--card));
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -45,24 +46,26 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --foreground: 28 35% 15%;
+  --foreground: 28 35% 15%;
+  --card: 35 30% 98%;
+  --card-foreground: 28 35% 15%;
+  --popover: 35 30% 98%;
+  --popover-foreground: 28 35% 15%;
+  --primary: 28 45% 25%;
+  --primary-foreground: 32 25% 96%;
+  --secondary: 140 25% 35%;
+  --secondary-foreground: 32 25% 96%;
+  --muted: 32 20% 88%;
+  --muted-foreground: 28 20% 40%;
+  --accent: 15 65% 55%;
+  --accent-foreground: 32 25% 96%;
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 32 25% 96%;
+  --border: 32 20% 85%;
+  --input: 32 20% 85%;
+  --ring: 28 45% 25%;
+
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -76,27 +79,68 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Custom design tokens for Antique Nepal */
+  --hemp: 45 35% 65%;
+  --hemp-dark: 45 30% 45%;
+  --mountain: 210 25% 45%;
+  --mountain-light: 210 20% 85%;
+  --paper: 35 25% 92%;
+  --earth: 25 45% 40%;
+  --terracotta: 15 65% 55%;
+
+  /* Gradients */
+  --gradient-mountain: linear-gradient(
+    180deg,
+    hsl(210 25% 65%) 0%,
+    hsl(140 25% 35%) 100%
+  );
+  --gradient-paper: linear-gradient(
+    135deg,
+    hsl(35 30% 98%) 0%,
+    hsl(32 20% 88%) 100%
+  );
+  --gradient-hero: linear-gradient(
+    135deg,
+    hsl(28 45% 25% / 0.95) 0%,
+    hsl(140 25% 35% / 0.9) 100%
+  );
+
+  /* Shadows */
+  --shadow-soft: 0 4px 20px hsl(28 35% 15% / 0.08);
+  --shadow-medium: 0 8px 30px hsl(28 35% 15% / 0.12);
+
+  /* Transitions */
+  --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --background: 28 35% 10%;
+  --foreground: 32 25% 96%;
+
+  --card: 28 35% 12%;
+  --card-foreground: 32 25% 96%;
+
+  --popover: 28 35% 12%;
+  --popover-foreground: 32 25% 96%;
+
+  --primary: 32 25% 96%;
+  --primary-foreground: 28 45% 25%;
+
+  --secondary: 140 25% 35%;
+  --secondary-foreground: 32 25% 96%;
+
+  --muted: 28 20% 20%;
+  --muted-foreground: 32 20% 70%;
+
+  --accent: 15 65% 55%;
+  --accent-foreground: 32 25% 96%;
+
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 32 25% 96%;
+  --border: 28 20% 25%;
+  --input: 28 20% 25%;
+  --ring: 32 25% 96%;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -119,4 +163,30 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+.animate-accordion-down {
+  animation: accordion-down 0.3s ease-out forwards;
+}
+
+.animate-accordion-up {
+  animation: accordion-up 0.3s ease-out forwards;
 }
