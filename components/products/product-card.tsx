@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Heart, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
@@ -43,6 +44,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           : "border-[#e8e0d8] bg-white"
       )}
     >
+      <Link href={`/products/${product.id}`} className="flex flex-col h-full">
       <div className="relative w-full aspect-square bg-muted overflow-hidden">
         <Image
           src={product.image || "/placeholder.svg"}
@@ -52,9 +54,13 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         />
 
         <button
-          onClick={() => setIsWishlisted(!isWishlisted)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsWishlisted(!isWishlisted);
+          }}
           className={cn(
-            "absolute top-2 right-2 md:top-4 md:right-4 p-1.5 md:p-2 rounded-full transition-colors",
+            "absolute top-2 right-2 md:top-4 md:right-4 p-1.5 md:p-2 rounded-full transition-colors z-10",
             isDark 
               ? "bg-white/90 hover:bg-white" 
               : "bg-white/95 hover:bg-white shadow-md"
@@ -121,7 +127,11 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                 : "hover:bg-[#e8e0d8]/50"
             )}
             aria-label="Add to cart"
-            onClick={() => handleCartClick()}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleCartClick();
+            }}
             disabled={!product.inStock}
           >
             <ShoppingCart size={16} className={cn(
@@ -131,6 +141,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           </button>
         </div>
       </div>
+      </Link>
     </motion.div>
   );
 }
