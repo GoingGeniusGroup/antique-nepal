@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useTheme } from "@/contexts/theme-context";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 interface ProductCardProps {
   product: {
@@ -44,13 +45,14 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       )}
     >
       <div className="relative w-full aspect-square bg-muted overflow-hidden">
-        <Image
-          src={product.image || "/placeholder.svg"}
-          alt={product.name}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-
+        <Link href={`/products/${product.id}`}>
+          <Image
+            src={product.image || "/placeholder.svg"}
+            alt={product.name}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </Link>
         <button
           onClick={() => setIsWishlisted(!isWishlisted)}
           className={cn(
