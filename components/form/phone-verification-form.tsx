@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,9 +15,10 @@ import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 
-import { sendVerificationCode } from "@/app/actions/auth/sendCode";
-import { verifyCode } from "@/app/actions/auth/verifyCode";
 import toast from "react-hot-toast";
+
+import { auth } from "@/lib/firebase";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
 interface PhoneVerificationFormProps {
   onVerified: (data: { prefix: string; phone: string }) => void;
@@ -35,52 +36,60 @@ const PhoneVerificationForm: React.FC<PhoneVerificationFormProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleGetVerificationCode = async () => {
-    if (!phone) {
-      toast.error("Please enter your phone number");
-      return;
+  useEffect(() => {
+    // Make a div for reCAPTCHA in invisible mode
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+          callback: () => console.log("reCAPTCHA verified"),
+        }
+      );
     }
+  }, []);
 
+  const handleGetVerificationCode = async () => {
+    if (!phone) return toast.error("Please enter your phone number");
     setIsLoading(true);
-    const result = await sendVerificationCode({
-      prefix: countryCode,
-      phone,
-    });
-    setIsLoading(false);
 
-    if (result.success) {
+    const fullNumber = countryCode + phone;
+    const appVerifier = window.recaptchaVerifier;
+
+    try {
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        fullNumber,
+        appVerifier
+      );
+      window.confirmationResult = confirmationResult;
       toast.success("Verification code sent successfully!");
       setCodeSent(true);
-    } else {
-      toast.error(result.error || "Failed to send code");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Failed to send code");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    if (!agreedToTerms) {
-      toast.error("Please agree to the Terms and Conditions");
-      return;
-    }
-    if (!verificationCode) {
-      toast.error("Please enter the verification code");
-      return;
-    }
+    if (!agreedToTerms)
+      return toast.error("Please agree to Terms & Conditions");
+    if (!verificationCode) return toast.error("Enter the verification code");
 
     setIsLoading(true);
-    const result = await verifyCode({
-      prefix: countryCode,
-      phone,
-      code: verificationCode,
-    });
-    setIsLoading(false);
-
-    if (result.success) {
+    try {
+      await window.confirmationResult.confirm(verificationCode);
       toast.success("Phone verified successfully!");
       onVerified({ prefix: countryCode, phone });
-    } else {
-      toast.error(result.error || "Verification failed");
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Invalid verification code");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -99,6 +108,7 @@ const PhoneVerificationForm: React.FC<PhoneVerificationFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        <div id="recaptcha-container" />
         <div className="space-y-4">
           {/* Phone Number */}
           <div className="space-y-2">

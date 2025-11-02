@@ -6,7 +6,6 @@ import {
   phoneValidation,
   passwordValidation,
 } from "@/app/validations/auth/auth-achema";
-import { z } from "zod";
 
 // Use .extend instead of merge (merge is deprecated)
 const registrationSchema = phoneValidation.extend({
