@@ -3,13 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  Leaf,
-  Users,
-  Award,
-  ShoppingBag,
-  ArrowRight,
-} from "lucide-react";
+import { Leaf, Users, Award, ShoppingBag, ArrowRight } from "lucide-react";
 import { NavigationLink } from "@/components/navigation-link";
 import type { LucideIcon } from "lucide-react";
 import { useTheme } from "@/contexts/theme-context";
