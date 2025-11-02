@@ -9,15 +9,9 @@ import {
 import { z } from "zod";
 
 // Use .extend instead of merge (merge is deprecated)
-const registrationSchema = phoneValidation
-  .extend({
-    password: passwordValidation.shape.password,
-    rePassword: z.string().min(1, "Confirm password is required"),
-  })
-  .refine((data) => data.password === data.rePassword, {
-    message: "Passwords do not match",
-    path: ["rePassword"], // error points to rePassword field
-  });
+const registrationSchema = phoneValidation.extend({
+  password: passwordValidation.shape.password,
+});
 
 interface RegisterData {
   prefix: string;

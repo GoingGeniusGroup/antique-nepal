@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,8 +15,12 @@ import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 
+import { sendVerificationCode } from "@/app/actions/auth/sendCode";
+import { verifyCode } from "@/app/actions/auth/verifyCode";
+import toast from "react-hot-toast";
+
 interface PhoneVerificationFormProps {
-  onVerified: () => void;
+  onVerified: (data: { prefix: string; phone: string }) => void;
 }
 
 const PhoneVerificationForm: React.FC<PhoneVerificationFormProps> = ({
@@ -31,36 +35,53 @@ const PhoneVerificationForm: React.FC<PhoneVerificationFormProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleGetVerificationCode = () => {
+  const handleGetVerificationCode = async () => {
     if (!phone) {
-      setError("Please enter your phone number");
-      return;
-    }
-    setCodeSent(true);
-    setError("");
-    console.log("Verification code sent to:", countryCode + phone);
-  };
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    setError("");
-
-    if (!agreedToTerms) {
-      setError("Please agree to the Terms and Conditions");
-      return;
-    }
-
-    if (!verificationCode) {
-      setError("Please enter the verification code");
+      toast.error("Please enter your phone number");
       return;
     }
 
     setIsLoading(true);
+    const result = await sendVerificationCode({
+      prefix: countryCode,
+      phone,
+    });
+    setIsLoading(false);
 
-    setTimeout(() => {
-      setIsLoading(false);
-      onVerified();
-    }, 1000);
+    if (result.success) {
+      toast.success("Verification code sent successfully!");
+      setCodeSent(true);
+    } else {
+      toast.error(result.error || "Failed to send code");
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!agreedToTerms) {
+      toast.error("Please agree to the Terms and Conditions");
+      return;
+    }
+    if (!verificationCode) {
+      toast.error("Please enter the verification code");
+      return;
+    }
+
+    setIsLoading(true);
+    const result = await verifyCode({
+      prefix: countryCode,
+      phone,
+      code: verificationCode,
+    });
+    setIsLoading(false);
+
+    if (result.success) {
+      toast.success("Phone verified successfully!");
+      onVerified({ prefix: countryCode, phone });
+    } else {
+      toast.error(result.error || "Verification failed");
+    }
   };
 
   return (
@@ -147,7 +168,7 @@ const PhoneVerificationForm: React.FC<PhoneVerificationFormProps> = ({
             <Checkbox
               id="terms"
               checked={agreedToTerms}
-              onCheckedChange={(checked) => setAgreedToTerms(true)}
+              onCheckedChange={() => setAgreedToTerms(true)}
             />
             <label
               htmlFor="terms"

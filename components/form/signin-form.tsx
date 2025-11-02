@@ -15,6 +15,7 @@ import {
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const SigninForm: React.FC = () => {
   const route = useRouter();
@@ -98,9 +99,17 @@ const SigninForm: React.FC = () => {
 
           {/* Password */}
           <div className="relative space-y-2">
-            <Label htmlFor="password">
-              Password <span className="text-destructive">*</span>
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">
+                Password <span className="text-destructive">*</span>
+                <Link
+                  href="#"
+                  className="text-sm text-primary hover:text-primary-glow transition-smooth"
+                >
+                  Forgot password?
+                </Link>
+              </Label>
+            </div>
             <Input
               id="password"
               type={showPassword ? "text" : "password"}

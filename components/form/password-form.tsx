@@ -5,8 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import { registerUser } from "@/app/actions/auth/register";
+import toast from "react-hot-toast";
 
-const PasswordForm: React.FC = () => {
+interface PasswordFormProps {
+  prefix: string;
+  phone: string;
+}
+
+const PasswordForm: React.FC<PasswordFormProps> = ({ prefix, phone }) => {
   const route = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -16,7 +23,7 @@ const PasswordForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -31,10 +38,19 @@ const PasswordForm: React.FC = () => {
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      route.push("/"); // Registration complete
-    }, 1000);
+    const result = await registerUser({ prefix, phone, password });
+    setIsLoading(false);
+
+    if (result.success) {
+      toast.success("Account created successfully!");
+      route.push("/login");
+    } else {
+      toast.error(result.error || "Registration failed");
+      console.log(result.error);
+    }
+    console.log(prefix);
+    console.log(phone);
+    console.log(password);
   };
 
   return (
