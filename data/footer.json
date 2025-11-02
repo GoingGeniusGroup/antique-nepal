@@ -1,0 +1,163 @@
+{
+  "brand": {
+    "name": "Antique Nepal",
+    "logo": "/logo/Antique Nepal Logo White Png 1.png",
+    "tagline": "Handcrafted Heritage",
+    "description": "Preserving centuries of Nepalese craftsmanship through sustainable, handmade hemp bags. Each piece tells a story of tradition, artistry, and environmental stewardship."
+  },
+  "social": [
+    {
+      "id": 1,
+      "name": "Facebook",
+      "icon": "Facebook",
+      "href": "https://facebook.com"
+    },
+    {
+      "id": 2,
+      "name": "Instagram",
+      "icon": "Instagram",
+      "href": "https://instagram.com"
+    },
+    {
+      "id": 3,
+      "name": "Twitter",
+      "icon": "Twitter",
+      "href": "https://twitter.com"
+    },
+    {
+      "id": 4,
+      "name": "Pinterest",
+      "icon": "Pinterest",
+      "href": "https://pinterest.com"
+    }
+  ],
+  "sections": [
+    {
+      "id": 1,
+      "title": "Shop",
+      "links": [
+        {
+          "id": 1,
+          "name": "All Products",
+          "href": "/products"
+        },
+        {
+          "id": 2,
+          "name": "Tote Bags",
+          "href": "/categories/tote-bags"
+        },
+        {
+          "id": 3,
+          "name": "Backpacks",
+          "href": "/categories/backpacks"
+        },
+        {
+          "id": 4,
+          "name": "Shoulder Bags",
+          "href": "/categories/shoulder-bags"
+        },
+        {
+          "id": 5,
+          "name": "Clutches",
+          "href": "/categories/clutches"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Company",
+      "links": [
+        {
+          "id": 1,
+          "name": "About Us",
+          "href": "/about"
+        },
+        {
+          "id": 2,
+          "name": "Our Heritage",
+          "href": "/heritage"
+        },
+        {
+          "id": 3,
+          "name": "Artisans",
+          "href": "/artisans"
+        },
+        {
+          "id": 4,
+          "name": "Sustainability",
+          "href": "/sustainability"
+        },
+        {
+          "id": 5,
+          "name": "Blog",
+          "href": "/blog"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Customer Service",
+      "links": [
+        {
+          "id": 1,
+          "name": "Contact Us",
+          "href": "/contact"
+        },
+        {
+          "id": 2,
+          "name": "Shipping Info",
+          "href": "/shipping"
+        },
+        {
+          "id": 3,
+          "name": "Returns & Exchanges",
+          "href": "/returns"
+        },
+        {
+          "id": 4,
+          "name": "FAQ",
+          "href": "/faq"
+        },
+        {
+          "id": 5,
+          "name": "Size Guide",
+          "href": "/size-guide"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Legal",
+      "links": [
+        {
+          "id": 1,
+          "name": "Privacy Policy",
+          "href": "/privacy"
+        },
+        {
+          "id": 2,
+          "name": "Terms of Service",
+          "href": "/terms"
+        },
+        {
+          "id": 3,
+          "name": "Cookie Policy",
+          "href": "/cookies"
+        }
+      ]
+    }
+  ],
+  "contact": {
+    "email": "hello@antiquenepal.com",
+    "phone": "+977 1 234 5678",
+    "address": "Thamel, Kathmandu, Nepal"
+  },
+  "newsletter": {
+    "title": "Join Our Community",
+    "description": "Subscribe to receive updates on new arrivals, special offers, and artisan stories."
+  },
+  "copyright": {
+    "year": 2024,
+    "text": "Antique Nepal. All rights reserved."
+  }
+}
