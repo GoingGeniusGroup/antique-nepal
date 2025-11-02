@@ -5,11 +5,14 @@ import { useTheme } from "@/contexts/theme-context";
 import { NavigationProvider, useNavigation } from "@/contexts/navigation-context";
 import { LoadingScreen } from "@/components/loading-screen";
 import { Navbar } from "@/components/navbar";
+import { usePathname } from "next/navigation";
 
 function ClientRootContent({ children }: PropsWithChildren) {
   const { isReady } = useTheme();
   const { isNavigating } = useNavigation();
   const [initialLoad, setInitialLoad] = useState(true);
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
 
   useEffect(() => {
     if (isReady) {
@@ -23,7 +26,7 @@ function ClientRootContent({ children }: PropsWithChildren) {
 
   return (
     <div className="relative">
-      <Navbar />
+      {!isAdmin && <Navbar />}
       <LoadingScreen isLoading={showLoading} />
       {/* Always render children, loading screen overlays on top */}
       <div className={showLoading ? "opacity-0 pointer-events-none" : "opacity-100 transition-opacity duration-300"}>
@@ -40,3 +43,4 @@ export function ClientRoot({ children }: PropsWithChildren) {
     </NavigationProvider>
   );
 }
+
