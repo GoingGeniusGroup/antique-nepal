@@ -16,6 +16,7 @@ import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 const SigninForm: React.FC = () => {
   const route = useRouter();
@@ -26,24 +27,36 @@ const SigninForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     if (!phone || !password) {
       setError("Please enter both phone number and password");
+      setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      console.log("Logged in:", countryCode + phone, password);
-      // redirect after login
-      route.push("/");
-    }, 1000);
-  };
+    try {
+      const result = await signIn("credentials", {
+        redirect: false, // important for SPA flow
+        phone: countryCode + phone,
+        password,
+      });
 
+      if (result?.error) {
+        setError("Invalid phone or password");
+      } else {
+        route.push("/");
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="flex justify-center items-center min-h-screen p-4">
       {/* <div> */}

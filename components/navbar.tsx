@@ -4,10 +4,21 @@ import { useState, useRef, useEffect } from "react";
 import { NavigationLink } from "@/components/navigation-link";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/theme-context";
-import { Menu, X, ShoppingBag, BookOpen, Mail, LogIn, UserPlus, ChevronDown } from "lucide-react";
+import {
+  Menu,
+  X,
+  ShoppingBag,
+  BookOpen,
+  Mail,
+  LogIn,
+  UserPlus,
+  ChevronDown,
+  LogOut,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { signOut, useSession } from "next-auth/react";
 
 // Featured products for Shop dropdown
 const featuredProducts = [
@@ -39,6 +50,9 @@ export function Navbar() {
   const [isShopOpen, setIsShopOpen] = useState(false);
   const { theme, isReady } = useTheme();
   const shopDropdownRef = useRef<HTMLDivElement>(null);
+  const { data: session, status } = useSession();
+  console.log(session);
+  console.log(status);
 
   const navLinks = [
     { href: "/blog", label: "Blog", icon: BookOpen },
@@ -66,22 +80,18 @@ export function Navbar() {
   }, [isShopOpen]);
 
   const isDark = isReady && theme === "dark";
-  
+
   // Aceternity UI style - warm beige/cream for light mode, dark for dark mode
-  const navBg = isDark 
-    ? "bg-black/70 backdrop-blur-xl border-white/10" 
+  const navBg = isDark
+    ? "bg-black/70 backdrop-blur-xl border-white/10"
     : "bg-[#f7f5f2]/80 dark:bg-black/70 backdrop-blur-xl border-[#e8e0d8]/50";
-  
-  const textColor = isDark 
-    ? "text-white" 
-    : "text-[#2d2520]";
-  
-  const borderColor = isDark 
-    ? "border-white/10" 
-    : "border-[#e8e0d8]/50";
+
+  const textColor = isDark ? "text-white" : "text-[#2d2520]";
+
+  const borderColor = isDark ? "border-white/10" : "border-[#e8e0d8]/50";
 
   return (
-    <nav 
+    <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         navBg,
@@ -101,8 +111,8 @@ export function Navbar() {
               <span
                 className={cn(
                   "text-xl md:text-2xl font-bold tracking-[0.15em] transition-colors",
-                  isDark 
-                    ? "text-white group-hover:text-amber-300" 
+                  isDark
+                    ? "text-white group-hover:text-amber-300"
                     : "text-[#2d2520] group-hover:text-primary"
                 )}
                 style={{ fontFamily: "var(--font-cinzel)" }}
@@ -115,7 +125,7 @@ export function Navbar() {
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center space-x-2">
             {/* Shop with Dropdown */}
-            <div 
+            <div
               className="relative"
               ref={shopDropdownRef}
               onMouseEnter={() => setIsShopOpen(true)}
@@ -125,18 +135,18 @@ export function Navbar() {
                 href="/products"
                 className={cn(
                   "px-4 py-2 rounded-lg text-sm font-inter font-medium transition-all duration-200 flex items-center gap-2 relative group",
-                  isDark 
-                    ? "text-white/90 hover:text-white hover:bg-white/10" 
+                  isDark
+                    ? "text-white/90 hover:text-white hover:bg-white/10"
                     : "text-[#2d2520]/90 hover:text-[#2d2520] hover:bg-[#e8e0d8]/30"
                 )}
               >
                 <ShoppingBag className="h-4 w-4" />
                 Shop
-                <ChevronDown 
+                <ChevronDown
                   className={cn(
                     "h-3 w-3 transition-transform duration-200",
                     isShopOpen ? "rotate-180" : ""
-                  )} 
+                  )}
                 />
               </NavigationLink>
 
@@ -150,20 +160,22 @@ export function Navbar() {
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className={cn(
                       "absolute top-full left-0 mt-2 w-[600px] rounded-2xl shadow-2xl overflow-hidden",
-                      isDark 
-                        ? "bg-black/95 backdrop-blur-xl border border-white/10" 
+                      isDark
+                        ? "bg-black/95 backdrop-blur-xl border border-white/10"
                         : "bg-white/95 backdrop-blur-xl border border-[#e8e0d8]/50"
                     )}
                   >
                     <div className="p-6">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className={cn(
-                          "font-semibold text-base",
-                          isDark ? "text-white" : "text-[#2d2520]"
-                        )}>
+                        <h3
+                          className={cn(
+                            "font-semibold text-base",
+                            isDark ? "text-white" : "text-[#2d2520]"
+                          )}
+                        >
                           Featured Products
                         </h3>
-                        <NavigationLink 
+                        <NavigationLink
                           href="/products"
                           onClick={() => setIsShopOpen(false)}
                           className={cn(
@@ -186,8 +198,8 @@ export function Navbar() {
                               whileHover={{ y: -4, scale: 1.02 }}
                               className={cn(
                                 "rounded-xl overflow-hidden transition-all duration-300",
-                                isDark 
-                                  ? "bg-white/5 hover:bg-white/10 border border-white/10" 
+                                isDark
+                                  ? "bg-white/5 hover:bg-white/10 border border-white/10"
                                   : "bg-[#f7f5f2] hover:bg-[#e8e0d8] border border-[#e8e0d8]"
                               )}
                             >
@@ -200,16 +212,20 @@ export function Navbar() {
                                 />
                               </div>
                               <div className="p-3">
-                                <p className={cn(
-                                  "text-xs font-medium mb-1 truncate",
-                                  isDark ? "text-white/90" : "text-[#2d2520]"
-                                )}>
+                                <p
+                                  className={cn(
+                                    "text-xs font-medium mb-1 truncate",
+                                    isDark ? "text-white/90" : "text-[#2d2520]"
+                                  )}
+                                >
                                   {product.name}
                                 </p>
-                                <p className={cn(
-                                  "text-sm font-bold",
-                                  isDark ? "text-amber-300" : "text-primary"
-                                )}>
+                                <p
+                                  className={cn(
+                                    "text-sm font-bold",
+                                    isDark ? "text-amber-300" : "text-primary"
+                                  )}
+                                >
                                   {product.price}
                                 </p>
                               </div>
@@ -232,8 +248,8 @@ export function Navbar() {
                   href={link.href}
                   className={cn(
                     "px-4 py-2 rounded-lg text-sm font-inter font-medium transition-all duration-200 flex items-center gap-2",
-                    isDark 
-                      ? "text-white/90 hover:text-white hover:bg-white/10" 
+                    isDark
+                      ? "text-white/90 hover:text-white hover:bg-white/10"
                       : "text-[#2d2520]/90 hover:text-[#2d2520] hover:bg-[#e8e0d8]/30"
                   )}
                 >
@@ -246,26 +262,38 @@ export function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            <NavigationLink href="/login">
+            {!session ? (
+              <>
+                <NavigationLink href="/login">
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "font-inter transition-all",
+                      isDark
+                        ? "border-white/30 bg-transparent text-white hover:bg-white/20 hover:text-white hover:border-white/50"
+                        : "border-[#d4c5b0] bg-transparent text-[#2d2520] hover:bg-[#e8e0d8] hover:text-[#2d2520] hover:border-[#c9b7a0]"
+                    )}
+                  >
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Login
+                  </Button>
+                </NavigationLink>
+                <NavigationLink href="/register">
+                  <Button className="font-inter bg-primary hover:bg-primary/90 text-primary-foreground transition-all border-0">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Sign Up
+                  </Button>
+                </NavigationLink>
+              </>
+            ) : (
               <Button
-                variant="outline"
-                className={cn(
-                  "font-inter transition-all",
-                  isDark 
-                    ? "border-white/30 bg-transparent text-white hover:bg-white/20 hover:text-white hover:border-white/50"
-                    : "border-[#d4c5b0] bg-transparent text-[#2d2520] hover:bg-[#e8e0d8] hover:text-[#2d2520] hover:border-[#c9b7a0]"
-                )}
+                className="w-full font-inter bg-destructive text-white justify-start border-0"
+                onClick={() => signOut()}
               >
-                <LogIn className="h-4 w-4 mr-2" />
-                Login
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
               </Button>
-            </NavigationLink>
-            <NavigationLink href="/register">
-              <Button className="font-inter bg-primary hover:bg-primary/90 text-primary-foreground transition-all border-0">
-                <UserPlus className="h-4 w-4 mr-2" />
-                Sign Up
-              </Button>
-            </NavigationLink>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -273,8 +301,8 @@ export function Navbar() {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className={cn(
               "md:hidden p-2 rounded-lg transition-colors",
-              isDark 
-                ? "text-white hover:bg-white/10" 
+              isDark
+                ? "text-white hover:bg-white/10"
                 : "text-[#2d2520] hover:bg-[#e8e0d8]/30"
             )}
             aria-label="Toggle menu"
@@ -303,8 +331,8 @@ export function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={cn(
                     "flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-inter font-medium transition-all",
-                    isDark 
-                      ? "text-white/90 hover:text-white hover:bg-white/10" 
+                    isDark
+                      ? "text-white/90 hover:text-white hover:bg-white/10"
                       : "text-[#2d2520]/90 hover:text-[#2d2520] hover:bg-[#e8e0d8]/30"
                   )}
                 >
@@ -320,8 +348,8 @@ export function Navbar() {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={cn(
                         "flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-inter font-medium transition-all",
-                        isDark 
-                          ? "text-white/90 hover:text-white hover:bg-white/10" 
+                        isDark
+                          ? "text-white/90 hover:text-white hover:bg-white/10"
                           : "text-[#2d2520]/90 hover:text-[#2d2520] hover:bg-[#e8e0d8]/30"
                       )}
                     >
@@ -331,26 +359,44 @@ export function Navbar() {
                   );
                 })}
                 <div className={cn("pt-4 border-t space-y-2", borderColor)}>
-                  <NavigationLink href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                  {!session ? (
+                    <>
+                      <NavigationLink
+                        href="/login"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full font-inter justify-start",
+                            isDark
+                              ? "border-white/30 bg-transparent text-white hover:bg-white/20 hover:text-white hover:border-white/50"
+                              : "border-[#d4c5b0] bg-transparent text-[#2d2520] hover:bg-[#e8e0d8] hover:text-[#2d2520] hover:border-[#c9b7a0]"
+                          )}
+                        >
+                          <LogIn className="h-4 w-4 mr-2" />
+                          Login
+                        </Button>
+                      </NavigationLink>
+                      <NavigationLink
+                        href="/register"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Button className="w-full font-inter bg-primary hover:bg-primary/90 text-primary-foreground justify-start border-0">
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Sign Up
+                        </Button>
+                      </NavigationLink>
+                    </>
+                  ) : (
                     <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full font-inter justify-start",
-                        isDark 
-                          ? "border-white/30 bg-transparent text-white hover:bg-white/20 hover:text-white hover:border-white/50"
-                          : "border-[#d4c5b0] bg-transparent text-[#2d2520] hover:bg-[#e8e0d8] hover:text-[#2d2520] hover:border-[#c9b7a0]"
-                      )}
+                      className="w-full font-inter bg-destructive text-white justify-start border-0"
+                      onClick={() => signOut()}
                     >
-                      <LogIn className="h-4 w-4 mr-2" />
-                      Login
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
                     </Button>
-                  </NavigationLink>
-                  <NavigationLink href="/register" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button className="w-full font-inter bg-primary hover:bg-primary/90 text-primary-foreground justify-start border-0">
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Sign Up
-                    </Button>
-                  </NavigationLink>
+                  )}
                 </div>
               </div>
             </motion.div>
