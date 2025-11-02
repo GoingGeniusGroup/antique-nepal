@@ -50,9 +50,7 @@ export function Navbar() {
   const [isShopOpen, setIsShopOpen] = useState(false);
   const { theme, isReady } = useTheme();
   const shopDropdownRef = useRef<HTMLDivElement>(null);
-  const { data: session, status } = useSession();
-  console.log(session);
-  console.log(status);
+  const { data: session } = useSession();
 
   const navLinks = [
     { href: "/blog", label: "Blog", icon: BookOpen },

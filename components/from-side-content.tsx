@@ -3,7 +3,6 @@
 const SideContent = () => {
   return (
     <div>
-      {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/30 dark:bg-black/50"></div>
       <div className="relative z-10 flex flex-col justify-center p-12 text-white space-y-6 max-w-md">
         <img src="/logo.png" alt="Antique Nepal Logo" className="w-40 mb-4" />

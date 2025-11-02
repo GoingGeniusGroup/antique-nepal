@@ -12,11 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FaFacebook } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import FacebookSigninButton from "../button/facebook-sign-in-button";
+import GoogleSigninButton from "../button/goole-sign-in-button";
 
 const SigninForm: React.FC = () => {
   const route = useRouter();
@@ -40,7 +40,7 @@ const SigninForm: React.FC = () => {
 
     try {
       const result = await signIn("credentials", {
-        redirect: false, // important for SPA flow
+        redirect: false,
         phone: countryCode + phone,
         password,
       });
@@ -48,6 +48,7 @@ const SigninForm: React.FC = () => {
       if (result?.error) {
         setError("Invalid phone or password");
       } else {
+        // Login successful, redirect
         route.push("/");
       }
     } catch (err) {
@@ -58,21 +59,27 @@ const SigninForm: React.FC = () => {
     }
   };
   return (
-    <div className="flex justify-center items-center min-h-screen p-4">
+    <div className="flex justify-center items-center p-4">
       {/* <div> */}
       <div className="w-full max-w-md p-8 space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
           <h1
-            className="text-3xl font-semibold"
+            className="text-4xl font-semibold mb-4"
             style={{ fontFamily: "var(--font-cinzel)" }}
           >
             Welcome Back
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-lg text-muted-foreground">
             Sign in to your account
           </p>
         </div>
+
+        {/* Error */}
+
+        <p className="text-sm text-destructive animate-in fade-in slide-in-from-top-2 h-4">
+          {error}
+        </p>
 
         {/* Form */}
         <form className="space-y-5" onSubmit={handleSubmit}>
@@ -87,7 +94,7 @@ const SigninForm: React.FC = () => {
                 onValueChange={setCountryCode}
                 name="prefix"
               >
-                <SelectTrigger className="w-[140px] bg-background border border-border">
+                <SelectTrigger className="w-[140px] bg-white border border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -105,7 +112,7 @@ const SigninForm: React.FC = () => {
                 placeholder="Enter phone number"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="flex-1 border border-border focus:border-primary bg-background"
+                className="flex-1 border border-border focus:border-primary bg-white"
               />
             </div>
           </div>
@@ -115,13 +122,13 @@ const SigninForm: React.FC = () => {
             <div className="flex items-center justify-between">
               <Label htmlFor="password">
                 Password <span className="text-destructive">*</span>
-                <Link
-                  href="#"
-                  className="text-sm text-primary hover:text-primary-glow transition-smooth"
-                >
-                  Forgot password?
-                </Link>
               </Label>
+              <Link
+                href="#"
+                className="text-sm text-blue-700 hover:text-primary-glow transition-smooth "
+              >
+                Forgot password?
+              </Link>
             </div>
             <Input
               id="password"
@@ -129,7 +136,7 @@ const SigninForm: React.FC = () => {
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="border border-border focus:border-primary bg-background pr-10"
+              className="border border-border focus:border-primary bg-white pr-10"
             />
             <button
               type="button"
@@ -139,13 +146,6 @@ const SigninForm: React.FC = () => {
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
-
-          {/* Error */}
-          {error && (
-            <p className="text-sm text-destructive animate-in fade-in slide-in-from-top-2">
-              {error}
-            </p>
-          )}
 
           {/* Submit */}
           <Button
@@ -158,41 +158,27 @@ const SigninForm: React.FC = () => {
         </form>
 
         {/* Divider */}
-        <div className="relative my-4">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">OR</span>
-          </div>
+        <div className="flex items-center my-6">
+          <span className="grow h-px bg-gray-300 dark:bg-gray-600"></span>
+          <span className="px-3 text-primary dark:text-primary-foreground uppercase text-xs">
+            OR
+          </span>
+          <span className="grow h-px bg-gray-300 dark:bg-gray-600"></span>
         </div>
 
         {/* Social Buttons */}
         <div className="space-y-3">
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full bg-background border border-border text-foreground hover:shadow-md flex items-center justify-center gap-2 font-medium"
-          >
-            <FcGoogle className="w-5 h-5" />
-            Continue with Google
-          </Button>
-          <Button
-            type="button"
-            className="w-full bg-[#1877F2] text-white hover:bg-[#166FE0] flex items-center justify-center gap-2 font-medium"
-          >
-            <FaFacebook className="w-5 h-5 text-white" />
-            Continue with Facebook
-          </Button>
+          <GoogleSigninButton />
+          <FacebookSigninButton />
         </div>
 
         {/* Register Link */}
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-center text-sm text-muted cursor-default">
           Don't have an account?{" "}
           <button
             type="button"
             onClick={() => route.push("/register")}
-            className="text-primary font-medium underline hover:text-primary/80"
+            className="text-secondary font-medium underline hover:text-primary/80 cursor-pointer"
           >
             Register
           </button>
