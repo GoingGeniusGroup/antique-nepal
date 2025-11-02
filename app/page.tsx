@@ -1,7 +1,6 @@
 import { CallToAction } from "@/components/landing/CallToAction";
 import { FAQ } from "@/components/landing/FAQ";
 import { FeaturedCollection } from "@/components/landing/featured-collection";
-import { Footer } from "@/components/landing/Footer";
 import Heritage from "@/components/landing/Heritage";
 
 import { Hero } from "@/components/landing/hero";
@@ -15,15 +14,14 @@ export default function Home() {
   return (
     <div className="pt-16 md:pt-20">
       <Hero />
+      <WhyChoose />
       <FeaturedCollection />
       <ProductShowcase />
-      <WhyChoose />
       <Heritage />
       <Sustainability />
       <Stats />
       <FAQ />
       <CallToAction />
-      <Footer />
     </div>
   );
 }

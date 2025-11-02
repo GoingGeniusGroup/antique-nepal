@@ -190,3 +190,5 @@
 .animate-accordion-up {
   animation: accordion-up 0.3s ease-out forwards;
 }
+
+/* Admin Sidebar Styles - Cleaned up, now using Next.js Link */
