@@ -3,12 +3,32 @@ import prisma from "@/lib/prisma";
 
 type SettingsPayload = {
   general?: { siteName?: string; logo?: string };
-  hero?: { title?: string; subtitle?: string };
-  banner?: { text?: string };
+  hero?: { 
+    title?: string; 
+    subtitle?: string; 
+    description?: string;
+    backgroundImage?: string;
+    features?: {
+      feature1?: { title?: string; description?: string; };
+      feature2?: { title?: string; description?: string; };
+      feature3?: { title?: string; description?: string; };
+    };
+  };
+  banner?: { text?: string; isVisible?: boolean };
   footer?: { text?: string };
+  homepage?: {
+    featuredTitle?: string;
+    featuredSubtitle?: string;
+    featuredDescription?: string;
+    productHighlights?: {
+      title?: string;
+      subtitle?: string;
+      featuredProductIds?: string[];
+    };
+  };
 };
 
-const KEYS = ["general", "hero", "banner", "footer"] as const;
+const KEYS = ["general", "hero", "banner", "footer", "homepage"] as const;
 
 export async function GET() {
   const rows = await prisma.siteSetting.findMany({ where: { key: { in: KEYS as unknown as string[] } } });
@@ -19,6 +39,7 @@ export async function GET() {
     hero: data.hero || {},
     banner: data.banner || {},
     footer: data.footer || {},
+    homepage: data.homepage || {},
   });
 }
 

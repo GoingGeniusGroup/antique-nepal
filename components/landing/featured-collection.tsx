@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-context";
+import { useHomepageSettings } from "@/contexts/settings-context";
 import { ProductCard } from "@/components/product-card";
 import { NavigationLink } from "@/components/navigation-link";
 import {
@@ -30,6 +31,7 @@ const itemVariantsCustom = {
 
 export function FeaturedCollection() {
   const { theme, isReady } = useTheme();
+  const { homepage, loading } = useHomepageSettings();
 
   return (
     <section
@@ -80,7 +82,7 @@ export function FeaturedCollection() {
                 : "text-[#2d2520]"
             }`}
           >
-            FEATURED COLLECTION
+            {homepage?.featuredTitle || "FEATURED COLLECTION"}
           </h2>
           <p
             className={`text-center text-xl font-inter mb-12 ${
@@ -91,8 +93,7 @@ export function FeaturedCollection() {
                 : "text-neutral-600"
             }`}
           >
-            Discover our most beloved pieces, each crafted with centuries of
-            tradition
+            {homepage?.featuredDescription || "Discover our most beloved pieces, each crafted with centuries of tradition"}
           </p>
         </motion.div>
 
