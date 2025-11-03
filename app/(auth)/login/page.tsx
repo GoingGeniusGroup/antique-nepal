@@ -1,39 +1,53 @@
 "use client";
 
+import { motion } from "framer-motion";
 import SigninForm from "@/components/form/signin-form";
 import SideContent from "@/components/from-side-content";
 
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] as any }, // cubic-bezier easeOut
+};
+
+const backgroundFade = {
+  initial: { opacity: 0.7, scale: 1.05 },
+  animate: { opacity: 1, scale: 1 },
+  transition: { duration: 1.2, ease: [0.42, 0, 0.58, 1] as any },
+};
+
 const LoginPage = () => {
   return (
-    <div className="pt-16 md:pt-20">
-      {" "}
-      {/* Adjust based on your navbar height */}
-      <div className="relative flex flex-col md:flex-row min-h-[calc(100vh-5rem)]">
+    <div className="overflow-hidden">
+      <div className="relative flex flex-col md:flex-row w-full h-screen">
         {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center "
+        <motion.div
+          className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/hemp-field.png')" }}
-        ></div>
-
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/30 dark:bg-black/50 transition-opacity duration-500"></div>
+          {...backgroundFade}
+        />
 
         {/* Content Container */}
-        <div className="relative z-10 flex flex-col md:flex-row w-full h-full items-center justify-center">
-          {/* Left Section (Hidden on mobile) */}
-          <div className="flex-1 hidden md:flex items-center justify-center p-8 md:p-16 text-white">
+        <div className="relative z-10 flex flex-1 w-full h-full items-center justify-center">
+          {/* Left Section */}
+          <motion.div
+            className="flex-1 hidden md:flex items-center justify-center p-8 md:p-16 text-white"
+            {...fadeInUp}
+            transition={{ ...fadeInUp.transition, delay: 0.2 }}
+          >
             <SideContent />
-          </div>
+          </motion.div>
 
           {/* Right Section */}
-          <div
-            className="flex-1 flex items-start justify-center pt-12 md:pt-20 p-8 md:p-16  shadow-xl backdrop-blur-sm 
-             bg-linear-to-l from-[#D4BE96]/95 to-[#D4BE96]/30 min-h-[60vh] md:min-h-full"
+          <motion.div
+            className="flex-1 flex items-center justify-center p-8 md:p-16 shadow-xl backdrop-blur-sm bg-linear-to-l from-[#D4BE96]/95 to-[#D4BE96]/30 min-h-full"
+            {...fadeInUp}
+            transition={{ ...fadeInUp.transition, delay: 0.4 }}
           >
             <div className="w-full max-w-md md:max-w-lg">
               <SigninForm />
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

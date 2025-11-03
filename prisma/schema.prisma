@@ -10,12 +10,12 @@ datasource db {
 
 model User {
   id            String        @id @default(cuid())
-  email         String?
+  email         String        @unique
   emailVerified DateTime?
   password      String?
   firstName     String?
   lastName      String?
-  phone         String        @unique
+  phone         String?
   image         String?
   role          Role          @default(CUSTOMER)
   isActive      Boolean       @default(true)
@@ -541,16 +541,6 @@ model FooterNewsletter {
   @@map("footer_newsletter")
 }
 
-// ============================================
-// NEWSLETTER
-// ============================================
-
-enum SubscriptionStatus {
-  SUBSCRIBED
-  UNSUBSCRIBED
-  BOUNCED
-}
-
 model NewsletterSubscriber {
   id             String             @id @default(cuid())
   email          String             @unique
@@ -561,6 +551,12 @@ model NewsletterSubscriber {
   @@index([email])
   @@index([status])
   @@map("newsletter_subscribers")
+}
+
+enum SubscriptionStatus {
+  SUBSCRIBED
+  UNSUBSCRIBED
+  BOUNCED
 }
 
 enum Role {
@@ -602,10 +598,4 @@ enum CouponType {
   PERCENTAGE
   FIXED
   FREE_SHIPPING
-}
-
-enum SubscriptionStatus {
-  SUBSCRIBED
-  UNSUBSCRIBED
-  BOUNCED
 }

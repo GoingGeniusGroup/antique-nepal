@@ -12,7 +12,7 @@ import { Label } from "../ui/label";
 import GoogleSigninButton from "../button/google-sign-in-button";
 import FacebookSigninButton from "../button/facebook-sign-in-button";
 
-const SignIn = () => {
+const SigninForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -59,33 +59,33 @@ const SignIn = () => {
       setErrors({});
       toast.success("Signed in successfully");
       setTimeout(() => {
-        router.push("/auth-buttons");
+        router.push("/");
       }, 500);
     }
   };
 
   return (
-    <div className="flex justify-center items-center p-4">
+    <div className="flex justify-center items-center min-h-screen px-4 py-6 sm:py-8 text-foreground  dark:text-foreground">
       {/* <div> */}
-      <div className="w-full max-w-md p-8 space-y-6">
-        <div className="text-center mb-6">
+      <div className="w-full max-w-md p-6 sm:p-8 space-y-6">
+        <div className="text-2xl sm:text-3xl text-primary font-bold mb-6">
           <h1 className="text-4xl font-cinzel font-bold text-primary mb-2">
             welcome back
           </h1>
-          <p className="text-sm text-muted-foreground font-sans">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Sign in to your account to continue
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-sans font-semibold text-primary mb-1">
-              Email
-            </label>
+            <Label className="text-sm font-semibold mb-1">
+              Email <span className="text-destructive">*</span>
+            </Label>
             <Input
               name="email"
-              type="text"
-              placeholder="Enter email"
+              type="email"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -95,21 +95,19 @@ const SignIn = () => {
                   return next;
                 });
               }}
-              className={`bg-white transition-all${
-                errors.identifier
-                  ? "border-[hsl(var(--terracotta))] border-2 focus:border-[hsl(var(--terracotta) hover:border-[hsl(var(--terracotta))]"
-                  : "border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain) hover:border-[hsl(var(--mountain-dark))]"
+              className={`bg-card text-foreground placeholder:text-muted-foreground transition-all ${
+                errors.email
+                  ? "border-destructive border-2 focus:border-destructive"
+                  : "border-border focus:border-primary"
               }`}
             />
-            <p className="text-xs text-[hsl(var(--terracotta))] mt-1 h-4">
-              {errors.identifier || ""}
-            </p>
+            <p className="text-xs text-destructive mt-1 h-4">{errors.email}</p>
           </div>
 
           {/* Password */}
           <div className="relative space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">
+              <Label htmlFor="password" className="text-sm font-semibold mb-1">
                 Password <span className="text-destructive">*</span>
               </Label>
               <Link
@@ -123,10 +121,14 @@ const SignIn = () => {
               id="password"
               name="password"
               type={showPassword ? "text" : "password"}
-              placeholder="Enter password"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="border border-border focus:border-primary bg-white pr-10"
+              className={`w-full pr-10 bg-card text-foreground placeholder:text-muted-foreground transition-all ${
+                errors.password
+                  ? "border-destructive border-2 focus:border-destructive"
+                  : "border-border focus:border-primary"
+              }`}
             />
             <button
               type="button"
@@ -154,13 +156,13 @@ const SignIn = () => {
           </button>
         </form>
 
-        {/* Divider */}
+        {/* OR divider */}
         <div className="flex items-center my-6">
-          <span className="grow h-px bg-gray-300 dark:bg-gray-600"></span>
-          <span className="px-3 text-primary dark:text-primary-foreground uppercase text-xs">
+          <span className="grow h-px bg-border"></span>
+          <span className="px-3 text-muted-foreground uppercase text-xs">
             OR
           </span>
-          <span className="grow h-px bg-gray-300 dark:bg-gray-600"></span>
+          <span className="grow h-px bg-border"></span>
         </div>
 
         {/* Social Buttons */}
@@ -185,4 +187,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SigninForm;

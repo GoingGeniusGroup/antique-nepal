@@ -9,17 +9,20 @@ export const RegisterSchema = z
   .object({
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
-    email: z.string().regex(emailRegex, "Invalid email format").optional(),
+    email: z.string().regex(emailRegex, "Invalid email format"),
     phone: z.string().regex(phoneRegex, "Phone must be 10 digits").optional(),
+    prefix: z.string().min(1, "Country code is required"), // <-- add this
     password: z
       .string()
+      .min(1, "Password is required")
       .regex(
         passwordRegex,
         "Password must be 8+ chars with uppercase, lowercase, number & special character"
       ),
   })
-  .refine((data) => data.email || data.phone, {
-    message: "Either email or phone is required",
+
+  .refine((data) => data.email, {
+    message: "Email is required",
     path: ["email"],
   });
 
