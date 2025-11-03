@@ -75,7 +75,7 @@
         {
           "id": 2,
           "name": "Our Heritage",
-          "href": "/heritage"
+          "href": "/our-heritage"
         },
         {
           "id": 3,
@@ -89,8 +89,8 @@
         },
         {
           "id": 5,
-          "name": "Blog",
-          "href": "/blog"
+          "name": "Workshop",
+          "href": "/workshop"
         }
       ]
     },
