@@ -87,28 +87,28 @@ export default function SettingsPage() {
         </div>
       ) : (
         <>
-          <Card className="p-6 border-l-4 border-l-blue-500">
+          <Card className="p-6 border-l-4 border-l-blue-500 dark:!bg-slate-800 dark:!border-slate-600">
             <div className="flex items-center gap-2 mb-4">
               <Globe className="h-5 w-5 text-blue-600" />
-              <div className="text-lg font-semibold text-gray-900">General Settings</div>
+              <div className="text-lg font-semibold text-foreground">General Settings</div>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label htmlFor="siteName" className="text-sm font-medium text-gray-700">Site Name</Label>
+                <Label htmlFor="siteName" className="text-sm font-medium text-muted-foreground">Site Name</Label>
                 <Input
                   id="siteName"
                   placeholder="Antique Nepal"
-                  className="mt-2 border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+                  className="mt-2"
                   value={settings.general.siteName || ""}
                   onChange={(e) => setSettings((s) => ({ ...s, general: { ...s.general, siteName: e.target.value } }))}
                 />
               </div>
               <div>
-                <Label htmlFor="logo" className="text-sm font-medium text-gray-700">Logo URL</Label>
+                <Label htmlFor="logo" className="text-sm font-medium text-muted-foreground">Logo URL</Label>
                 <Input
                   id="logo"
                   placeholder="https://example.com/logo.png"
-                  className="mt-2 border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+                  className="mt-2"
                   value={settings.general.logo || ""}
                   onChange={(e) => setSettings((s) => ({ ...s, general: { ...s.general, logo: e.target.value } }))}
                 />
@@ -116,28 +116,28 @@ export default function SettingsPage() {
             </div>
           </Card>
 
-          <Card className="p-6 border-l-4 border-l-green-500">
+          <Card className="p-6 border-l-4 border-l-green-500 dark:!bg-slate-800 dark:!border-slate-600">
             <div className="flex items-center gap-2 mb-4">
               <Type className="h-5 w-5 text-green-600" />
-              <div className="text-lg font-semibold text-gray-900">Hero Section</div>
+              <div className="text-lg font-semibold text-foreground">Hero Section</div>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label htmlFor="heroTitle" className="text-sm font-medium text-gray-700">Hero Title</Label>
+                <Label htmlFor="heroTitle" className="text-sm font-medium text-muted-foreground">Hero Title</Label>
                 <Input
                   id="heroTitle"
                   placeholder="Handcrafted Hemp Bags"
-                  className="mt-2 border-gray-200 focus:border-green-300 focus:ring-green-200"
+                  className="mt-2"
                   value={settings.hero.title || ""}
                   onChange={(e) => setSettings((s) => ({ ...s, hero: { ...s.hero, title: e.target.value } }))}
                 />
               </div>
               <div>
-                <Label htmlFor="heroSubtitle" className="text-sm font-medium text-gray-700">Hero Subtitle</Label>
+                <Label htmlFor="heroSubtitle" className="text-sm font-medium text-muted-foreground">Hero Subtitle</Label>
                 <Input
                   id="heroSubtitle"
                   placeholder="Woven with Himalayan Heritage"
-                  className="mt-2 border-gray-200 focus:border-green-300 focus:ring-green-200"
+                  className="mt-2"
                   value={settings.hero.subtitle || ""}
                   onChange={(e) => setSettings((s) => ({ ...s, hero: { ...s.hero, subtitle: e.target.value } }))}
                 />
@@ -145,18 +145,18 @@ export default function SettingsPage() {
             </div>
           </Card>
 
-          <Card className="p-6 border-l-4 border-l-purple-500">
+          <Card className="p-6 border-l-4 border-l-primary dark:!bg-slate-800 dark:!border-slate-600">
             <div className="flex items-center gap-2 mb-4">
-              <Image className="h-5 w-5 text-purple-600" />
-              <div className="text-lg font-semibold text-gray-900">Banner Configuration</div>
+              <Image className="h-5 w-5 text-primary" />
+              <div className="text-lg font-semibold text-foreground">Banner Configuration</div>
             </div>
             <div className="grid gap-4">
               <div>
-                <Label htmlFor="bannerText" className="text-sm font-medium text-gray-700">Banner Text</Label>
+                <Label htmlFor="bannerText" className="text-sm font-medium text-muted-foreground">Banner Text</Label>
                 <Input
                   id="bannerText"
                   placeholder="Limited-time offers on handcrafted items..."
-                  className="mt-2 border-gray-200 focus:border-purple-300 focus:ring-purple-200"
+                  className="mt-2"
                   value={settings.banner.text || ""}
                   onChange={(e) => setSettings((s) => ({ ...s, banner: { ...s.banner, text: e.target.value } }))}
                 />
@@ -164,18 +164,18 @@ export default function SettingsPage() {
             </div>
           </Card>
 
-          <Card className="p-6 border-l-4 border-l-orange-500">
+          <Card className="p-6 border-l-4 border-l-primary dark:!bg-slate-800 dark:!border-slate-600">
             <div className="flex items-center gap-2 mb-4">
-              <FileText className="h-5 w-5 text-orange-600" />
-              <div className="text-lg font-semibold text-gray-900">Footer Content</div>
+              <FileText className="h-5 w-5 text-primary" />
+              <div className="text-lg font-semibold text-foreground">Footer Content</div>
             </div>
             <div className="grid gap-4">
               <div>
-                <Label htmlFor="footerText" className="text-sm font-medium text-gray-700">Footer Text</Label>
+                <Label htmlFor="footerText" className="text-sm font-medium text-muted-foreground">Footer Text</Label>
                 <Input
                   id="footerText"
                   placeholder="© 2024 Antique Nepal. All rights reserved."
-                  className="mt-2 border-gray-200 focus:border-orange-300 focus:ring-orange-200"
+                  className="mt-2"
                   value={settings.footer.text || ""}
                   onChange={(e) => setSettings((s) => ({ ...s, footer: { ...s.footer, text: e.target.value } }))}
                 />

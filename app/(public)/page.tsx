@@ -14,9 +14,9 @@ export default function Home() {
   return (
     <div className="pt-16 md:pt-20">
       <Hero />
-      <WhyChoose />
       <FeaturedCollection />
       <ProductShowcase />
+      <WhyChoose />
       <Heritage />
       <Sustainability />
       <Stats />

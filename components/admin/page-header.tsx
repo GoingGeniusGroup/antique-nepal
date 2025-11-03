@@ -24,11 +24,11 @@ export function PageHeader({ title, className }: { title: string; className?: st
           const isLast = i === parts.length - 1;
           return (
             <span key={href} className="inline-flex items-center gap-1">
-              {i === 0 ? null : <span className="text-gray-400 mx-1">/</span>}
+              {i === 0 ? null : <span className="text-muted-foreground/60 mx-1">/</span>}
               {isLast ? (
-                <span className="capitalize text-gray-600">{p}</span>
+                <span className="capitalize text-muted-foreground">{p}</span>
               ) : (
-                <Link href={href} className="capitalize hover:underline text-gray-500">{p}</Link>
+                <Link href={href} className="capitalize hover:underline text-muted-foreground/80 hover:text-muted-foreground">{p}</Link>
               )}
             </span>
           );
