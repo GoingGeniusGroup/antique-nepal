@@ -12,16 +12,12 @@ export async function registerUser(formData: FormData) {
       lastName: formData.get("lastName")?.toString() || "",
       email: formData.get("email")?.toString() || "",
       phone: formData.get("phone")?.toString() || "",
+      prefix: formData.get("countryCode")?.toString() || "",
       password: formData.get("password")?.toString() || "",
     });
 
     const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          data.email ? { email: data.email } : undefined,
-          data.phone ? { phone: data.phone } : undefined,
-        ].filter(Boolean) as any[],
-      },
+      where: { email: data.email },
     });
 
     if (existingUser) {
@@ -38,9 +34,9 @@ export async function registerUser(formData: FormData) {
         firstName: data.firstName,
         lastName: data.lastName,
         password: hashedPassword,
-        ...(data.email ? { email: data.email } : {}),
-        ...(data.phone ? { phone: data.phone } : {}),
-      } as any,
+        email: data.email,
+        phone: data.phone,
+      },
     });
 
     return { success: true, message: "User registered successfully", user };

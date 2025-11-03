@@ -4,35 +4,29 @@ import type React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { FacebookIcon, X } from "lucide-react";
-import GoogleSignin from "../button/goole-sign-in-button";
+import { Eye, EyeOff } from "lucide-react";
 import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
+import Link from "next/link";
+import { Label } from "../ui/label";
+import GoogleSigninButton from "../button/google-sign-in-button";
+import FacebookSigninButton from "../button/facebook-sign-in-button";
 
 const SignIn = () => {
-  const [identifier, setIdentifier] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-
-  const handleFacebookSignIn = async () => {
-    try {
-      await signIn("facebook", { callbackUrl: "/" });
-    } catch (error) {
-      console.error("Facebook Sign-in failed:", error);
-      toast.error("Facebook sign-in failed");
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors({}); // Clear previous errors
 
-    if (!identifier.trim() || !password) {
+    if (!email || !password) {
       const newErrors: Record<string, string> = {};
-      if (!identifier.trim())
-        newErrors.identifier = "Email or phone is required";
+      if (!email) newErrors.identifier = "Email is required";
       if (!password) newErrors.password = "Password is required";
       setErrors(newErrors);
       return;
@@ -42,7 +36,7 @@ const SignIn = () => {
 
     const res: any = await signIn("credentials", {
       redirect: false,
-      identifier: identifier.trim(),
+      email,
       password,
     } as any);
 
@@ -53,9 +47,9 @@ const SignIn = () => {
       let message = String(res.error);
 
       if (message === "CredentialsSignin" || /invalid/i.test(message)) {
-        message = "Invalid email/phone or password";
+        message = "Invalid email or password";
       } else if (/both fields/i.test(message)) {
-        message = "Both email/phone and password are required";
+        message = "Both email and password are required";
       }
 
       toast.error(message);
@@ -71,52 +65,33 @@ const SignIn = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto mt-16 p-6 bg-[hsl(var(--paper))] border-[hsl(var(--mountain-light))] border-2 rounded-lg shadow-lg">
-      <div className="pt-6 pb-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-cinzel font-bold text-primary mb-2">
-            WELCOME BACK
+    <div className="flex justify-center items-center p-4">
+      {/* <div> */}
+      <div className="w-full max-w-md p-8 space-y-6">
+        <div className="text-center mb-6">
+          <h1 className="text-4xl font-cinzel font-bold text-primary mb-2">
+            welcome back
           </h1>
           <p className="text-sm text-muted-foreground font-sans">
             Sign in to your account to continue
           </p>
         </div>
 
-        <div className="mt-8 space-y-3">
-          <GoogleSignin />
-          <button
-            onClick={handleFacebookSignIn}
-            type="button"
-            className="w-full bg-[hsl(var(--hemp))] hover:bg-[hsl(var(--hemp-dark))] text-primary font-sans font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 border border-primary border-opacity-20"
-          >
-            <FacebookIcon className="w-5 h-5" />
-            Continue with Facebook
-          </button>
-        </div>
-
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[hsl(var(--mountain-light))]"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-[hsl(var(--paper))] text-muted-foreground font-sans">
-              Or continue with email or phone
-            </span>
-          </div>
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-sans font-semibold text-primary mb-1">
-              Email or phone
-            </label>
+            <Label
+              htmlFor="email"
+              className="block text-sm font-sans font-semibold text-primary mb-1"
+            >
+              Email <span className="text-destructive">*</span>
+            </Label>
             <Input
-              name="identifier"
+              name="email"
               type="text"
-              placeholder=""
-              value={identifier}
+              placeholder="Enter email"
+              value={email}
               onChange={(e) => {
-                setIdentifier(e.target.value);
+                setEmail(e.target.value);
                 setErrors((prev) => {
                   const next = { ...prev };
                   delete next.identifier;
@@ -134,32 +109,38 @@ const SignIn = () => {
             </p>
           </div>
 
-          <div>
-            <label className="block text-sm font-sans font-semibold text-primary mb-1">
-              Password
-            </label>
+          {/* Password */}
+          <div className="relative space-y-2">
+            <div className="flex items-center justify-between">
+              <Label
+                htmlFor="password"
+                className="block text-sm font-sans font-semibold text-primary mb-1"
+              >
+                Password <span className="text-destructive">*</span>
+              </Label>
+              <Link
+                href="#"
+                className="text-sm text-blue-700 hover:text-primary-glow transition-smooth "
+              >
+                Forgot password?
+              </Link>
+            </div>
             <Input
+              id="password"
               name="password"
-              type="password"
-              placeholder=""
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter password"
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setErrors((prev) => {
-                  const next = { ...prev };
-                  delete next.password;
-                  return next;
-                });
-              }}
-              className={`bg-white transition-all ${
-                errors.password
-                  ? "border-[hsl(var(--terracotta))] border-2 focus:border-[hsl(var(--terracotta) hover:border-[hsl(var(--terracotta))]"
-                  : "border-[hsl(var(--mountain-light))] focus:border-[hsl(var(--mountain) hover:border-[hsl(var(--mountain-dark))]"
-              }`}
+              onChange={(e) => setPassword(e.target.value)}
+              className="border border-border focus:border-primary bg-white pr-10"
             />
-            <p className="text-xs text-[hsl(var(--terracotta))] mt-1 h-4">
-              {errors.password || ""}
-            </p>
+            <button
+              type="button"
+              className="absolute right-3 top-9 text-muted-foreground"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
           </div>
 
           <button
@@ -179,17 +160,32 @@ const SignIn = () => {
           </button>
         </form>
 
-        <div className="mt-4 text-center">
-          <p className="text-sm font-sans text-muted-foreground">
-            Don't have an account?{" "}
-            <button
-              className="text-[hsl(var(--mountain))] font-semibold hover:text-[hsl(var(--terracotta))] transition-colors duration-200"
-              onClick={() => {}}
-            >
-              Sign up
-            </button>
-          </p>
+        {/* Divider */}
+        <div className="flex items-center my-6">
+          <span className="grow h-px bg-gray-300 dark:bg-gray-600"></span>
+          <span className="px-3 text-primary dark:text-primary-foreground uppercase text-xs">
+            OR
+          </span>
+          <span className="grow h-px bg-gray-300 dark:bg-gray-600"></span>
         </div>
+
+        {/* Social Buttons */}
+        <div className="space-y-3">
+          <GoogleSigninButton />
+          <FacebookSigninButton />
+        </div>
+
+        {/* Register Link */}
+        <p className="text-center text-sm text-primary cursor-default">
+          Don't have an account?{" "}
+          <Link
+            type="button"
+            href={"/register"}
+            className="text-blue-700 hover:text-primary-glow transition-smooth underline cursor-pointer"
+          >
+            Register
+          </Link>
+        </p>
       </div>
     </div>
   );
