@@ -5,6 +5,8 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
+import { getSession } from "next-auth/react";
+import { Role } from "@prisma/client";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -74,13 +76,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         (session.user as any).role = token.role;
       }
       return session;
-    },
-    async signIn({ user }) {
-      // Redirect admin users to admin panel
-      if ((user as any).role === "ADMIN") {
-        return "/admin";
-      }
-      return true; // normal users go to default page
     },
   },
   pages: {
