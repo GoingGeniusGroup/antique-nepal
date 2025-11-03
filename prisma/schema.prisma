@@ -104,8 +104,6 @@ model Product {
   shortDescription String?
   sku              String            @unique
   price            Decimal           @db.Decimal(10, 2)
-  compareAtPrice   Decimal?          @db.Decimal(10, 2)
-  costPrice        Decimal?          @db.Decimal(10, 2)
   isActive         Boolean           @default(true)
   isFeatured       Boolean           @default(false)
   metaTitle        String?
@@ -125,25 +123,24 @@ model Product {
 }
 
 model ProductVariant {
-  id             String         @id @default(cuid())
-  productId      String
-  sku            String         @unique
-  name           String
-  price          Decimal?       @db.Decimal(10, 2)
-  compareAtPrice Decimal?       @db.Decimal(10, 2)
-  color          String?
-  size           String?
-  weight         Decimal?       @db.Decimal(8, 2)
-  dimensions     String?
-  isActive       Boolean        @default(true)
-  displayOrder   Int            @default(0)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  cartItems      CartItem[]
-  inventory      Inventory?
-  orderItems     OrderItem[]
-  images         ProductImage[]
-  product        Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id           String         @id @default(cuid())
+  productId    String
+  sku          String         @unique
+  name         String
+  price        Decimal?       @db.Decimal(10, 2)
+  color        String?
+  size         String?
+  weight       Decimal?       @db.Decimal(8, 2)
+  dimensions   String?
+  isActive     Boolean        @default(true)
+  displayOrder Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  cartItems    CartItem[]
+  inventory    Inventory?
+  orderItems   OrderItem[]
+  images       ProductImage[]
+  product      Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@index([sku])
