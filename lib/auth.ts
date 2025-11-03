@@ -5,13 +5,15 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
-import { getSession } from "next-auth/react";
-import { Role } from "@prisma/client";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
+    maxAge: 60 * 60,
+  },
+  jwt: {
+    maxAge: 60 * 60, // same — optional but recommended
   },
   providers: [
     Google({
@@ -62,10 +64,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
+      const now = Math.floor(Date.now() / 1000);
+      const maxAge = 60 * 60;
+      // If token is older than 1 hour, force re-login
+      if (token.exp && now > token.exp) {
+        return {}; // Expired, will trigger logout
+      }
+
       if (user) {
         token.id = user.id;
         token.phone = (user as any).phone;
         token.role = (user as any).role;
+        token.exp = now + maxAge;
       }
       return token;
     },
@@ -79,6 +89,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   pages: {
-    signIn: "/",
+    signIn: "/login",
   },
 });

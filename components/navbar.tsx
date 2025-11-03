@@ -27,23 +27,15 @@ import {
 import { cn } from "@/lib/utils";
 import navigationData from "@/data/navigation.json";
 import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useAutoLogout } from "@/hooks/useAutoLogout";
+import { useAdminUser } from "@/hooks/useAdminUser";
 
 export const Navbar = () => {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const { brand, categories, stories } = navigationData;
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!session) return;
-
-    if ((session.user as any).role === "ADMIN") {
-      router.push("/admin"); // redirect admin
-    } else {
-      router.push("/"); // redirect normal users
-    }
-  }, [session, router]);
+  useAutoLogout();
+  useAdminUser();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-elegant">

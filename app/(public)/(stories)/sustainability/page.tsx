@@ -7,7 +7,7 @@ import paperTexture from "@/public/paper-texture.jpg";
 import hempField from "@/public/hemp-field.jpg";
 
 // Framer Motion imports
-import { motion } from "framer-motion";
+import { backOut, easeInOut, easeOut, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
 // Animation variants
@@ -29,7 +29,7 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.8,
-      ease: "easeOut",
+      ease: easeOut,
     },
   },
 };
@@ -42,7 +42,7 @@ const cardVariants = {
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: "easeOut",
+      ease: easeOut,
     },
   },
   hover: {
@@ -50,7 +50,7 @@ const cardVariants = {
     scale: 1.02,
     transition: {
       duration: 0.3,
-      ease: "easeInOut",
+      ease: easeInOut,
     },
   },
 };
@@ -62,7 +62,7 @@ const imageVariants = {
     scale: 1,
     transition: {
       duration: 1,
-      ease: "easeOut",
+      ease: easeOut,
     },
   },
 };
@@ -74,7 +74,7 @@ const numberVariants = {
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: "backOut",
+      ease: backOut,
     },
   },
 };
@@ -85,7 +85,7 @@ const AnimatedCard = motion.create(Card);
 const AnimatedImage = motion.create(Image);
 
 // Reusable animated section component
-const AnimatedSection = ({ children, className = "" }) => {
+const AnimatedSection = ({ children, className = "" }: any) => {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
