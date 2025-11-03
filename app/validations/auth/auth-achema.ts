@@ -27,3 +27,24 @@ export const LoginSchema = z.object({
   identifier: z.string().min(1, "Email or phone is required"),
   password: z.string().min(1, "Password is required"),
 });
+
+export const phoneValidation = z.object({
+  prefix: z.string().min(1, "Prefix is required"),
+  phone: z
+    .string()
+    .min(5, "Phone number is too short")
+    .max(15, "Phone number is too long"),
+});
+
+export const codeValidation = z.object({
+  code: z.string().length(6, "Verification code must be 6 characters"),
+});
+
+export const passwordValidation = z.object({
+  password: z
+    .string()
+    .regex(
+      passwordRegex,
+      "Password must be 8+ chars with uppercase, lowercase, number & special character"
+    ),
+});

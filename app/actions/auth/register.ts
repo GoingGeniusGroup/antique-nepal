@@ -10,14 +10,23 @@ export async function registerUser(formData: FormData) {
     const data = RegisterSchema.parse({
       firstName: formData.get("firstName")?.toString() || "",
       lastName: formData.get("lastName")?.toString() || "",
-      email: formData.get("email")?.toString() || "",
+      email: formData.get("email")?.toString() ,
       phone: formData.get("phone")?.toString() || "",
       prefix: formData.get("countryCode")?.toString() || "",
       password: formData.get("password")?.toString() || "",
     });
 
+    // Combine prefix + phone if phone exists
+    const fullPhone = data.phone ? `${data.prefix}${data.phone}` : undefined;
+
+    // Check if user exists by email or phone
     const existingUser = await prisma.user.findFirst({
-      where: { email: data.email },
+      where: {
+        OR: [
+          { email: data.email },
+          ...(fullPhone ? [{ phone: fullPhone }] : []),
+        ],
+      },
     });
 
     if (existingUser) {
@@ -34,8 +43,8 @@ export async function registerUser(formData: FormData) {
         firstName: data.firstName,
         lastName: data.lastName,
         password: hashedPassword,
-        email: data.email,
-        phone: data.phone,
+        email: data.email, // required by Prisma
+        ...(fullPhone && { phone: fullPhone }),
       },
     });
 

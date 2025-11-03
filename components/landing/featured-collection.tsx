@@ -3,12 +3,19 @@
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-context";
 import { ProductCard } from "@/components/product-card";
-import Link from "next/link";
+import { NavigationLink } from "@/components/navigation-link";
+import {
+  containerVariants,
+  itemVariants,
+  viewportConfig,
+  viewportConfigHeader,
+} from "./landing-utils";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
+// Custom variants with different timing
+const containerVariantsCustom = {
+  ...containerVariants,
   visible: {
-    opacity: 1,
+    ...containerVariants.visible,
     transition: {
       staggerChildren: 0.2,
       delayChildren: 0.1,
@@ -16,21 +23,13 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut" as any,
-    },
-  },
+const itemVariantsCustom = {
+  ...itemVariants,
+  hidden: { ...itemVariants.hidden, y: 40 },
 };
 
 export function FeaturedCollection() {
   const { theme, isReady } = useTheme();
-  const MotionLink = motion(Link);
 
   return (
     <section
@@ -69,7 +68,7 @@ export function FeaturedCollection() {
         <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: false, margin: "-100px", amount: 0.3 }}
+          viewport={viewportConfigHeader}
           transition={{ duration: 0.6 }}
         >
           <h2
@@ -99,12 +98,12 @@ export function FeaturedCollection() {
 
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-sm md:max-w-none font-inter mx-auto"
-          variants={containerVariants}
+          variants={containerVariantsCustom}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: false, margin: "-50px", amount: 0.2 }}
+          viewport={viewportConfig}
         >
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariantsCustom}>
             <ProductCard
               title="Traditional Weave Tote"
               price="300"
@@ -113,7 +112,7 @@ export function FeaturedCollection() {
               description="Handwoven with traditional patterns"
             />
           </motion.div>
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariantsCustom}>
             <ProductCard
               title="Minimalist Hemp Bag"
               price="300"
@@ -122,7 +121,7 @@ export function FeaturedCollection() {
               description="Clean lines, maximum durability"
             />
           </motion.div>
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariantsCustom}>
             <ProductCard
               title="Mountain Explorer Pack"
               price="300"
@@ -141,38 +140,39 @@ export function FeaturedCollection() {
           viewport={{ once: false, amount: 0.5 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <MotionLink
-            href="/products"
-            className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-emerald-600 to-emerald-500 text-white px-6 py-3 text-sm font-medium shadow-lg shadow-emerald-500/20 group cursor-pointer"
-            whileHover={{
-              scale: 1.08,
-              boxShadow: "0 15px 40px rgba(107,74,50,0.4)",
-              y: -3,
-            }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-          >
-            View Full Collection
-            <motion.svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              animate={{ x: [0, 5, 0] }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut",
+          <NavigationLink href="/products">
+            <motion.div
+              className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-emerald-600 to-emerald-500 text-white px-6 py-3 text-sm font-medium shadow-lg shadow-emerald-500/20 group cursor-pointer"
+              whileHover={{
+                scale: 1.08,
+                boxShadow: "0 15px 40px rgba(107,74,50,0.4)",
+                y: -3,
               }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.2 }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </motion.svg>
-          </MotionLink>
+              View Full Collection
+              <motion.svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                animate={{ x: [0, 5, 0] }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
+              </motion.svg>
+            </motion.div>
+          </NavigationLink>
         </motion.div>
         
       </div>

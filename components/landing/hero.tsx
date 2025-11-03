@@ -3,25 +3,11 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  Leaf,
-  Users,
-  Award,
-  ShoppingBag,
-  ArrowRight,
-  Lightbulb,
-  LightbulbOff,
-  Sun,
-  Moon,
-} from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Leaf, Users, Award, ShoppingBag, ArrowRight } from "lucide-react";
+import { NavigationLink } from "@/components/navigation-link";
 import type { LucideIcon } from "lucide-react";
 import { useTheme } from "@/contexts/theme-context";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 // Prayer flag colors
 const PRAYER_FLAG_COLORS = [
@@ -107,7 +93,7 @@ const particles = [
 ];
 
 export function Hero() {
-  const { theme, isReady, toggleTheme } = useTheme();
+  const { theme, isReady } = useTheme();
   return (
     <section className="relative background-cover min-h-screen w-full overflow-hidden">
       {/* Original Image Background */}
@@ -129,48 +115,17 @@ export function Hero() {
       })()}
 
       {/* Theme Toggle - Right side floating */}
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <motion.button
-              onClick={toggleTheme}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className={`group absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 rounded-full p-3 md:p-3.5 backdrop-blur-md shadow-[0_10px_28px_rgba(0,0,0,0.28)] border ${
-                isReady && theme === "dark"
-                  ? "bg-white/20 border-white/30"
-                  : "bg-white/15 border-white/25"
-              }`}
-              aria-label={
-                isReady && theme === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"
-              }
-              aria-pressed={isReady && theme === "dark"}
-            >
-              {isReady ? (
-                theme === "dark" ? (
-                  <Moon className="h-5 w-5 md:h-6 md:w-6 text-amber-300" />
-                ) : (
-                  <Sun className="h-5 w-5 md:h-6 md:w-6 text-yellow-500" />
-                )
-              ) : (
-                <Sun className="h-5 w-5 md:h-6 md:w-6 text-white" />
-              )}
-            </motion.button>
-          </TooltipTrigger>
-          <TooltipContent
-            side="left"
-            className="backdrop-blur bg-white/20 text-white border-white/30"
-          >
-            {isReady && theme === "dark" ? "Light mode" : "Dark mode"}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <ThemeToggle
+        variant="absolute"
+        position="right-4 md:right-8 top-1/2 -translate-y-1/2"
+        animationType="slide"
+        animationDelay={0.6}
+        zIndex={20}
+        className="p-3 md:p-3.5 shadow-[0_10px_28px_rgba(0,0,0,0.28)]"
+      />
 
       {/* Prayer Flags Animation - Enhanced */}
-      <div className="absolute top-16 left-0 right-0 h-32 overflow-hidden pointer-events-none z-10 flex items-start justify-between px-2">
+      <div className="absolute top-0 left-0 right-0 h-32 overflow-hidden pointer-events-none z-10 flex items-start justify-between px-2">
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
@@ -302,7 +257,7 @@ export function Hero() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.7 }}
               viewport={{ once: true }}
-              className="max-w-2xl mx-auto text-3xl sm:text-3xl md:text-3xl font-inter font-light text-primary-foreground"
+              className="max-w-2xl mx-auto text-3xl sm:text-3xl md:text-3xl font-inter font-light text-white"
             >
               Handcrafted Hemp Bags Woven with Himalayan Heritage
             </motion.p>
@@ -323,18 +278,20 @@ export function Hero() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mb-16">
             <motion.div {...ANIMATION_CONFIG.hoverScale}>
-              <Button className="relative overflow-hidden rounded-md h-11 px-7 text-lg font-inter font-medium group text-white bg-primary hover:bg-[#b44f36] dark:bg-emerald-600 dark:hover:bg-emerald-500">
-                <span className="relative flex items-center">
-                  <ShoppingBag className="mr-2 h-4 w-4" />
-                  Explore Collection
-                  <motion.span
-                    animate={{ x: [0, 3, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </motion.span>
-                </span>
-              </Button>
+              <NavigationLink href="/products">
+                <Button className="relative overflow-hidden rounded-md h-11 px-7 text-lg font-inter font-medium group text-white bg-primary hover:bg-[#b44f36] dark:bg-emerald-600 dark:hover:bg-emerald-500">
+                  <span className="relative flex items-center">
+                    <ShoppingBag className="mr-2 h-4 w-4" />
+                    Explore Collection
+                    <motion.span
+                      animate={{ x: [0, 3, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </motion.span>
+                  </span>
+                </Button>
+              </NavigationLink>
             </motion.div>
             <motion.div {...ANIMATION_CONFIG.hoverScale}>
               <Button

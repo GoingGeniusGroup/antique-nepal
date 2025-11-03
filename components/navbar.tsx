@@ -1,0 +1,310 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+
+import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+
+import {
+  Mountain,
+  ShoppingBag,
+  Menu,
+  X,
+  User,
+  Heart,
+  Search,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import navigationData from "@/data/navigation.json";
+
+export const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { brand, categories, stories } = navigationData;
+
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-elegant">
+      <div className="container px-4">
+        <div className="flex items-center justify-between h-20">
+          {/* ✅ Logo */}
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative">
+              <Mountain className="w-8 h-8 text-primary transition-all duration-300 group-hover:scale-110 group-hover:rotate-6" />
+              <div className="absolute -inset-2 bg-gradient-primary rounded-full blur-md opacity-0 group-hover:opacity-30 transition-all duration-300" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-2xl font-bold text-foreground font-serif tracking-tight transition-colors group-hover:text-primary">
+                {brand.name}
+              </span>
+              <span className="text-xs text-muted-foreground font-sans tracking-wide">
+                {brand.tagline}
+              </span>
+            </div>
+          </Link>
+
+          {/* ✅ Desktop Navigation */}
+          <NavigationMenu className="hidden lg:flex">
+            <NavigationMenuList className="gap-2">
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/"
+                    className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                  >
+                    Home
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              {/* Categories */}
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-background hover:bg-accent">
+                  Categories
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[500px] gap-2 p-6 md:w-[600px] md:grid-cols-2 lg:w-[700px]">
+                    <li className="md:col-span-2">
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href="/categories"
+                          className="block select-none space-y-1 rounded-lg p-4 leading-none no-underline outline-none transition-all hover:shadow-soft border-2 border-primary/20 hover:border-primary/40 bg-gradient-subtle group"
+                        >
+                          <div className="text-base font-bold leading-none text-primary group-hover:scale-105 transition-transform inline-block">
+                            View All Categories
+                          </div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-2">
+                            Explore our complete collection of handcrafted bags
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+
+                    {categories.map((category) => (
+                      <li key={category.id}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            href={category.href}
+                            className="group block select-none rounded-lg leading-none no-underline outline-none transition-all hover:shadow-soft overflow-hidden border border-border/50 hover:border-primary/30"
+                          >
+                            <div className="relative h-32 overflow-hidden">
+                              <Image
+                                src={category.image}
+                                alt={category.name}
+                                fill
+                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
+                            </div>
+                            <div className="p-3">
+                              <div className="text-sm font-semibold leading-none mb-1 group-hover:text-primary transition-colors">
+                                {category.name}
+                              </div>
+                              <p className="text-xs leading-snug text-muted-foreground">
+                                {category.description}
+                              </p>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              {/* Shop */}
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/products"
+                    className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                  >
+                    Shop
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              {/* Stories */}
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-background hover:bg-accent">
+                  Stories
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[500px] gap-2 p-6 md:w-[600px] md:grid-cols-2 lg:w-[700px]">
+                    {stories.map((story) => (
+                      <li key={story.id}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            href={story.href}
+                            className="group block select-none rounded-lg leading-none no-underline outline-none transition-all hover:shadow-soft overflow-hidden border border-border/50 hover:border-primary/30"
+                          >
+                            <div className="relative h-32 overflow-hidden">
+                              <Image
+                                src={story.image}
+                                alt={story.name}
+                                fill
+                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
+                            </div>
+                            <div className="p-3">
+                              <div className="text-sm font-semibold leading-none mb-1 group-hover:text-primary transition-colors">
+                                {story.name}
+                              </div>
+                              <p className="text-xs leading-snug text-muted-foreground">
+                                {story.description}
+                              </p>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+
+          {/* ✅ Desktop Actions */}
+          <div className="hidden lg:flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:scale-110 hover:text-primary transition-transform"
+            >
+              <Search className="w-5 h-5" />
+            </Button>
+            <Link href="/wishlist">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:scale-110 hover:text-primary transition-transform"
+              >
+                <Heart className="w-5 h-5" />
+              </Button>
+            </Link>
+            <Link href="/carts">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative hover:scale-110 hover:text-primary transition-transform group"
+              >
+                <ShoppingBag className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-glow">
+                  0
+                </span>
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-2 hover:shadow-soft transition-all"
+            >
+              <User className="w-4 h-4 mr-2" />
+              Login
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-2 hover:shadow-soft transition-all"
+            >
+              <User className="w-4 h-4 mr-2" />
+              Signup
+            </Button>
+          </div>
+
+          {/* ✅ Mobile Menu Button */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="lg:hidden text-foreground hover:text-primary transition-all p-2 hover:scale-110"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
+        {/* ✅ Mobile Menu */}
+        {isOpen && (
+          <div className="lg:hidden py-6 animate-fade-in border-t border-border/50">
+            <div className="flex flex-col gap-6">
+              {/* Links */}
+              <div className="flex flex-col gap-4">
+                <Link
+                  href="/"
+                  className="text-foreground hover:text-primary transition-colors font-medium py-2"
+                >
+                  Home
+                </Link>
+
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                    Categories
+                  </p>
+                  <div className="pl-4 space-y-2">
+                    {categories.map((cat) => (
+                      <Link
+                        key={cat.id}
+                        href={cat.href}
+                        className="block text-sm text-foreground hover:text-primary py-1"
+                      >
+                        {cat.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                <Link
+                  href="/products"
+                  className="text-foreground hover:text-primary transition-colors font-medium py-2"
+                >
+                  Shop
+                </Link>
+
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                    Stories
+                  </p>
+                  <div className="pl-4 space-y-2">
+                    {stories.map((story) => (
+                      <Link
+                        key={story.id}
+                        href={story.href}
+                        className="block text-sm text-foreground hover:text-primary py-1"
+                      >
+                        {story.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col gap-3 pt-4 border-t border-border/50">
+                <Button variant="outline" className="w-full justify-start">
+                  <Search className="w-4 h-4 mr-2" /> Search
+                </Button>
+                <Link href="/wishlist">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Heart className="w-4 h-4 mr-2" /> Wishlist
+                  </Button>
+                </Link>
+                <Button variant="outline" className="w-full justify-start">
+                  <ShoppingBag className="w-4 h-4 mr-2" /> Cart (0)
+                </Button>
+                <Button variant="default" className="w-full mt-2">
+                  <User className="w-4 h-4 mr-2" /> Login
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
+  );
+};

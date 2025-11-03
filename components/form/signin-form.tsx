@@ -79,12 +79,9 @@ const SignIn = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label
-              htmlFor="email"
-              className="block text-sm font-sans font-semibold text-primary mb-1"
-            >
-              Email <span className="text-destructive">*</span>
-            </Label>
+            <label className="block text-sm font-sans font-semibold text-primary mb-1">
+              Email
+            </label>
             <Input
               name="email"
               type="text"
@@ -112,10 +109,7 @@ const SignIn = () => {
           {/* Password */}
           <div className="relative space-y-2">
             <div className="flex items-center justify-between">
-              <Label
-                htmlFor="password"
-                className="block text-sm font-sans font-semibold text-primary mb-1"
-              >
+              <Label htmlFor="password">
                 Password <span className="text-destructive">*</span>
               </Label>
               <Link

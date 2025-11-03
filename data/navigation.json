@@ -1,0 +1,67 @@
+{
+  "brand": {
+    "name": "Antique Nepal",
+    "tagline": "HANDCRAFTED HERITAGE",
+    "description": "Preserving centuries of Nepalese craftsmanship through sustainable, handmade hemp bags."
+  },
+  "categories": [
+    {
+      "id": 1,
+      "name": "Tote Bags",
+      "href": "/categories/tote-bags",
+      "description": "Spacious everyday carriers",
+      "image": "/hemp-bag-1.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Backpacks",
+      "href": "/categories/backpacks",
+      "description": "Adventure-ready designs",
+      "image": "/hemp-bag-2.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Shoulder Bags",
+      "href": "/categories/shoulder-bags",
+      "description": "Elegant & functional",
+      "image": "/hemp-bag-3.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Clutches",
+      "href": "/categories/clutches",
+      "description": "Perfect for special occasions",
+      "image": "/artisan-hands.jpg"
+    }
+  ],
+  "stories": [
+    {
+      "id": 1,
+      "name": "Our Heritage",
+      "href": "/our-heritage",
+      "description": "Centuries of tradition",
+      "image": "/workshop.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Artisan Stories",
+      "href": "/artisans",
+      "description": "Meet our craftspeople",
+      "image": "/artisan-hands.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Sustainability",
+      "href": "/sustainability",
+      "description": "Our eco commitment",
+      "image": "/hemp-field.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Our Workshop",
+      "href": "/workshop",
+      "description": "Where tradition meets craft",
+      "image": "/workshop.jpg"
+    }
+  ]
+}
