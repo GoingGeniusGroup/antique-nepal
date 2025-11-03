@@ -19,7 +19,7 @@ enum Role {
 
 model User {
   id            String    @id @default(cuid())
-  email         String    @unique
+  email         String?   @unique
   emailVerified DateTime?
   password      String? // Nullable for OAuth users
   firstName     String?
@@ -595,6 +595,85 @@ model SiteSetting {
   updatedAt DateTime @updatedAt
 
   @@map("site_settings")
+}
+
+model FooterBrand {
+  id          String   @id @default(cuid())
+  name        String
+  logo        String
+  tagline     String
+  description String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("footer_brand")
+}
+
+model FooterSocial {
+  id           String   @id @default(cuid())
+  name         String
+  icon         String
+  href         String
+  displayOrder Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([displayOrder])
+  @@map("footer_socials")
+}
+
+model FooterSection {
+  id           String       @id @default(cuid())
+  title        String
+  displayOrder Int          @default(0)
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  links        FooterLink[]
+
+  @@index([displayOrder])
+  @@map("footer_sections")
+}
+
+model FooterLink {
+  id           String        @id @default(cuid())
+  sectionId    String
+  name         String
+  href         String
+  displayOrder Int           @default(0)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  section      FooterSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId])
+  @@index([displayOrder])
+  @@map("footer_links")
+}
+
+model FooterContact {
+  id        String   @id @default(cuid())
+  email     String
+  phone     String
+  address   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("footer_contact")
+}
+
+model FooterNewsletter {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("footer_newsletter")
 }
 
 // ============================================

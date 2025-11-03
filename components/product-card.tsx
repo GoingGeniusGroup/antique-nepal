@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Sparkles } from "lucide-react";
@@ -12,9 +13,10 @@ type Props = {
   img: string;
   tag?: string;
   description?: string;
+  id?: number;
 };
 
-export function ProductCard({ title, price, img, tag, description }: Props) {
+export function ProductCard({ title, price, img, tag, description, id = 1 }: Props) {
   const [isHovered, setIsHovered] = useState(false);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -135,22 +137,24 @@ export function ProductCard({ title, price, img, tag, description }: Props) {
             >
               $ {price}
             </motion.div>
-            <motion.button
-              className={
-                "group/btn relative overflow-hidden inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 w-full sm:w-auto justify-center text-[#c85a3c] bg-white border border-[#c85a3c] hover:bg-[#c85a3c] hover:text-white dark:text-emerald-400 dark:bg-emerald-500/10 dark:border dark:border-emerald-500/30 dark:hover:bg-emerald-500 dark:hover:text-white"
-              }
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <motion.div
-                className={"absolute inset-0 bg-[#c85a3c] dark:bg-emerald-500"}
-                initial={{ x: "-100%" }}
-                whileHover={{ x: 0 }}
-                transition={{ duration: 0.3 }}
-              />
-              <span className="relative z-10">View Details</span>
-              <ArrowRight className="relative z-10 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-            </motion.button>
+            <Link href={`/products/${id}`}>
+              <motion.button
+                className={
+                  "group/btn relative overflow-hidden inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 w-full sm:w-auto justify-center text-[#c85a3c] bg-white border border-[#c85a3c] hover:bg-[#c85a3c] hover:text-white dark:text-emerald-400 dark:bg-emerald-500/10 dark:border dark:border-emerald-500/30 dark:hover:bg-emerald-500 dark:hover:text-white"
+                }
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <motion.div
+                  className={"absolute inset-0 bg-[#c85a3c] dark:bg-emerald-500"}
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+                <span className="relative z-10">View Details</span>
+                <ArrowRight className="relative z-10 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+              </motion.button>
+            </Link>
           </div>
         </CardContent>
       </Card>

@@ -1,9 +1,10 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { Chrome as Google } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
+import { Button } from "../ui/button";
 
-const GoogleSignin = () => {
+const GoogleSigninButton = () => {
   const handleGoogleSignIn = async () => {
     try {
       await signIn("google", { callbackUrl: "/" });
@@ -13,15 +14,16 @@ const GoogleSignin = () => {
   };
 
   return (
-    <button
-      onClick={handleGoogleSignIn}
+    <Button
       type="button"
-      className="w-full bg-hemp hover:bg-opacity-80 text-primary font-sans font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 border border-primary border-opacity-20"
+      variant="outline"
+      onClick={handleGoogleSignIn}
+      className="w-full bg-background border border-border text-foreground hover:shadow-md flex items-center justify-center gap-2 font-medium cursor-pointer"
     >
-      <Google className="w-5 h-5" />
+      <FcGoogle className="w-5 h-5" />
       Continue with Google
-    </button>
+    </Button>
   );
 };
 
-export default GoogleSignin;
+export default GoogleSigninButton;
