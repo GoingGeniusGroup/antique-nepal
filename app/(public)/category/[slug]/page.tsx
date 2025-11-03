@@ -11,6 +11,7 @@ import { ProductControls } from "@/components/products/product-controls";
 import { ProductGrid } from "@/components/products/product-grid";
 import { Pagination } from "@/components/products/pagination";
 import ProductsBannerSection from "@/components/products/ProductsBannerSection";
+import type { Product } from "@/types/product";
 
 const PRODUCTS_PER_PAGE = 8;
 
@@ -27,7 +28,7 @@ const CategoryPage = () => {
 
   // filter products
   const filteredProducts = useMemo(() => {
-    let filtered = category.products;
+    let filtered: Product[] = category.products;
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -82,8 +83,8 @@ const CategoryPage = () => {
 
       {/* Banner */}
       <ProductsBannerSection
-        title={category.name}
-        subtitle={category.hero.subtitle}
+        title={category?.name || "Product"}
+        subtitle={category?.hero?.subtitle || "Explore our collection"}
       />
 
       <div className="flex flex-col gap-8 p-6 mx-3 lg:mx-16 md:p-8">
