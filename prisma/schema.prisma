@@ -454,14 +454,10 @@ model ActivityLog {
 }
 
 model SiteSetting {
-  key         String   @id
-  value       Json
-  description String?  // Optional description of what this setting controls
-  category    String?  // Group settings by category (hero, banner, homepage, etc.)
-  isActive    Boolean  @default(true) // Allow disabling settings
-  updatedBy   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  key       String   @id
+  value     Json
+  updatedBy String?
+  updatedAt DateTime @updatedAt
 
   @@index([category])
   @@index([isActive])
