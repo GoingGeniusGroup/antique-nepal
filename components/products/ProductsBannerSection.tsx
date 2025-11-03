@@ -2,12 +2,15 @@
 
 import { useTheme } from "@/contexts/theme-context";
 
-type Banner = {
+interface ProductsBannerSectionProps {
   title: string;
   subtitle: string;
-};
+}
 
-export default function ProductsBannerSection({ title, subtitle }: Banner) {
+export default function ProductsBannerSection({
+  title,
+  subtitle,
+}: ProductsBannerSectionProps) {
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
 

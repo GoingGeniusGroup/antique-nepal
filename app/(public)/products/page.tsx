@@ -206,7 +206,10 @@ const ProductsPage = () => {
           zIndex={30}
         />
 
-        <ProductsBannerSection />
+        <ProductsBannerSection
+          title="Our Hemp Collection"
+          subtitle="Discover handcrafted accessories made from sustainable hemp fiber by skilled artisans in the Himalayan foothills."
+        />
         <div className="flex flex-col gap-8 p-6 mx-3 lg:mx-16 md:p-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

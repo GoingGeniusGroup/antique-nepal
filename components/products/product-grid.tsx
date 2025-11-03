@@ -1,6 +1,7 @@
 import { StaticImageData } from "next/image";
 import { ProductCard } from "./product-card";
-import { Product } from "@/types/product";
+
+import { Product } from "@/lib/types";
 
 interface ProductGridProps {
   products: Product[];

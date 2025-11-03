@@ -5,13 +5,18 @@ import { Card } from "@/components/ui/card";
 import { Leaf, Droplets, Recycle, Sun, TreePine, Wind } from "lucide-react";
 import paperTexture from "@/public/paper-texture.jpg";
 import hempField from "@/public/hemp-field.jpg";
+import { ReactNode } from "react";
 
 // Framer Motion imports
+<<<<<<< HEAD
 import { backOut, easeInOut, easeOut, motion } from "framer-motion";
+=======
+import { motion, Variants } from "framer-motion";
+>>>>>>> 121c2c9e8c2af6965c8316cca92a6030177d5e6f
 import { useInView } from "react-intersection-observer";
 
 // Animation variants
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -22,7 +27,7 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
@@ -34,7 +39,7 @@ const itemVariants = {
   },
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 40, scale: 0.95 },
   visible: {
     opacity: 1,
@@ -55,7 +60,7 @@ const cardVariants = {
   },
 };
 
-const imageVariants = {
+const imageVariants: Variants = {
   hidden: { opacity: 0, scale: 1.1 },
   visible: {
     opacity: 1,
@@ -67,7 +72,7 @@ const imageVariants = {
   },
 };
 
-const numberVariants = {
+const numberVariants: Variants = {
   hidden: { opacity: 0, scale: 0.5 },
   visible: {
     opacity: 1,
@@ -80,12 +85,16 @@ const numberVariants = {
 };
 
 // Animated components
-const AnimatedBadge = motion.create(Badge);
-const AnimatedCard = motion.create(Card);
-const AnimatedImage = motion.create(Image);
+const AnimatedBadge = motion(Badge);
+const AnimatedCard = motion(Card);
+const AnimatedImage = motion(Image);
 
 // Reusable animated section component
+<<<<<<< HEAD
 const AnimatedSection = ({ children, className = "" }: any) => {
+=======
+const AnimatedSection = ({ children, className = "" }: { children: ReactNode, className?: string }) => {
+>>>>>>> 121c2c9e8c2af6965c8316cca92a6030177d5e6f
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
