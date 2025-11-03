@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/page-header";
 import { PageTransition } from "@/components/admin/page-transition";
-import { Save, Settings, Globe, Type, Image, FileText } from "lucide-react";
+import { Save, Settings, Globe, Type, Image, FileText, Star, Package } from "lucide-react";
 
 /**
  * Site Settings Management Page
@@ -22,9 +22,29 @@ import { Save, Settings, Globe, Type, Image, FileText } from "lucide-react";
 
 type Settings = {
   general: { siteName?: string; logo?: string };
-  hero: { title?: string; subtitle?: string };
-  banner: { text?: string };
+  hero: { 
+    title?: string; 
+    subtitle?: string; 
+    description?: string;
+    backgroundImage?: string;
+    features?: {
+      feature1?: { title?: string; description?: string; };
+      feature2?: { title?: string; description?: string; };
+      feature3?: { title?: string; description?: string; };
+    };
+  };
+  banner: { text?: string; isVisible?: boolean };
   footer: { text?: string };
+  homepage: {
+    featuredTitle?: string;
+    featuredSubtitle?: string;
+    featuredDescription?: string;
+    productHighlights?: {
+      title?: string;
+      subtitle?: string;
+      featuredProductIds?: string[];
+    };
+  };
 };
 
 export default function SettingsPage() {
@@ -33,6 +53,7 @@ export default function SettingsPage() {
     hero: {},
     banner: {},
     footer: {},
+    homepage: {},
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -126,7 +147,7 @@ export default function SettingsPage() {
                 <Label htmlFor="heroTitle" className="text-sm font-medium text-muted-foreground">Hero Title</Label>
                 <Input
                   id="heroTitle"
-                  placeholder="Handcrafted Hemp Bags"
+                  placeholder="ANTIQUE NEPAL"
                   className="mt-2"
                   value={settings.hero.title || ""}
                   onChange={(e) => setSettings((s) => ({ ...s, hero: { ...s.hero, title: e.target.value } }))}
@@ -136,11 +157,127 @@ export default function SettingsPage() {
                 <Label htmlFor="heroSubtitle" className="text-sm font-medium text-muted-foreground">Hero Subtitle</Label>
                 <Input
                   id="heroSubtitle"
-                  placeholder="Woven with Himalayan Heritage"
+                  placeholder="Welcome to best website"
                   className="mt-2"
                   value={settings.hero.subtitle || ""}
                   onChange={(e) => setSettings((s) => ({ ...s, hero: { ...s.hero, subtitle: e.target.value } }))}
                 />
+              </div>
+              <div className="md:col-span-2">
+                <Label htmlFor="heroDescription" className="text-sm font-medium text-muted-foreground">Hero Description</Label>
+                <Input
+                  id="heroDescription"
+                  placeholder="Every bag tells a story. Crafted by master artisans using centuries-old techniques..."
+                  className="mt-2"
+                  value={settings.hero.description || ""}
+                  onChange={(e) => setSettings((s) => ({ ...s, hero: { ...s.hero, description: e.target.value } }))}
+                />
+              </div>
+            </div>
+            
+            {/* Hero Features */}
+            <div className="mt-6 pt-6 border-t border-border">
+              <h4 className="text-md font-semibold text-foreground mb-4">Feature Cards</h4>
+              <div className="grid gap-4 md:grid-cols-3">
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Feature 1 Title</Label>
+                  <Input
+                    placeholder="100% Eco-Friendly"
+                    className="mt-2 mb-2"
+                    value={settings.hero.features?.feature1?.title || ""}
+                    onChange={(e) => setSettings((s) => ({ 
+                      ...s, 
+                      hero: { 
+                        ...s.hero, 
+                        features: { 
+                          ...s.hero.features, 
+                          feature1: { ...s.hero.features?.feature1, title: e.target.value } 
+                        } 
+                      } 
+                    }))}
+                  />
+                  <Input
+                    placeholder="Sustainable hemp fiber"
+                    className="mt-1"
+                    value={settings.hero.features?.feature1?.description || ""}
+                    onChange={(e) => setSettings((s) => ({ 
+                      ...s, 
+                      hero: { 
+                        ...s.hero, 
+                        features: { 
+                          ...s.hero.features, 
+                          feature1: { ...s.hero.features?.feature1, description: e.target.value } 
+                        } 
+                      } 
+                    }))}
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Feature 2 Title</Label>
+                  <Input
+                    placeholder="Fair Trade"
+                    className="mt-2 mb-2"
+                    value={settings.hero.features?.feature2?.title || ""}
+                    onChange={(e) => setSettings((s) => ({ 
+                      ...s, 
+                      hero: { 
+                        ...s.hero, 
+                        features: { 
+                          ...s.hero.features, 
+                          feature2: { ...s.hero.features?.feature2, title: e.target.value } 
+                        } 
+                      } 
+                    }))}
+                  />
+                  <Input
+                    placeholder="Supporting local artisans"
+                    className="mt-1"
+                    value={settings.hero.features?.feature2?.description || ""}
+                    onChange={(e) => setSettings((s) => ({ 
+                      ...s, 
+                      hero: { 
+                        ...s.hero, 
+                        features: { 
+                          ...s.hero.features, 
+                          feature2: { ...s.hero.features?.feature2, description: e.target.value } 
+                        } 
+                      } 
+                    }))}
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Feature 3 Title</Label>
+                  <Input
+                    placeholder="Quality Crafted"
+                    className="mt-2 mb-2"
+                    value={settings.hero.features?.feature3?.title || ""}
+                    onChange={(e) => setSettings((s) => ({ 
+                      ...s, 
+                      hero: { 
+                        ...s.hero, 
+                        features: { 
+                          ...s.hero.features, 
+                          feature3: { ...s.hero.features?.feature3, title: e.target.value } 
+                        } 
+                      } 
+                    }))}
+                  />
+                  <Input
+                    placeholder="15+ years tradition"
+                    className="mt-1"
+                    value={settings.hero.features?.feature3?.description || ""}
+                    onChange={(e) => setSettings((s) => ({ 
+                      ...s, 
+                      hero: { 
+                        ...s.hero, 
+                        features: { 
+                          ...s.hero.features, 
+                          feature3: { ...s.hero.features?.feature3, description: e.target.value } 
+                        } 
+                      } 
+                    }))}
+                  />
+                </div>
               </div>
             </div>
           </Card>
@@ -159,6 +296,92 @@ export default function SettingsPage() {
                   className="mt-2"
                   value={settings.banner.text || ""}
                   onChange={(e) => setSettings((s) => ({ ...s, banner: { ...s.banner, text: e.target.value } }))}
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 border-l-4 border-l-amber-500 dark:!bg-slate-800 dark:!border-slate-600">
+            <div className="flex items-center gap-2 mb-4">
+              <Star className="h-5 w-5 text-amber-600" />
+              <div className="text-lg font-semibold text-foreground">Featured Section</div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label htmlFor="featuredTitle" className="text-sm font-medium text-muted-foreground">Featured Title</Label>
+                <Input
+                  id="featuredTitle"
+                  placeholder="Featured Collections"
+                  className="mt-2"
+                  value={settings.homepage.featuredTitle || ""}
+                  onChange={(e) => setSettings((s) => ({ ...s, homepage: { ...s.homepage, featuredTitle: e.target.value } }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="featuredSubtitle" className="text-sm font-medium text-muted-foreground">Featured Subtitle</Label>
+                <Input
+                  id="featuredSubtitle"
+                  placeholder="Discover Our Best Sellers"
+                  className="mt-2"
+                  value={settings.homepage.featuredSubtitle || ""}
+                  onChange={(e) => setSettings((s) => ({ ...s, homepage: { ...s.homepage, featuredSubtitle: e.target.value } }))}
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label htmlFor="featuredDescription" className="text-sm font-medium text-muted-foreground">Featured Description</Label>
+                <Input
+                  id="featuredDescription"
+                  placeholder="Explore our handpicked selection of premium hemp bags..."
+                  className="mt-2"
+                  value={settings.homepage.featuredDescription || ""}
+                  onChange={(e) => setSettings((s) => ({ ...s, homepage: { ...s.homepage, featuredDescription: e.target.value } }))}
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 border-l-4 border-l-purple-500 dark:!bg-slate-800 dark:!border-slate-600">
+            <div className="flex items-center gap-2 mb-4">
+              <Package className="h-5 w-5 text-purple-600" />
+              <div className="text-lg font-semibold text-foreground">Product Highlights</div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label htmlFor="highlightsTitle" className="text-sm font-medium text-muted-foreground">Highlights Title</Label>
+                <Input
+                  id="highlightsTitle"
+                  placeholder="Why Choose Our Products"
+                  className="mt-2"
+                  value={settings.homepage.productHighlights?.title || ""}
+                  onChange={(e) => setSettings((s) => ({ 
+                    ...s, 
+                    homepage: { 
+                      ...s.homepage, 
+                      productHighlights: { 
+                        ...s.homepage.productHighlights, 
+                        title: e.target.value 
+                      } 
+                    } 
+                  }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="highlightsSubtitle" className="text-sm font-medium text-muted-foreground">Highlights Subtitle</Label>
+                <Input
+                  id="highlightsSubtitle"
+                  placeholder="Premium Quality & Sustainable"
+                  className="mt-2"
+                  value={settings.homepage.productHighlights?.subtitle || ""}
+                  onChange={(e) => setSettings((s) => ({ 
+                    ...s, 
+                    homepage: { 
+                      ...s.homepage, 
+                      productHighlights: { 
+                        ...s.homepage.productHighlights, 
+                        subtitle: e.target.value 
+                      } 
+                    } 
+                  }))}
                 />
               </div>
             </div>
