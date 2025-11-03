@@ -6,20 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
 import { Pagination } from "@/components/products/pagination"; // adjust import path if needed
-import { useState } from "react";
-import Link from "next/link";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
 interface CartItem {
   id: number;
   name: string;
   price: number;
   image: string;
-  image: string; // if using public folder images, keep as string
   quantity: number;
   color: string;
   size: string;
@@ -71,11 +63,6 @@ const Cart = () => {
   const updateQuantity = (id: number, change: number) => {
     setItems((prev) =>
       prev.map((item) =>
-  ]);
-
-  const updateQuantity = (id: number, change: number) => {
-    setItems(
-      items.map((item) =>
         item.id === id
           ? { ...item, quantity: Math.max(1, item.quantity + change) }
           : item
@@ -88,7 +75,6 @@ const Cart = () => {
     if (visibleItems.length === 1 && currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
     }
-    setItems(items.filter((item) => item.id !== id));
   };
 
   const subtotal = items.reduce(
@@ -131,7 +117,6 @@ const Cart = () => {
               {/* Cart Items */}
               <div className="lg:col-span-2 space-y-4">
                 {visibleItems.map((item) => (
-                {items.map((item) => (
                   <div
                     key={item.id}
                     className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow"
@@ -276,7 +261,6 @@ const Cart = () => {
                       className="w-full bg-green-600 text-white hover:bg-green-700 cursor-pointer"
                       size="lg"
                     >
-                    <Button className="w-full" size="lg">
                       <ShoppingBag className="h-5 w-5 mr-2" />
                       Proceed to Checkout
                     </Button>
