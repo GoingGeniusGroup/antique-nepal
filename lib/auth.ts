@@ -53,6 +53,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           name: user.firstName,
           email: user.email,
           phone: user.phone,
+          role: user.role,
         };
       },
     }),
@@ -62,6 +63,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.id = user.id;
         token.phone = (user as any).phone;
+        token.role = (user as any).role;
       }
       return token;
     },
@@ -69,8 +71,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user && token) {
         session.user.id = token.id as string;
         (session.user as any).phone = token.phone;
+        (session.user as any).role = token.role;
       }
       return session;
+    },
+    async signIn({ user }) {
+      // Redirect admin users to admin panel
+      if ((user as any).role === "ADMIN") {
+        return "/admin";
+      }
+      return true; // normal users go to default page
     },
   },
   pages: {
