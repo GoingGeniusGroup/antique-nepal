@@ -1,126 +1,113 @@
 "use client";
+
+import type React from "react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Eye, EyeOff } from "lucide-react";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Eye, EyeOff } from "lucide-react";
 import { signIn } from "next-auth/react";
+import toast from "react-hot-toast";
+import Link from "next/link";
+import { Label } from "../ui/label";
+import GoogleSigninButton from "../button/google-sign-in-button";
 import FacebookSigninButton from "../button/facebook-sign-in-button";
-import GoogleSigninButton from "../button/goole-sign-in-button";
 
-const SigninForm: React.FC = () => {
-  const route = useRouter();
-  const [countryCode, setCountryCode] = useState("+977");
-  const [phone, setPhone] = useState("");
+const SigninForm = () => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
-    setIsLoading(true);
+    setErrors({}); // Clear previous errors
 
-    if (!phone || !password) {
-      setError("Please enter both phone number and password");
-      setIsLoading(false);
+    if (!email || !password) {
+      const newErrors: Record<string, string> = {};
+      if (!email) newErrors.identifier = "Email is required";
+      if (!password) newErrors.password = "Password is required";
+      setErrors(newErrors);
       return;
     }
 
-    try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        phone: countryCode + phone,
-        password,
-      });
+    setLoading(true);
 
-      if (result?.error) {
-        setError("Invalid phone or password");
-      } else {
-        // Login successful, redirect
-        route.push("/");
+    const res: any = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    } as any);
+
+    setLoading(false);
+
+    if (res?.error) {
+      // Show toast only
+      let message = String(res.error);
+
+      if (message === "CredentialsSignin" || /invalid/i.test(message)) {
+        message = "Invalid email or password";
+      } else if (/both fields/i.test(message)) {
+        message = "Both email and password are required";
       }
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+
+      toast.error(message);
+
+      // Do NOT set errors on the input fields
+    } else {
+      setErrors({});
+      toast.success("Signed in successfully");
+      setTimeout(() => {
+        router.push("/");
+      }, 500);
     }
   };
+
   return (
-    <div className="flex justify-center items-center p-4">
+    <div className="flex justify-center items-center min-h-screen px-4 py-6 sm:py-8 text-foreground  dark:text-foreground">
       {/* <div> */}
-      <div className="w-full max-w-md p-8 space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1
-            className="text-4xl font-semibold mb-4"
-            style={{ fontFamily: "var(--font-cinzel)" }}
-          >
-            Welcome Back
+      <div className="w-full max-w-md p-6 sm:p-8 space-y-6">
+        <div className="text-2xl sm:text-3xl text-primary font-bold mb-6">
+          <h1 className="text-4xl font-cinzel font-bold text-primary mb-2">
+            welcome back
           </h1>
-          <p className="text-lg text-muted-foreground">
-            Sign in to your account
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Sign in to your account to continue
           </p>
         </div>
 
-        {/* Error */}
-
-        <p className="text-sm text-destructive animate-in fade-in slide-in-from-top-2 h-4">
-          {error}
-        </p>
-
-        {/* Form */}
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          {/* Phone */}
-          <div className="space-y-2">
-            <Label htmlFor="phone">
-              Phone Number <span className="text-destructive">*</span>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label className="text-sm font-semibold mb-1">
+              Email <span className="text-destructive">*</span>
             </Label>
-            <div className="flex gap-2">
-              <Select
-                value={countryCode}
-                onValueChange={setCountryCode}
-                name="prefix"
-              >
-                <SelectTrigger className="w-[140px] bg-white border border-border">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="+977">Nepal (+977)</SelectItem>
-                  <SelectItem value="+1">USA (+1)</SelectItem>
-                  <SelectItem value="+91">India (+91)</SelectItem>
-                  <SelectItem value="+86">China (+86)</SelectItem>
-                  <SelectItem value="+44">UK (+44)</SelectItem>
-                  <SelectItem value="+81">Japan (+81)</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="Enter phone number"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="flex-1 border border-border focus:border-primary bg-white"
-              />
-            </div>
+            <Input
+              name="email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrors((prev) => {
+                  const next = { ...prev };
+                  delete next.identifier;
+                  return next;
+                });
+              }}
+              className={`bg-card text-foreground placeholder:text-muted-foreground transition-all ${
+                errors.email
+                  ? "border-destructive border-2 focus:border-destructive"
+                  : "border-border focus:border-primary"
+              }`}
+            />
+            <p className="text-xs text-destructive mt-1 h-4">{errors.email}</p>
           </div>
 
           {/* Password */}
           <div className="relative space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">
+              <Label htmlFor="password" className="text-sm font-semibold mb-1">
                 Password <span className="text-destructive">*</span>
               </Label>
               <Link
@@ -132,11 +119,16 @@ const SigninForm: React.FC = () => {
             </div>
             <Input
               id="password"
+              name="password"
               type={showPassword ? "text" : "password"}
-              placeholder="Enter password"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="border border-border focus:border-primary bg-white pr-10"
+              className={`w-full pr-10 bg-card text-foreground placeholder:text-muted-foreground transition-all ${
+                errors.password
+                  ? "border-destructive border-2 focus:border-destructive"
+                  : "border-border focus:border-primary"
+              }`}
             />
             <button
               type="button"
@@ -147,23 +139,30 @@ const SigninForm: React.FC = () => {
             </button>
           </div>
 
-          {/* Submit */}
-          <Button
+          <button
             type="submit"
-            className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all"
-            disabled={isLoading}
+            disabled={loading}
+            className={`w-full bg-primary hover:bg-[hsl(var(--earth))] text-[hsl(var(--paper))] font-sans font-semibold py-3 px-4 rounded transition-all duration-200 mt-6 flex items-center justify-center gap-2 ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            {isLoading ? "Logging in..." : "Login"}
-          </Button>
+            {loading ? (
+              "Signing in..."
+            ) : (
+              <>
+                Sign In <span>→</span>
+              </>
+            )}
+          </button>
         </form>
 
-        {/* Divider */}
+        {/* OR divider */}
         <div className="flex items-center my-6">
-          <span className="grow h-px bg-gray-300 dark:bg-gray-600"></span>
-          <span className="px-3 text-primary dark:text-primary-foreground uppercase text-xs">
+          <span className="grow h-px bg-border"></span>
+          <span className="px-3 text-muted-foreground uppercase text-xs">
             OR
           </span>
-          <span className="grow h-px bg-gray-300 dark:bg-gray-600"></span>
+          <span className="grow h-px bg-border"></span>
         </div>
 
         {/* Social Buttons */}
@@ -173,15 +172,15 @@ const SigninForm: React.FC = () => {
         </div>
 
         {/* Register Link */}
-        <p className="text-center text-sm text-muted cursor-default">
+        <p className="text-center text-sm text-primary cursor-default">
           Don't have an account?{" "}
-          <button
+          <Link
             type="button"
-            onClick={() => route.push("/register")}
-            className="text-secondary font-medium underline hover:text-primary/80 cursor-pointer"
+            href={"/register"}
+            className="text-blue-700 hover:text-primary-glow transition-smooth underline cursor-pointer"
           >
             Register
-          </button>
+          </Link>
         </p>
       </div>
     </div>

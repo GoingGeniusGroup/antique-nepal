@@ -1,49 +1,61 @@
 "use server";
 
-import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import {
-  phoneValidation,
-  passwordValidation,
-} from "@/app/validations/auth/auth-achema";
+import prisma from "@/lib/prisma";
+import { RegisterSchema } from "@/app/validations/auth/auth-achema";
+import { ZodError } from "zod";
 
-// Use .extend instead of merge (merge is deprecated)
-const registrationSchema = phoneValidation.extend({
-  password: passwordValidation.shape.password,
-});
-
-interface RegisterData {
-  prefix: string;
-  phone: string;
-  password: string;
-}
-
-export async function registerUser(data: RegisterData) {
-  const parseResult = registrationSchema.safeParse(data);
-
-  if (!parseResult.success) {
-    const errors = parseResult.error.issues.map((i) => i.message).join(", ");
-    return { success: false, error: errors };
-  }
-
-  const { prefix, phone, password } = parseResult.data;
-  const phoneNumber = prefix + phone;
-
+export async function registerUser(formData: FormData) {
   try {
+    const data = RegisterSchema.parse({
+      firstName: formData.get("firstName")?.toString() || "",
+      lastName: formData.get("lastName")?.toString() || "",
+      email: formData.get("email")?.toString(),
+      phone: formData.get("phone")?.toString() || "",
+      prefix: formData.get("countryCode")?.toString() || "",
+      password: formData.get("password")?.toString() || "",
+    });
+
+    // Combine prefix + phone if phone exists
+    const fullPhone = data.phone ? `${data.prefix}${data.phone}` : undefined;
+
+    // Check if user exists by email or phone
     const existingUser = await prisma.user.findUnique({
-      where: { phone: phoneNumber },
+      where: {
+        email: data.email,
+      },
     });
 
-    if (existingUser) return { success: false, error: "User already exists" };
+    if (existingUser) {
+      return {
+        success: false,
+        message: "User already exists with this email or phone",
+      };
+    }
 
-    const hashed = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
     const user = await prisma.user.create({
-      data: { phone: phoneNumber, password: hashed },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        password: hashedPassword,
+        email: data.email, // required by Prisma
+        ...(fullPhone && { phone: fullPhone }),
+      },
     });
 
-    return { success: true, user };
-  } catch (error: any) {
+    return { success: true, message: "User registered successfully", user };
+  } catch (error) {
+    if (error instanceof ZodError) {
+      const fieldErrors: Record<string, string> = {};
+      error.issues.forEach((err) => {
+        if (err.path?.[0]) fieldErrors[err.path[0].toString()] = err.message;
+      });
+      return { success: false, errors: fieldErrors };
+    }
+
     console.error(error);
-    return { success: false, error: error.message || "Registration failed" };
+    return { success: false, message: "Something went wrong." };
   }
 }

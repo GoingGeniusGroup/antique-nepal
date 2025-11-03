@@ -22,11 +22,14 @@ import {
   User,
   Heart,
   Search,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import navigationData from "@/data/navigation.json";
+import { signOut, useSession } from "next-auth/react";
 
 export const Navbar = () => {
+  const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const { brand, categories, stories } = navigationData;
 
@@ -101,7 +104,7 @@ export const Navbar = () => {
                                 fill
                                 className="object-cover transition-transform duration-500 group-hover:scale-110"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
+                              <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent" />
                             </div>
                             <div className="p-3">
                               <div className="text-sm font-semibold leading-none mb-1 group-hover:text-primary transition-colors">
@@ -152,7 +155,7 @@ export const Navbar = () => {
                                 fill
                                 className="object-cover transition-transform duration-500 group-hover:scale-110"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
+                              <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent" />
                             </div>
                             <div className="p-3">
                               <div className="text-sm font-semibold leading-none mb-1 group-hover:text-primary transition-colors">
@@ -202,22 +205,54 @@ export const Navbar = () => {
                 </span>
               </Button>
             </Link>
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-2 hover:shadow-soft transition-all"
-            >
-              <User className="w-4 h-4 mr-2" />
-              Login
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-2 hover:shadow-soft transition-all"
-            >
-              <User className="w-4 h-4 mr-2" />
-              Signup
-            </Button>
+
+            {/*  Auth Buttons*/}
+            {!session ? (
+              <>
+                <Link href={"/login"}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="ml-2 hover:shadow-soft transition-all"
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Login
+                  </Button>
+                </Link>
+                <Link href={"/register"}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="ml-2 hover:shadow-soft transition-all"
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Signup
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-2 hover:shadow-soft transition-all"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+                <Link href="/profile">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="ml-2 hover:shadow-soft transition-all"
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    {session.user?.name}
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* ✅ Mobile Menu Button */}
