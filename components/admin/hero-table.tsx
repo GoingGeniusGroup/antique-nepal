@@ -329,16 +329,16 @@ export function HeroTable<T extends { id: string }>({
           </Table>
         </div>
       ) : (
-        <div className="rounded-lg border bg-card overflow-hidden">
+        <div className="rounded-lg border bg-card dark:!bg-slate-800 overflow-hidden">
           <div className="overflow-x-auto">
             <Table 
               aria-label={title}
               className="min-w-full"
               classNames={{
                 wrapper: "shadow-none border-0 bg-transparent rounded-lg",
-                th: "bg-muted/50 text-muted-foreground font-semibold text-xs uppercase tracking-wide border-b-2 border-border whitespace-nowrap px-2 sm:px-4",
-                td: "text-sm text-foreground border-b border-border/50 whitespace-nowrap px-2 sm:px-4",
-                tr: "hover:bg-muted/30 transition-colors duration-200",
+                th: "bg-muted/50 dark:!bg-slate-700 text-muted-foreground dark:!text-slate-200 font-semibold text-xs uppercase tracking-wide border-b-2 border-border dark:!border-slate-600 whitespace-nowrap px-2 sm:px-4",
+                td: "text-sm text-foreground dark:!text-slate-100 border-b border-border/50 dark:!border-slate-600/50 whitespace-nowrap px-2 sm:px-4",
+                tr: "hover:bg-muted/30 dark:!hover:bg-slate-700/50 transition-colors duration-200",
               }}
             >
             <TableHeader>

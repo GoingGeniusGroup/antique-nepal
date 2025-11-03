@@ -34,7 +34,7 @@ export default function AdminHomePage() {
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="p-4 sm:p-6 hover:shadow-md transition-shadow">
+            <Card key={index} className="p-4 sm:p-6 hover:shadow-md transition-shadow dark:!bg-slate-800 dark:!border-slate-600">
               <div className="flex items-center justify-between">
                 <div className="min-w-0 flex-1">
                   <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{stat.title}</p>
@@ -55,7 +55,7 @@ export default function AdminHomePage() {
 
       {/* Charts and Recent Activity - Responsive */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <Card className="p-4 sm:p-6">
+        <Card className="p-4 sm:p-6 dark:!bg-slate-800 dark:!border-slate-600">
           <div className="flex items-center justify-between mb-4">
             <div className="text-base sm:text-lg font-semibold text-foreground">Sales Overview</div>
             <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
@@ -68,7 +68,7 @@ export default function AdminHomePage() {
           </div>
         </Card>
         
-        <Card className="p-4 sm:p-6">
+        <Card className="p-4 sm:p-6 dark:!bg-slate-800 dark:!border-slate-600">
           <div className="flex items-center justify-between mb-4">
             <div className="text-base sm:text-lg font-semibold text-foreground">Recent Activity</div>
             <Package className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400 flex-shrink-0" />
@@ -80,7 +80,7 @@ export default function AdminHomePage() {
               { action: "New user registered", time: "10 min ago", type: "user" },
               { action: "Payment received", time: "15 min ago", type: "payment" },
             ].map((activity, idx) => (
-              <div key={idx} className="flex items-center justify-between p-2 sm:p-3 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors">
+              <div key={idx} className="flex items-center justify-between p-2 sm:p-3 rounded-lg bg-muted/50 dark:!bg-slate-700/50 hover:bg-muted/70 dark:!hover:bg-slate-700 transition-colors">
                 <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
                   <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
                     activity.type === 'order' ? 'bg-blue-400 dark:bg-blue-300' :

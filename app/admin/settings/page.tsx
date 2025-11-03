@@ -87,7 +87,7 @@ export default function SettingsPage() {
         </div>
       ) : (
         <>
-          <Card className="p-6 border-l-4 border-l-blue-500">
+          <Card className="p-6 border-l-4 border-l-blue-500 dark:!bg-slate-800 dark:!border-slate-600">
             <div className="flex items-center gap-2 mb-4">
               <Globe className="h-5 w-5 text-blue-600" />
               <div className="text-lg font-semibold text-foreground">General Settings</div>
@@ -116,7 +116,7 @@ export default function SettingsPage() {
             </div>
           </Card>
 
-          <Card className="p-6 border-l-4 border-l-green-500">
+          <Card className="p-6 border-l-4 border-l-green-500 dark:!bg-slate-800 dark:!border-slate-600">
             <div className="flex items-center gap-2 mb-4">
               <Type className="h-5 w-5 text-green-600" />
               <div className="text-lg font-semibold text-foreground">Hero Section</div>
@@ -145,7 +145,7 @@ export default function SettingsPage() {
             </div>
           </Card>
 
-          <Card className="p-6 border-l-4 border-l-primary">
+          <Card className="p-6 border-l-4 border-l-primary dark:!bg-slate-800 dark:!border-slate-600">
             <div className="flex items-center gap-2 mb-4">
               <Image className="h-5 w-5 text-primary" />
               <div className="text-lg font-semibold text-foreground">Banner Configuration</div>
@@ -164,7 +164,7 @@ export default function SettingsPage() {
             </div>
           </Card>
 
-          <Card className="p-6 border-l-4 border-l-primary">
+          <Card className="p-6 border-l-4 border-l-primary dark:!bg-slate-800 dark:!border-slate-600">
             <div className="flex items-center gap-2 mb-4">
               <FileText className="h-5 w-5 text-primary" />
               <div className="text-lg font-semibold text-foreground">Footer Content</div>

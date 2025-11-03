@@ -47,7 +47,7 @@ const CustomSidebarLink = ({
     <Link
       href={href}
       className={cn(
-        "flex items-center gap-2 group/sidebar py-2 rounded-md transition-all duration-200 text-white",
+        "flex items-center gap-2 group/sidebar py-2 rounded-md transition-all duration-300 ease-in-out text-white",
         open ? "justify-start px-3" : "justify-center px-2",
         isActive ? "bg-gray-700 dark:bg-gray-800" : "hover:bg-gray-700/50 dark:hover:bg-gray-800/50"
       )}
@@ -58,7 +58,8 @@ const CustomSidebarLink = ({
           display: open ? "inline-block" : "none",
           opacity: open ? 1 : 0,
         }}
-        className="text-white text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="text-white text-sm group-hover/sidebar:translate-x-1 transition duration-300 ease-in-out whitespace-pre inline-block !p-0 !m-0"
       >
         {label}
       </motion.span>
@@ -90,16 +91,17 @@ export function AdminSidebar({ collapsed, onToggle }: { collapsed: boolean; onTo
   return (
     <div className="sticky top-0 h-screen z-20">
       <Sidebar open={open} setOpen={setOpen} animate>
-        <SidebarBody className={cn("justify-between gap-6 sm:gap-10 !bg-gray-800 dark:!bg-gray-900 transition-all duration-300", open ? "px-4" : "px-2")}> 
+        <SidebarBody className={cn("justify-between gap-6 sm:gap-10 !bg-gray-800 dark:!bg-gray-900 transition-all duration-500 ease-in-out", open ? "px-4" : "px-2")}> 
           <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             {/* Brand Logo and text */}
-            <div className={cn("flex items-center py-4 transition-all duration-300", open ? "space-x-2 justify-start" : "justify-center")}>
+            <div className={cn("flex items-center py-4 transition-all duration-500 ease-in-out", open ? "space-x-2 justify-start" : "justify-center")}>
               <div className="h-7 w-7 bg-gradient-to-br from-primary/20 to-primary/40 rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
               <motion.span
                 animate={{
                   display: open ? "inline-block" : "none",
                   opacity: open ? 1 : 0,
                 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
                 className="font-medium text-white whitespace-pre"
               >
                 Antique Admin
