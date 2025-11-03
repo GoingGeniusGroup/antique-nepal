@@ -4,9 +4,10 @@ import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Settings, ShoppingCart, Package, Users } from "lucide-react";
+import { LayoutDashboard, Settings, ShoppingCart, Package, Users, Sun, Moon } from "lucide-react";
 import { Sidebar, SidebarBody } from "@/components/ui/sidebar";
 import { motion } from "framer-motion";
+import { useTheme } from "@/contexts/theme-context";
 
 /**
  * Admin Sidebar Component
@@ -15,8 +16,9 @@ import { motion } from "framer-motion";
  * - Collapsible sidebar with smooth animations
  * - Navigation links with active state highlighting
  * - Keyboard shortcut support (Ctrl/Cmd+B)
+ * - Built-in dark/light mode toggle
  * - User avatar at bottom
- * - Dark theme with proper contrast
+ * - Responsive theme switching
  */
 
 const LINKS = [
@@ -45,8 +47,9 @@ const CustomSidebarLink = ({
     <Link
       href={href}
       className={cn(
-        "flex items-center justify-start gap-2 group/sidebar py-2 px-3 rounded-md transition-all duration-200 text-white",
-        isActive ? "bg-slate-800" : "hover:bg-slate-800/50"
+        "flex items-center gap-2 group/sidebar py-2 rounded-md transition-all duration-200 text-white",
+        open ? "justify-start px-3" : "justify-center px-2",
+        isActive ? "bg-gray-700 dark:bg-gray-800" : "hover:bg-gray-700/50 dark:hover:bg-gray-800/50"
       )}
     >
       {icon}
@@ -66,6 +69,7 @@ const CustomSidebarLink = ({
 export function AdminSidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(!collapsed);
+  const { theme, toggleTheme, isReady } = useTheme();
 
   // Keep open state in sync with collapsed prop (Ctrl/Cmd+B)
   useEffect(() => {
@@ -86,14 +90,20 @@ export function AdminSidebar({ collapsed, onToggle }: { collapsed: boolean; onTo
   return (
     <div className="sticky top-0 h-screen z-20">
       <Sidebar open={open} setOpen={setOpen} animate>
-        <SidebarBody className="justify-between gap-6 sm:gap-10 bg-slate-950 border-r border-slate-800 dark:bg-slate-950"> 
+        <SidebarBody className={cn("justify-between gap-6 sm:gap-10 !bg-gray-800 dark:!bg-gray-900 transition-all duration-300", open ? "px-4" : "px-2")}> 
           <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             {/* Brand Logo and text */}
-            <div className="flex items-center space-x-2 py-4">
-              <div className="h-7 w-7 bg-gradient-to-br from-slate-700 to-slate-900 rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-              <span className="font-medium text-white whitespace-pre">
+            <div className={cn("flex items-center py-4 transition-all duration-300", open ? "space-x-2 justify-start" : "justify-center")}>
+              <div className="h-7 w-7 bg-gradient-to-br from-primary/20 to-primary/40 rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+              <motion.span
+                animate={{
+                  display: open ? "inline-block" : "none",
+                  opacity: open ? 1 : 0,
+                }}
+                className="font-medium text-white whitespace-pre"
+              >
                 Antique Admin
-              </span>
+              </motion.span>
             </div>
             
             {/* Navigation Links */}
@@ -109,6 +119,7 @@ export function AdminSidebar({ collapsed, onToggle }: { collapsed: boolean; onTo
                 />
               ))}
             </div>
+            
           </div>
           
           {/* Bottom User */}

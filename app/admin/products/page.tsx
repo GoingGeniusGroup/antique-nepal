@@ -43,12 +43,12 @@ export default function ProductsPage() {
   const columns: HeroColumn<Row>[] = [
     { key: "name", label: "Product Name", sortable: true, render: (r: Row) => (
       <div className="flex flex-col">
-        <span className="font-medium text-gray-900">{r.name}</span>
-        <span className="text-xs text-gray-500 font-mono">{r.sku}</span>
+        <span className="font-medium text-foreground">{r.name}</span>
+        <span className="text-xs text-muted-foreground font-mono">{r.sku}</span>
       </div>
     ) },
     { key: "price", label: "Price", sortable: true, render: (r: Row) => (
-      <span className="font-semibold text-green-700">{formatCurrency(r.price)}</span>
+      <span className="font-semibold text-green-600 dark:text-green-400">{formatCurrency(r.price)}</span>
     ) },
     { key: "isActive", label: "Status", render: (r: Row) => (
       <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getStatusColor('active', String(r.isActive))}`}>

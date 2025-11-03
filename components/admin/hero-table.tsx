@@ -238,11 +238,11 @@ export function HeroTable<T extends { id: string }>({
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
           {/* Search - Full width on mobile */}
           <div className="relative flex-1 sm:flex-none">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search..."
               onChange={(e) => debouncedSetQ(e.target.value)}
-              className="h-9 w-full sm:w-56 pl-9 border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+              className="h-9 w-full sm:w-56 pl-9"
             />
           </div>
           
@@ -251,7 +251,7 @@ export function HeroTable<T extends { id: string }>({
             <div className="flex items-center gap-2">
               {/* Sort Controls - Smaller on mobile */}
               <Select value={sort} onValueChange={(v) => setSort(v)}>
-                <SelectTrigger className="h-9 w-32 sm:w-40 border-gray-200 focus:border-blue-300">
+                <SelectTrigger className="h-9 w-32 sm:w-40">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
@@ -263,10 +263,10 @@ export function HeroTable<T extends { id: string }>({
               
               <Button 
                 variant="outline" 
-                className="h-9 px-2 sm:px-3 border-gray-200 hover:bg-gray-50" 
+                className="h-9 px-2 sm:px-3" 
                 onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
               >
-                <ArrowUpDown className="h-4 w-4 sm:mr-1 text-gray-600" />
+                <ArrowUpDown className="h-4 w-4 sm:mr-1" />
                 <span className="hidden sm:inline">{order === "asc" ? "Asc" : "Desc"}</span>
               </Button>
             </div>
@@ -275,7 +275,7 @@ export function HeroTable<T extends { id: string }>({
             {onAdd && (
               <Button 
                 onClick={onAdd}
-                className="hidden sm:flex h-9 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+                className="hidden sm:flex h-9 shadow-sm"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Add New
@@ -311,7 +311,7 @@ export function HeroTable<T extends { id: string }>({
             <TableBody>
               <TableRow>
                 <TableCell colSpan={tableColumns.length} className="px-4 py-8 text-center">
-                  <div className="text-red-600">
+                  <div className="text-destructive">
                     <p className="font-medium">Error loading data</p>
                     <p className="text-xs mt-1">{error}</p>
                     <Button 
@@ -336,9 +336,9 @@ export function HeroTable<T extends { id: string }>({
               className="min-w-full"
               classNames={{
                 wrapper: "shadow-none border-0 bg-transparent rounded-lg",
-                th: "bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 font-semibold text-xs uppercase tracking-wide border-b-2 border-gray-200 whitespace-nowrap px-2 sm:px-4",
-                td: "text-sm text-gray-700 border-b border-gray-100 whitespace-nowrap px-2 sm:px-4",
-                tr: "hover:bg-blue-50/50 transition-colors duration-200",
+                th: "bg-muted/50 text-muted-foreground font-semibold text-xs uppercase tracking-wide border-b-2 border-border whitespace-nowrap px-2 sm:px-4",
+                td: "text-sm text-foreground border-b border-border/50 whitespace-nowrap px-2 sm:px-4",
+                tr: "hover:bg-muted/30 transition-colors duration-200",
               }}
             >
             <TableHeader>
