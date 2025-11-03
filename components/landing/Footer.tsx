@@ -204,7 +204,7 @@ export const Footer = () => {
       <div className="border-t border-border bg-muted/30">
         <div className="container px-6 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className=".text-sm .text-muted-foreground .font-inter">
+            <p className="text-sm text-muted-foreground font-inter">
               © {copyright.year} {brand.name}. {copyright.text}
             </p>
             <div className="flex gap-6">
