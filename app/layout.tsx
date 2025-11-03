@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "@/contexts/theme-context";
+import { SettingsProvider } from "@/contexts/settings-context";
 import Script from "next/script";
 import { ClientRoot } from "../components/client-root";
 import { auth } from "@/lib/auth";
@@ -55,8 +56,10 @@ export default async function RootLayout({
       >
         <SessionProvider session={session}>
           <ThemeProvider>
-            <ClientRoot>{children}</ClientRoot>
-            <Toaster />
+            <SettingsProvider>
+              <ClientRoot>{children}</ClientRoot>
+              <Toaster />
+            </SettingsProvider>
           </ThemeProvider>
         </SessionProvider>
       </body>

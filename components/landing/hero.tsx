@@ -7,6 +7,7 @@ import { Leaf, Users, Award, ShoppingBag, ArrowRight } from "lucide-react";
 import { NavigationLink } from "@/components/navigation-link";
 import type { LucideIcon } from "lucide-react";
 import { useTheme } from "@/contexts/theme-context";
+import { useHeroSettings, useBannerSettings } from "@/contexts/settings-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 // Prayer flag colors
@@ -94,6 +95,8 @@ const particles = [
 
 export function Hero() {
   const { theme, isReady } = useTheme();
+  const { hero, loading: heroLoading } = useHeroSettings();
+  const { banner, loading: bannerLoading } = useBannerSettings();
   return (
     <section className="relative background-cover min-h-screen w-full overflow-hidden">
       {/* Original Image Background */}
@@ -209,20 +212,22 @@ export function Hero() {
         />
       ))}
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 min-h-screen flex flex-col pt-32">
-        {/* Banner at top */}
-        <div className="flex justify-center mb-8">
-          <motion.div
-            className="rounded-full bg-white/18 border border-white/35 text-white backdrop-blur-md px-6 py-2.5 inline-flex items-center gap-2 shadow-[0_10px_28px_rgba(0,0,0,0.28)]"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            <Leaf className="h-4 w-4 text-emerald-300" />
-            <span className="text-sm font-inter">
-              100% Sustainable • Handcrafted in Nepal • Est. 2010
-            </span>
-          </motion.div>
-        </div>
+        {/* Dynamic Banner at top */}
+        {(banner?.isVisible !== false && (banner?.text || !bannerLoading)) && (
+          <div className="flex justify-center mb-8">
+            <motion.div
+              className="rounded-full bg-white/18 border border-white/35 text-white backdrop-blur-md px-6 py-2.5 inline-flex items-center gap-2 shadow-[0_10px_28px_rgba(0,0,0,0.28)]"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              <Leaf className="h-4 w-4 text-emerald-300" />
+              <span className="text-sm font-inter">
+                {banner?.text || "100% Sustainable • Handcrafted in Nepal • Est. 2010"}
+              </span>
+            </motion.div>
+          </div>
+        )}
 
         {/* Main content centered */}
         <div className="flex-1 flex flex-col items-center justify-center text-center text-white">
@@ -249,7 +254,7 @@ export function Hero() {
                   backgroundSize: "200% 200%",
                 }}
               >
-                ANTIQUE NEPAL
+                {hero?.title || "ANTIQUE NEPAL"}
               </motion.span>
             </motion.h1>
             <motion.p
@@ -259,7 +264,7 @@ export function Hero() {
               viewport={{ once: true }}
               className="max-w-2xl mx-auto text-3xl sm:text-3xl md:text-3xl font-inter font-light text-white"
             >
-              Handcrafted Hemp Bags Woven with Himalayan Heritage
+              {hero?.subtitle || "Handcrafted Hemp Bags Woven with Himalayan Heritage"}
             </motion.p>
             <motion.p
               initial={{ opacity: 0 }}
@@ -268,10 +273,7 @@ export function Hero() {
               viewport={{ once: true }}
               className="max-w-2xl mx-auto text-lg font-inter font-light sm:text-lg text-white/85 leading-relaxed px-4"
             >
-              Every bag tells a story. Crafted by master artisans using
-              centuries-old techniques, sustainable hemp, and adorned with
-              traditional Nepali paper art. Experience the perfect blend of
-              ancient wisdom and modern design.
+              {hero?.description || "Every bag tells a story. Crafted by master artisans using centuries-old techniques, sustainable hemp, and adorned with traditional Nepali paper art. Experience the perfect blend of ancient wisdom and modern design."}
             </motion.p>
           </div>
 
@@ -309,11 +311,15 @@ export function Hero() {
             </motion.div>
           </div>
 
-          {/* Feature Cards */}
+          {/* Dynamic Feature Cards */}
           <div className="max-w-5xl w-full px-6 pb-12">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {FEATURE_CARDS.map((card) => {
+              {FEATURE_CARDS.map((card, index) => {
                 const Icon = card.icon;
+                const dynamicFeature = index === 0 ? hero?.features?.feature1 : 
+                                     index === 1 ? hero?.features?.feature2 : 
+                                     hero?.features?.feature3;
+                
                 return (
                   <motion.div
                     key={card.title}
@@ -337,10 +343,10 @@ export function Hero() {
                     </motion.div>
                     <div className="text-white relative z-10">
                       <div className="text-lg font-semibold font-inter text-white mb-1">
-                        {card.title}
+                        {dynamicFeature?.title || card.title}
                       </div>
                       <div className="text-sm font-inter text-white/80">
-                        {card.description}
+                        {dynamicFeature?.description || card.description}
                       </div>
                     </div>
                   </motion.div>

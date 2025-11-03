@@ -459,6 +459,8 @@ model SiteSetting {
   updatedBy String?
   updatedAt DateTime @updatedAt
 
+  @@index([category])
+  @@index([isActive])
   @@map("site_settings")
 }
 
