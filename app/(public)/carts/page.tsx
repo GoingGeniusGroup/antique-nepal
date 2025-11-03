@@ -1,22 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
+import { Pagination } from "@/components/products/pagination"; // adjust import path if needed
 
 interface CartItem {
   id: number;
   name: string;
   price: number;
-  image: string; // if using public folder images, keep as string
+  image: string;
   quantity: number;
   color: string;
   size: string;
 }
+
+const ITEMS_PER_PAGE = 2; // adjust how many items per page
 
 const Cart = () => {
   const [items, setItems] = useState<CartItem[]>([
@@ -38,11 +39,30 @@ const Cart = () => {
       color: "Forest Green",
       size: "Large",
     },
+    {
+      id: 3,
+      name: "Mountain Artisan Sling Bag",
+      price: 69.99,
+      image: "/hemp-bag-3.jpg",
+      quantity: 1,
+      color: "Stone Gray",
+      size: "Small",
+    },
   ]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
+
+  // Slice visible items per page
+  const visibleItems = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return items.slice(start, start + ITEMS_PER_PAGE);
+  }, [items, currentPage]);
+
   const updateQuantity = (id: number, change: number) => {
-    setItems(
-      items.map((item) =>
+    setItems((prev) =>
+      prev.map((item) =>
         item.id === id
           ? { ...item, quantity: Math.max(1, item.quantity + change) }
           : item
@@ -51,7 +71,10 @@ const Cart = () => {
   };
 
   const removeItem = (id: number) => {
-    setItems(items.filter((item) => item.id !== id));
+    setItems((prev) => prev.filter((item) => item.id !== id));
+    if (visibleItems.length === 1 && currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
   };
 
   const subtotal = items.reduce(
@@ -93,7 +116,7 @@ const Cart = () => {
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Cart Items */}
               <div className="lg:col-span-2 space-y-4">
-                {items.map((item) => (
+                {visibleItems.map((item) => (
                   <div
                     key={item.id}
                     className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow"
@@ -178,6 +201,15 @@ const Cart = () => {
                     </div>
                   </div>
                 ))}
+
+                {/* Pagination for cart items */}
+                {totalPages > 1 && (
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page) => setCurrentPage(page)}
+                  />
+                )}
               </div>
 
               {/* Order Summary */}
@@ -225,7 +257,10 @@ const Cart = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <Button className="w-full" size="lg">
+                    <Button
+                      className="w-full bg-green-600 text-white hover:bg-green-700 cursor-pointer"
+                      size="lg"
+                    >
                       <ShoppingBag className="h-5 w-5 mr-2" />
                       Proceed to Checkout
                     </Button>

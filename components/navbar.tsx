@@ -74,7 +74,7 @@ export const Navbar = () => {
                     <li className="md:col-span-2">
                       <NavigationMenuLink asChild>
                         <Link
-                          href="/categories"
+                          href="/category"
                           className="block select-none space-y-1 rounded-lg p-4 leading-none no-underline outline-none transition-all hover:shadow-soft border-2 border-primary/20 hover:border-primary/40 bg-gradient-subtle group"
                         >
                           <div className="text-base font-bold leading-none text-primary group-hover:scale-105 transition-transform inline-block">
