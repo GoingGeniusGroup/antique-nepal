@@ -1,24 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { Heart, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useTheme } from "@/contexts/theme-context";
 import { motion } from "framer-motion";
+import { Product } from "@/lib/types";
 
 interface ProductCardProps {
-  product: {
-    id: number;
-    name: string;
-    category: string;
-    price: number;
-    image: string;
-    inStock: boolean;
-    badge: string;
-  };
+  product: Product;
   index?: number;
 }
 
@@ -118,7 +111,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           <div
             className={cn(
               "flex items-center justify-between pt-1.5 md:pt-2 border-t",
-              isDark ? "border-white/20" : "border-[#e8e0d8]"
+              isDark ? "border-white/20" : "border-white/20"
             )}
           >
             <span
