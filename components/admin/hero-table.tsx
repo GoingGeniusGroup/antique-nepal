@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { debounce, getPaginationInfo, handleApiError } from "@/lib/admin-utils";
 import { TableSkeleton } from "@/components/admin/table-skeleton";
 import { Search, Plus, ArrowUpDown, RefreshCw } from "lucide-react";
+import { FloatingDock } from "@/components/ui/floating-dock";
+import { IconEdit, IconTrash } from "@tabler/icons-react";
 
 /**
  * Enhanced HeroUI Table Component
@@ -364,29 +366,44 @@ export function HeroTable<T extends { id: string }>({
                     {(columnKey) => {
                       // Handle Actions column
                       if (columnKey === "actions") {
+                        const actionLinks = [];
+                        
+                        if (onEdit) {
+                          actionLinks.push({
+                            title: "Edit",
+                            icon: (
+                              <IconEdit className="h-full w-full text-blue-500 dark:text-blue-400" />
+                            ),
+                            href: "#",
+                            onClick: (e: React.MouseEvent) => {
+                              e.preventDefault();
+                              onEdit(row as T);
+                            },
+                          });
+                        }
+                        
+                        if (onDelete) {
+                          actionLinks.push({
+                            title: "Delete",
+                            icon: (
+                              <IconTrash className="h-full w-full text-red-500 dark:text-red-400" />
+                            ),
+                            href: "#",
+                            onClick: (e: React.MouseEvent) => {
+                              e.preventDefault();
+                              onDelete(row as T);
+                            },
+                          });
+                        }
+                        
                         return (
                           <TableCell className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              {onEdit && (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => onEdit(row as T)}
-                                  className="h-7 px-2 text-xs border-blue-200 text-blue-600 hover:bg-blue-50"
-                                >
-                                  Edit
-                                </Button>
-                              )}
-                              {onDelete && (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => onDelete(row as T)}
-                                  className="h-7 px-2 text-xs border-red-200 text-red-600 hover:bg-red-50"
-                                >
-                                  Delete
-                                </Button>
-                              )}
+                            <div className="flex items-center justify-center">
+                              <FloatingDock
+                                items={actionLinks}
+                                desktopClassName="transform-none"
+                                mobileClassName="transform-none"
+                              />
                             </div>
                           </TableCell>
                         );
