@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { ProductSchema } from "@/app/validations/product/product-schema";
 
+// Fetch all products
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = Number(searchParams.get("page") || 1);
@@ -44,3 +46,6 @@ export async function GET(req: Request) {
 
   return NextResponse.json({ page, pageSize, total, data: safe });
 }
+
+// Create Products
+export async function POST(req: Request) {}
