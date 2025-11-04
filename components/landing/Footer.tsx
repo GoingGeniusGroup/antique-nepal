@@ -14,13 +14,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import footerData from "@/data/footer.json";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { useFooterSettings } from "@/contexts/settings-context";
 
 const iconMap: Record<string, any> = {
   Facebook,
@@ -30,8 +30,32 @@ const iconMap: Record<string, any> = {
 };
 
 export const Footer = () => {
-  const { brand, social, sections, contact, newsletter, copyright } =
-    footerData;
+  const { footer, loading } = useFooterSettings();
+  
+  // Don't render if no data from database
+  if (loading) {
+    return (
+      <footer className="bg-card border-t border-border">
+        <div className="container px-6 py-16">
+          <div className="flex items-center justify-center h-32">
+            <p className="text-muted-foreground">Loading footer...</p>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+  
+  if (!footer?.brand && !footer?.contact && !footer?.newsletter && (!footer?.sections || footer.sections.length === 0)) {
+    return (
+      <footer className="bg-card border-t border-border">
+        <div className="container px-6 py-16">
+          <div className="flex items-center justify-center h-32">
+            <p className="text-muted-foreground">Footer content not configured. Please add data in admin settings.</p>
+          </div>
+        </div>
+      </footer>
+    );
+  }
 
   return (
     <footer className="bg-card border-t border-border">
@@ -42,61 +66,115 @@ export const Footer = () => {
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center relative overflow-hidden">
-                <Image
-                  src={brand.logo}
-                  alt={brand.name}
-                  width={48}
-                  height={48}
-                  className="w-10 h-10 object-contain"
-                />
+                {footer?.brand?.logo && (
+                  <Image
+                    src={footer.brand.logo}
+                    alt={footer.brand.name}
+                    width={48}
+                    height={48}
+                    className="w-10 h-10 object-contain"
+                  />
+                )}
               </div>
               <div>
                 <span className="text-2xl font-bold font-cinzel tracking-tight text-foreground">
-                  {brand.name}
+                  {footer?.brand?.name}
                 </span>
                 <p className="text-sm text-muted-foreground font-inter mt-1">
-                  {brand.tagline}
+                  {footer?.brand?.tagline}
                 </p>
               </div>
             </div>
             <p className="text-muted-foreground leading-relaxed text-sm max-w-md font-inter">
-              {brand.description}
+              {footer?.brand?.description}
             </p>
             <div className="flex gap-3 pt-2">
               <TooltipProvider>
-                {social.map((item) => {
-                  const Icon = iconMap[item.icon];
-                  return (
-                    <Tooltip key={item.id}>
-                      <TooltipTrigger asChild>
-                        <Link
-                          href={item.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-9 h-9 rounded-lg bg-muted hover:bg-accent flex items-center justify-center transition-all duration-200 hover:scale-105 group"
-                          aria-label={item.name}
-                        >
-                          {Icon ? (
-                            <Icon className="w-4 h-4 text-muted-foreground group-hover:text-accent-foreground" />
-                          ) : (
-                            <span className="text-xs text-muted-foreground">
-                              ?
-                            </span>
-                          )}
-                        </Link>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{item.name}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  );
-                })}
+                {/* Facebook */}
+                {footer?.socials?.find(s => s.icon === "Facebook")?.href && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={footer?.socials?.find(s => s.icon === "Facebook")?.href || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-9 h-9 rounded-lg bg-muted hover:bg-accent flex items-center justify-center transition-all duration-200 hover:scale-105 group"
+                        aria-label="Facebook"
+                      >
+                        <Facebook className="w-4 h-4 text-muted-foreground group-hover:text-accent-foreground" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Facebook</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+                
+                {/* Instagram */}
+                {footer?.socials?.find(s => s.icon === "Instagram")?.href && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={footer?.socials?.find(s => s.icon === "Instagram")?.href || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-9 h-9 rounded-lg bg-muted hover:bg-accent flex items-center justify-center transition-all duration-200 hover:scale-105 group"
+                        aria-label="Instagram"
+                      >
+                        <Instagram className="w-4 h-4 text-muted-foreground group-hover:text-accent-foreground" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Instagram</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+                
+                {/* Twitter */}
+                {footer?.socials?.find(s => s.icon === "Twitter")?.href && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={footer?.socials?.find(s => s.icon === "Twitter")?.href || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-9 h-9 rounded-lg bg-muted hover:bg-accent flex items-center justify-center transition-all duration-200 hover:scale-105 group"
+                        aria-label="Twitter"
+                      >
+                        <Twitter className="w-4 h-4 text-muted-foreground group-hover:text-accent-foreground" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Twitter</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+                
+                {/* LinkedIn */}
+                {footer?.socials?.find(s => s.icon === "Linkedin")?.href && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={footer?.socials?.find(s => s.icon === "Linkedin")?.href || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-9 h-9 rounded-lg bg-muted hover:bg-accent flex items-center justify-center transition-all duration-200 hover:scale-105 group"
+                        aria-label="LinkedIn"
+                      >
+                        <Linkedin className="w-4 h-4 text-muted-foreground group-hover:text-accent-foreground" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>LinkedIn</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
               </TooltipProvider>
             </div>
           </div>
 
           {/* Dynamic Sections */}
-          {sections.map((section) => (
+          {footer?.sections?.map((section) => (
             <div key={section.id}>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-6 font-cinzel">
                 {section.title}
@@ -106,7 +184,7 @@ export const Footer = () => {
                   <li key={link.id}>
                     <Link
                       href={link.href}
-                      className="text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm font-inter font-medium hover:translate-x-1 transform inline-block"
+                      className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm font-inter font-medium hover:translate-x-1 transform inline-block"
                     >
                       {link.name}
                     </Link>
@@ -134,7 +212,7 @@ export const Footer = () => {
                     Our Office
                   </p>
                   <p className="text-sm text-muted-foreground font-inter mt-1">
-                    {contact.address}
+                    {footer?.contact?.address}
                   </p>
                 </div>
               </div>
@@ -145,10 +223,10 @@ export const Footer = () => {
                 </div>
                 <div>
                   <Link
-                    href={`tel:${contact.phone}`}
+                    href={`tel:${footer?.contact?.phone}`}
                     className="text-sm font-medium text-foreground hover:text-primary transition-colors font-inter"
                   >
-                    {contact.phone}
+                    {footer?.contact?.phone}
                   </Link>
                 </div>
               </div>
@@ -159,10 +237,10 @@ export const Footer = () => {
                 </div>
                 <div>
                   <Link
-                    href={`mailto:${contact.email}`}
+                    href={`mailto:${footer?.contact?.email}`}
                     className="text-sm font-medium text-foreground hover:text-primary transition-colors font-inter"
                   >
-                    {contact.email}
+                    {footer?.contact?.email}
                   </Link>
                 </div>
               </div>
@@ -173,10 +251,10 @@ export const Footer = () => {
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold font-cinzel text-foreground mb-3">
-                {newsletter.title}
+                {footer?.newsletter?.title}
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-md font-inter">
-                {newsletter.description}
+                {footer?.newsletter?.description}
               </p>
             </div>
             <div className="flex gap-3 max-w-md">
@@ -205,11 +283,11 @@ export const Footer = () => {
         <div className="container px-6 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground font-inter">
-              © {copyright.year} {brand.name}. {copyright.text}
+              © {new Date().getFullYear()} {footer?.brand?.name}. All rights reserved.
             </p>
             <div className="flex gap-6">
-              {sections
-                .find((s) => s.title === "Legal")
+              {footer?.sections
+                ?.find((s) => s.title === "Legal")
                 ?.links.map((link) => (
                   <Link
                     key={link.id}

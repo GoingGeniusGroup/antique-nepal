@@ -16,7 +16,44 @@ type Settings = {
     };
   };
   banner: { text?: string; isVisible?: boolean };
-  footer: { text?: string };
+  footer: {
+    brand?: {
+      id?: string;
+      name: string;
+      logo: string;
+      tagline: string;
+      description: string;
+    } | null;
+    socials?: Array<{
+      id?: string;
+      name: string;
+      icon: string;
+      href: string;
+      displayOrder: number;
+    }>;
+    contact?: {
+      id?: string;
+      email: string;
+      phone: string;
+      address: string;
+    } | null;
+    newsletter?: {
+      id?: string;
+      title: string;
+      description: string;
+    } | null;
+    sections?: Array<{
+      id?: string;
+      title: string;
+      displayOrder: number;
+      links: Array<{
+        id?: string;
+        name: string;
+        href: string;
+        displayOrder: number;
+      }>;
+    }>;
+  };
   homepage: {
     featuredTitle?: string;
     featuredSubtitle?: string;
@@ -53,16 +90,24 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch("/api/admin/site-settings", {
-        cache: "no-store",
-      });
       
-      if (!response.ok) {
+      // Fetch site settings (hero, banner, homepage, general)
+      const [siteSettingsRes, footerRes] = await Promise.all([
+        fetch("/api/admin/site-settings", { cache: "no-store" }),
+        fetch("/api/footer", { cache: "no-store" }),
+      ]);
+      
+      if (!siteSettingsRes.ok || !footerRes.ok) {
         throw new Error("Failed to fetch settings");
       }
       
-      const data = await response.json();
-      setSettings(data);
+      const siteSettings = await siteSettingsRes.json();
+      const footerData = await footerRes.json();
+      
+      setSettings({
+        ...siteSettings,
+        footer: footerData,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch settings");
       console.error("Settings fetch error:", err);
@@ -120,6 +165,15 @@ export function useBannerSettings() {
   const { settings, loading, error } = useSettings();
   return {
     banner: settings.banner,
+    loading,
+    error,
+  };
+}
+
+export function useFooterSettings() {
+  const { settings, loading, error } = useSettings();
+  return {
+    footer: settings.footer,
     loading,
     error,
   };
