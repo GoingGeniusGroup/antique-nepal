@@ -204,86 +204,87 @@ export function HeroTable<T extends { id: string }>({
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Enhanced Header with controls - Responsive */}
-      <div className="flex flex-col gap-4">
-        {/* Title and Refresh - Always on top */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="text-lg sm:text-xl font-semibold text-foreground">{title}</div>
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+        {/* Search with stats badge and refresh */}
+        <div className="flex items-center gap-2 flex-1">
+          <div className="relative flex-1 sm:flex-none">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-500 dark:text-blue-400" />
+            <Input
+              placeholder="Search across all fields..."
+              onChange={(e) => debouncedSetQ(e.target.value)}
+              className="h-10 w-full sm:w-72 pl-10 pr-4 border-2 border-border dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-lg shadow-sm dark:bg-slate-800 dark:text-slate-100 placeholder:text-muted-foreground dark:placeholder:text-slate-500 transition-colors"
+            />
+          </div>
+          
+          {/* Total items badge with refresh - next to search */}
+          <div className="hidden sm:flex items-center gap-2">
+            {total > 0 && (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/30 border-2 border-blue-200 dark:border-blue-800">
+                <span className="text-xs font-medium text-muted-foreground dark:text-slate-400">Total items:</span>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400 animate-pulse"></div>
+                  <span className="text-sm font-bold text-blue-700 dark:text-blue-300">{total}</span>
+                </div>
+              </div>
+            )}
+            
+            {/* Refresh Button */}
             <Button
               variant="outline"
               size="sm"
               onClick={handleRefresh}
               disabled={loading}
-              className="h-8 w-8 p-0 hover:bg-blue-50 hover:border-blue-200"
+              className="h-10 w-10 p-0 border-2 border-border dark:border-slate-600 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-600 transition-all"
               title="Refresh data"
             >
-              <RefreshCw className={cn("h-3 w-3 text-blue-600", loading && "animate-spin")} />
+              <RefreshCw className={cn("h-4 w-4 text-blue-600 dark:text-blue-400", loading && "animate-spin")} />
+            </Button>
+          </div>
+        </div>
+        
+        {/* Sort and Add Controls */}
+        <div className="flex items-center gap-2 justify-between sm:justify-end">
+          <div className="flex items-center gap-2">
+            {/* Sort Controls */}
+            <Select value={sort} onValueChange={(v) => setSort(v)}>
+              <SelectTrigger className="h-10 w-36 sm:w-44 border-2 border-border dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                {columns.filter(c => c.sortable).map((c) => (
+                  <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <Button 
+              variant="outline" 
+              size="sm"
+              className={cn(
+                "h-10 w-10 p-0 border-2 border-border dark:border-slate-600 dark:bg-slate-800 transition-all",
+                order === "desc" 
+                  ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 dark:border-blue-500" 
+                  : "hover:bg-muted dark:hover:bg-slate-700 dark:text-slate-200"
+              )}
+              onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
+              title={order === "asc" ? "Ascending (A→Z)" : "Descending (Z→A)"}
+            >
+              <ArrowUpDown className="h-4 w-4" />
             </Button>
           </div>
           
-          {/* Add Button - Visible on mobile */}
+          {/* Add Button - Icon only */}
           {onAdd && (
             <Button 
               onClick={onAdd}
-              className="h-9 bg-blue-600 hover:bg-blue-700 text-white shadow-sm sm:hidden"
+              className="h-10 w-10 p-0 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 text-white shadow-md hover:shadow-lg transition-all"
+              title="Add new item"
             >
-              <Plus className="h-4 w-4 mr-1" />
-              <span className="hidden xs:inline">Add New</span>
-              <span className="xs:hidden">Add</span>
+              <Plus className="h-5 w-5" />
             </Button>
           )}
-        </div>
-        
-        {/* Controls - Responsive layout */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-          {/* Search - Full width on mobile */}
-          <div className="relative flex-1 sm:flex-none">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search..."
-              onChange={(e) => debouncedSetQ(e.target.value)}
-              className="h-9 w-full sm:w-56 pl-9"
-            />
-          </div>
-          
-          {/* Sort and Add Controls */}
-          <div className="flex items-center gap-2 justify-between sm:justify-end">
-            <div className="flex items-center gap-2">
-              {/* Sort Controls - Smaller on mobile */}
-              <Select value={sort} onValueChange={(v) => setSort(v)}>
-                <SelectTrigger className="h-9 w-32 sm:w-40">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  {columns.filter(c => c.sortable).map((c) => (
-                    <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              
-              <Button 
-                variant="outline" 
-                className="h-9 px-2 sm:px-3" 
-                onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-              >
-                <ArrowUpDown className="h-4 w-4 sm:mr-1" />
-                <span className="hidden sm:inline">{order === "asc" ? "Asc" : "Desc"}</span>
-              </Button>
-            </div>
-            
-            {/* Add Button - Hidden on mobile (shown in header) */}
-            {onAdd && (
-              <Button 
-                onClick={onAdd}
-                className="hidden sm:flex h-9 shadow-sm"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Add New
-              </Button>
-            )}
-          </div>
         </div>
       </div>
 
@@ -291,16 +292,16 @@ export function HeroTable<T extends { id: string }>({
       {loading ? (
         <TableSkeleton rows={pageSize} columns={columns.length + (onEdit || onDelete ? 1 : 0)} />
       ) : error ? (
-        <div className="rounded-lg border bg-card">
+        <div className="rounded-lg border border-border dark:border-slate-600 bg-card dark:!bg-slate-800 overflow-hidden shadow-sm">
           {/* Show table header even with error */}
           <Table 
             aria-label={title}
             className="min-w-full"
             classNames={{
-              wrapper: "shadow-none border-0 bg-transparent rounded-lg",
-              th: "bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 font-semibold text-xs uppercase tracking-wide border-b-2 border-gray-200",
-              td: "text-sm text-gray-700 border-b border-gray-100",
-              tr: "hover:bg-blue-50/50 transition-colors duration-200",
+              wrapper: "shadow-none border-0 bg-transparent",
+              th: "bg-gradient-to-b from-muted/80 to-muted/50 dark:!from-slate-700 dark:!to-slate-750 text-foreground dark:!text-slate-100 font-semibold text-xs uppercase tracking-wide border-b border-r border-border dark:!border-slate-600 last:border-r-0 whitespace-nowrap px-2 py-2 first:pl-3 last:pr-3",
+              td: "text-sm text-foreground dark:!text-slate-200 border-b border-border/40 dark:!border-slate-600/40",
+              tr: "transition-colors duration-200",
             }}
           >
             <TableHeader>
@@ -312,16 +313,17 @@ export function HeroTable<T extends { id: string }>({
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell colSpan={tableColumns.length} className="px-4 py-8 text-center">
-                  <div className="text-destructive">
-                    <p className="font-medium">Error loading data</p>
-                    <p className="text-xs mt-1">{error}</p>
+                <TableCell colSpan={tableColumns.length} className="px-4 py-12 text-center">
+                  <div className="text-destructive dark:text-red-400">
+                    <p className="font-semibold text-base">Error loading data</p>
+                    <p className="text-sm mt-2 text-muted-foreground dark:text-slate-400">{error}</p>
                     <Button 
                       variant="outline" 
                       size="sm" 
                       onClick={handleRefresh}
-                      className="mt-2"
+                      className="mt-4 border-2 hover:bg-blue-50 dark:hover:bg-blue-900/30"
                     >
+                      <RefreshCw className="h-3.5 w-3.5 mr-2" />
                       Try Again
                     </Button>
                   </div>
@@ -331,16 +333,16 @@ export function HeroTable<T extends { id: string }>({
           </Table>
         </div>
       ) : (
-        <div className="rounded-lg border bg-card dark:!bg-slate-800 overflow-hidden">
+        <div className="rounded-lg border border-border dark:border-slate-600 bg-card dark:!bg-slate-800 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <Table 
               aria-label={title}
               className="min-w-full"
               classNames={{
-                wrapper: "shadow-none border-0 bg-transparent rounded-lg",
-                th: "bg-muted/50 dark:!bg-slate-700 text-muted-foreground dark:!text-slate-200 font-semibold text-xs uppercase tracking-wide border-b-2 border-border dark:!border-slate-600 whitespace-nowrap px-2 sm:px-4",
-                td: "text-sm text-foreground dark:!text-slate-100 border-b border-border/50 dark:!border-slate-600/50 whitespace-nowrap px-2 sm:px-4",
-                tr: "hover:bg-muted/30 dark:!hover:bg-slate-700/50 transition-colors duration-200",
+                wrapper: "shadow-none border-0 bg-transparent",
+                th: "bg-gradient-to-b from-muted/80 to-muted/50 dark:!from-slate-700 dark:!to-slate-750 text-foreground dark:!text-slate-100 font-semibold text-xs uppercase tracking-wide border-b border-r border-border dark:!border-slate-600 last:border-r-0 whitespace-nowrap px-2 py-2 first:pl-3 last:pr-3",
+                td: "text-sm text-foreground dark:!text-slate-200 border-b border-r border-border/40 dark:!border-slate-600/40 last:border-r-0 whitespace-nowrap px-2 py-1.5 first:pl-3 last:pr-3",
+                tr: "hover:bg-blue-50/50 dark:!hover:bg-slate-700/70 transition-all duration-150 border-b border-border/30 dark:!border-slate-600/30 last:border-b-0",
               }}
             >
             <TableHeader>
@@ -397,12 +399,12 @@ export function HeroTable<T extends { id: string }>({
                         }
                         
                         return (
-                          <TableCell className="px-4 py-3">
-                            <div className="flex items-center justify-center">
+                          <TableCell className="px-2 py-1.5">
+                            <div className="flex items-center justify-center gap-0.5 scale-75">
                               <FloatingDock
                                 items={actionLinks}
-                                desktopClassName="transform-none"
-                                mobileClassName="transform-none"
+                                desktopClassName="transform-none [&>div]:h-5 [&>div]:w-5 [&>div>a]:h-5 [&>div>a]:w-5 [&>div>a>svg]:h-2.5 [&>div>a>svg]:w-2.5 [&>div]:transition-all [&>div]:duration-75 [&>div>a]:transition-all [&>div>a]:duration-75 [&>div:hover]:scale-105 [&>div>a:hover]:scale-105"
+                                mobileClassName="transform-none [&>div]:h-5 [&>div]:w-5 [&>div>a]:h-5 [&>div>a]:w-5 [&>div>a>svg]:h-2.5 [&>div>a>svg]:w-2.5 [&>div]:transition-all [&>div]:duration-75 [&>div>a]:transition-all [&>div>a]:duration-75 [&>div:hover]:scale-105 [&>div>a:hover]:scale-105"
                               />
                             </div>
                           </TableCell>
@@ -412,7 +414,7 @@ export function HeroTable<T extends { id: string }>({
                       // Handle regular columns
                       const column = columns.find(c => c.key === String(columnKey));
                       const value = column?.render ? column.render(row as T) : getKeyValue(row, columnKey);
-                      return <TableCell className="px-4 py-3">{value}</TableCell>;
+                      return <TableCell className="px-2 py-1.5">{value}</TableCell>;
                     }}
                   </TableRow>
                 ))
@@ -424,9 +426,9 @@ export function HeroTable<T extends { id: string }>({
       )}
 
       {/* Enhanced Pagination - Responsive */}
-      <div className="flex flex-col gap-4 pt-4 border-t border-gray-100">
+      <div className="flex flex-col gap-3 pt-3 border-t border-border dark:border-slate-600">
         {/* Results info - Always visible */}
-        <div className="text-sm text-gray-600 font-medium text-center sm:text-left">
+        <div className="text-xs text-muted-foreground dark:text-slate-400 font-medium text-center sm:text-left">
           {(() => {
             const paginationInfo = getPaginationInfo(page, pageSize, total);
             return `Showing ${paginationInfo.start} to ${paginationInfo.end} of ${paginationInfo.total} results`;
@@ -434,12 +436,12 @@ export function HeroTable<T extends { id: string }>({
         </div>
         
         {/* Controls - Responsive layout */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 hidden sm:inline">Rows per page:</span>
-            <span className="text-sm text-gray-600 sm:hidden">Per page:</span>
+            <span className="text-xs text-muted-foreground dark:text-slate-400 hidden sm:inline">Rows per page:</span>
+            <span className="text-xs text-muted-foreground dark:text-slate-400 sm:hidden">Per page:</span>
             <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
-              <SelectTrigger className="h-9 w-16 sm:w-20 border-gray-200">
+              <SelectTrigger className="h-8 w-16 sm:w-20 border-border dark:border-slate-600 dark:bg-slate-800 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -450,10 +452,12 @@ export function HeroTable<T extends { id: string }>({
             </Select>
           </div>
           
+          {/* Page Navigation with Numbers */}
           <div className="flex items-center gap-1">
+            {/* Previous Button */}
             <Button 
               variant="outline" 
-              className="h-9 px-2 sm:px-3 border-gray-200 hover:bg-gray-50 disabled:opacity-50" 
+              className="h-8 px-2 sm:px-3 text-xs border-border dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 disabled:opacity-50 dark:bg-slate-800 dark:text-slate-200" 
               disabled={page <= 1} 
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
@@ -461,13 +465,68 @@ export function HeroTable<T extends { id: string }>({
               <span className="sm:hidden">Prev</span>
             </Button>
             
-            <div className="flex items-center px-2 sm:px-3 py-1 text-sm font-medium text-gray-700 bg-gray-50 rounded border min-w-[80px] justify-center">
-              {page} of {totalPages}
+            {/* Page Numbers */}
+            <div className="flex items-center gap-1">
+              {(() => {
+                const pageNumbers = [];
+                const maxVisiblePages = 5;
+                
+                if (totalPages <= maxVisiblePages) {
+                  // Show all pages if total is small
+                  for (let i = 1; i <= totalPages; i++) {
+                    pageNumbers.push(i);
+                  }
+                } else {
+                  // Show smart pagination with ellipsis
+                  if (page <= 3) {
+                    // Near start: 1 2 3 4 ... last
+                    pageNumbers.push(1, 2, 3, 4, -1, totalPages);
+                  } else if (page >= totalPages - 2) {
+                    // Near end: 1 ... last-3 last-2 last-1 last
+                    pageNumbers.push(1, -1, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+                  } else {
+                    // Middle: 1 ... current-1 current current+1 ... last
+                    pageNumbers.push(1, -1, page - 1, page, page + 1, -2, totalPages);
+                  }
+                }
+                
+                return pageNumbers.map((pageNum, idx) => {
+                  if (pageNum === -1 || pageNum === -2) {
+                    // Ellipsis
+                    return (
+                      <span 
+                        key={`ellipsis-${idx}`}
+                        className="px-2 text-muted-foreground dark:text-slate-500"
+                      >
+                        ...
+                      </span>
+                    );
+                  }
+                  
+                  const isActive = pageNum === page;
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={isActive ? "default" : "outline"}
+                      className={cn(
+                        "h-8 w-8 p-0 text-xs font-medium transition-colors",
+                        isActive 
+                          ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 dark:border-blue-500" 
+                          : "border-border dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                      )}
+                      onClick={() => setPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                });
+              })()}
             </div>
             
+            {/* Next Button */}
             <Button 
               variant="outline" 
-              className="h-9 px-2 sm:px-3 border-gray-200 hover:bg-gray-50 disabled:opacity-50" 
+              className="h-8 px-2 sm:px-3 text-xs border-border dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 disabled:opacity-50 dark:bg-slate-800 dark:text-slate-200" 
               disabled={page >= totalPages} 
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >
