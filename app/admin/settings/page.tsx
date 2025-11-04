@@ -6,7 +6,6 @@ import { PageTransition } from "@/components/admin/page-transition";
 import { GeneralSettingsCard } from "@/components/admin/settings/general-settings-card";
 import { HeroSettingsCard } from "@/components/admin/settings/hero-settings-card";
 import { BannerSettingsCard } from "@/components/admin/settings/banner-settings-card";
-import { HomepageSettingsCard } from "@/components/admin/settings/homepage-settings-card";
 import { FooterSettingsCardNew } from "@/components/admin/settings/footer-settings-card-new";
 
 /**
@@ -74,16 +73,6 @@ type Settings = {
       }>;
     }>;
   };
-  homepage: {
-    featuredTitle?: string;
-    featuredSubtitle?: string;
-    featuredDescription?: string;
-    productHighlights?: {
-      title?: string;
-      subtitle?: string;
-      featuredProductIds?: string[];
-    };
-  };
 };
 
 export default function SettingsPage() {
@@ -92,7 +81,6 @@ export default function SettingsPage() {
     hero: {},
     banner: {},
     footer: {},
-    homepage: {},
   });
   const [loading, setLoading] = useState(true);
 
@@ -139,10 +127,6 @@ export default function SettingsPage() {
           <BannerSettingsCard 
             banner={settings.banner} 
             onChange={(banner) => setSettings(s => ({ ...s, banner }))} 
-          />
-          <HomepageSettingsCard 
-            homepage={settings.homepage} 
-            onChange={(homepage) => setSettings(s => ({ ...s, homepage }))} 
           />
           <FooterSettingsCardNew 
             footer={settings.footer} 

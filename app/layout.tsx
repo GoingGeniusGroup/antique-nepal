@@ -34,7 +34,7 @@ export default async function RootLayout({
   const session = await auth();
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <Script id="theme-initializer" strategy="beforeInteractive">
           {`
@@ -58,7 +58,6 @@ export default async function RootLayout({
           <ThemeProvider>
             <SettingsProvider>
               <ClientRoot>{children}</ClientRoot>
-              <Toaster />
             </SettingsProvider>
           </ThemeProvider>
         </SessionProvider>

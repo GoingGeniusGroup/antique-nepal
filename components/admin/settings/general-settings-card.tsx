@@ -66,7 +66,7 @@ export function GeneralSettingsCard({ general, onChange }: Props) {
 
   if (loading) {
     return (
-      <Card className="p-6 border-l-4 border-l-blue-500 dark:!bg-slate-800 dark:!border-slate-600">
+      <Card className="p-6 border-l-4 border-l-blue-500 dark:border-l-blue-400 dark:!bg-slate-800 dark:!border-slate-600">
         <div className="flex items-center justify-center h-32">
           <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"/> 
@@ -79,7 +79,7 @@ export function GeneralSettingsCard({ general, onChange }: Props) {
 
   return (
     <>
-      <Card className="p-6 border-l-4 border-l-blue-500 dark:!bg-slate-800 dark:!border-slate-600">
+      <Card className="p-6 border-l-4 border-l-blue-500 dark:border-l-blue-400 dark:!bg-slate-800 dark:!border-slate-600">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Globe className="h-5 w-5 text-blue-600" />

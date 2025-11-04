@@ -54,9 +54,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           transition={{ duration: 0.15, ease: "easeOut" }}
           className="flex-1 min-w-0 bg-gradient-to-b from-background to-muted/20 relative dark:!bg-gradient-to-b dark:!from-slate-900 dark:!to-slate-800"
         >
-          {/* Theme Toggle - Top Right */}
+          {/* Theme Toggle - Middle Right */}
           {isReady && (
-            <div className="absolute top-4 right-4 z-30">
+            <div className="fixed top-1/2 right-4 -translate-y-1/2 z-30">
               <motion.button
                 onClick={toggleTheme}
                 initial={{ opacity: 0, scale: 0.8 }}
