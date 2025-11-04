@@ -17,9 +17,19 @@ export const productImageSchema = z.object({
 });
 
 export const updateImageSchema = z.object({
-  id: z.string().nonempty(),
-  url: z.string().url().optional(),
-  altText: z.string().optional(),
-  displayOrder: z.number().optional(),
-  isPrimary: z.boolean().optional(),
+  altText: z.string().optional().nullable(),
+  displayOrder: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) => (val ? Number(val) : undefined)),
+  isPrimary: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) =>
+      val === "true" ? true : val === "false" ? false : undefined
+    ),
+  variantId: z.string().optional().nullable(),
+  productId: z.string().optional().nullable(),
 });
