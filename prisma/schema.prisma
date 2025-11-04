@@ -381,23 +381,22 @@ model ReviewImage {
 }
 
 model Coupon {
-  id           String     @id @default(cuid())
-  code         String     @unique
+  id           String        @id @default(cuid())
+  code         String        @unique
   type         CouponType
-  value        Decimal    @db.Decimal(10, 2)
-  minPurchase  Decimal?   @db.Decimal(10, 2)
-  maxDiscount  Decimal?   @db.Decimal(10, 2)
+  value        Decimal       @db.Decimal(10, 2)
+  minPurchase  Decimal?      @db.Decimal(10, 2)
+  maxDiscount  Decimal?      @db.Decimal(10, 2)
   usageLimit   Int?
-  usedCount    Int        @default(0)
+  usedCount    Int           @default(0)
   perUserLimit Int?
-
-  startsAt    DateTime
-  expiresAt   DateTime?
-  isActive    Boolean       @default(true)
-  description String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  usages      CouponUsage[]
+  startsAt     DateTime
+  expiresAt    DateTime?
+  isActive     Boolean       @default(true)
+  description  String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  usages       CouponUsage[]
 
   @@index([code])
   @@index([isActive])
