@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { ProductSchema } from "@/app/validations/product/product-schema";
+import { success, ZodError } from "zod";
 
 // Fetch all products
 export async function GET(req: Request) {
@@ -48,4 +49,46 @@ export async function GET(req: Request) {
 }
 
 // Create Products
-export async function POST(req: Request) {}
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const data = ProductSchema.parse(body);
+
+    // Check duplicate slug or sku
+    const existing = await prisma.product.findFirst({
+      where: {
+        OR: [{ slug: data.slug }, { sku: data.sku }],
+      },
+    });
+
+    if (existing) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Product with this slug or SKU already exists",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Create product
+    const product = await prisma.product.create({
+      data,
+    });
+    return NextResponse.json({ success: true, product }, { status: 201 });
+  } catch (error) {
+    console.error("Product create error:", error);
+
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { success: false, errors: error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: false, message: "Server error" },
+      { status: 500 }
+    );
+  }
+}
