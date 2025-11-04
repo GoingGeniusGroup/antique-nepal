@@ -233,7 +233,7 @@ const ProductDetail = () => {
                   <span className="text-4xl font-bold text-primary">
                     ₹{product.price}
                   </span>
-                  {product.originalPrice && (
+                  {/* {product.originalPrice && (
                     <>
                       <span className="text-xl text-muted-foreground line-through">
                         ₹{product.originalPrice}
@@ -247,7 +247,7 @@ const ProductDetail = () => {
                         % OFF
                       </Badge>
                     </>
-                  )}
+                  )} */}
                 </div>
 
                 <p className="text-muted-foreground leading-relaxed">
