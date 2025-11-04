@@ -317,7 +317,7 @@ const SustainabilityPage = () => {
                     whileHover={{ rotate: 15, scale: 1.1 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <Sun className="w-8 h-8 text-primary flex-shrink-0" />
+                    <Sun className="w-8 h-8 text-primary shrink-0" />
                   </motion.div>
                   <div>
                     <h3 className="font-serif text-2xl font-semibold mb-2">
@@ -336,7 +336,7 @@ const SustainabilityPage = () => {
                     whileHover={{ rotate: 15, scale: 1.1 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <Droplets className="w-8 h-8 text-primary flex-shrink-0" />
+                    <Droplets className="w-8 h-8 text-primary shrink-0" />
                   </motion.div>
                   <div>
                     <h3 className="font-serif text-2xl font-semibold mb-2">
@@ -354,7 +354,7 @@ const SustainabilityPage = () => {
                     whileHover={{ rotate: 15, scale: 1.1 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <Wind className="w-8 h-8 text-primary flex-shrink-0" />
+                    <Wind className="w-8 h-8 text-primary shrink-0" />
                   </motion.div>
                   <div>
                     <h3 className="font-serif text-2xl font-semibold mb-2">
