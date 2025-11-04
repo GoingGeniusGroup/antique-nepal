@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { AddProductSchema } from "@/app/validations/product/product-schema";
 import { success, ZodError } from "zod";
 
 // Fetch all products
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const page = Number(searchParams.get("page") || 1);
   const pageSize = Math.min(Number(searchParams.get("pageSize") || 10), 100);
@@ -27,13 +27,12 @@ export async function GET(req: Request) {
     prisma.product.findMany({
       where,
       orderBy: { [sort]: order },
-      select: {
-        id: true,
-        name: true,
-        sku: true,
-        price: true,
-        isActive: true,
-        createdAt: true,
+      include: {
+        categories: true,
+        images: true,
+        variants: true,
+        reviews: true,
+        wishlistItems: true,
       },
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -49,7 +48,7 @@ export async function GET(req: Request) {
 }
 
 // Create Products
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const data = AddProductSchema.parse(body);
