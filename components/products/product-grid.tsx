@@ -29,7 +29,7 @@ export function ProductGrid({ products }: ProductGridProps) {
         };
 
         return (
-          <ProductCard key={product.id} product={product} image={image} index={index} />
+          <ProductCard key={product.id} product={safeProduct} index={index} />
         );
       })}
     </div>

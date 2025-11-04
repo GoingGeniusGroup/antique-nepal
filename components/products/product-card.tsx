@@ -15,7 +15,7 @@ interface ProductCardProps {
   index?: number;
 }
 
-export function ProductCard({ product, image, index = 0 }: ProductCardProps) {
+export function ProductCard({ product, index = 0 }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
