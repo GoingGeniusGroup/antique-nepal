@@ -29,13 +29,31 @@ import navigationData from "@/data/navigation.json";
 import { signOut, useSession } from "next-auth/react";
 import { useAutoLogout } from "@/hooks/useAutoLogout";
 import { useAdminUser } from "@/hooks/useAdminUser";
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  color?: string;
+  count?: number;
+}
 
 export const Navbar = () => {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
-  const { brand, categories, stories } = navigationData;
+  const { brand, stories } = navigationData;
   useAutoLogout();
   useAdminUser();
+
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((res) => res.json())
+      .then(setCategories)
+      .catch(console.error);
+  }, []);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-elegant">
@@ -98,16 +116,18 @@ export const Navbar = () => {
                       <li key={category.id}>
                         <NavigationMenuLink asChild>
                           <Link
-                            href={category.href}
+                            href={`/category/${category.slug}`}
                             className="group block select-none rounded-lg leading-none no-underline outline-none transition-all hover:shadow-soft overflow-hidden border border-border/50 hover:border-primary/30"
                           >
                             <div className="relative h-32 overflow-hidden">
-                              <Image
-                                src={category.image}
-                                alt={category.name}
-                                fill
-                                className="object-cover transition-transform duration-500 group-hover:scale-110"
-                              />
+                              <div className="relative h-80 overflow-hidden">
+                                <Image
+                                  src={category.image ?? "/hemp-bag-1.jpg"}
+                                  alt={category.name}
+                                  fill // fill the parent div
+                                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                />
+                              </div>
                               <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent" />
                             </div>
                             <div className="p-3">
@@ -288,8 +308,8 @@ export const Navbar = () => {
                   <div className="pl-4 space-y-2">
                     {categories.map((cat) => (
                       <Link
-                        key={cat.id}
-                        href={cat.href}
+                        key={cat.slug}
+                        href={`/category/${cat.slug}`}
                         className="block text-sm text-foreground hover:text-primary py-1"
                       >
                         {cat.name}
