@@ -50,7 +50,7 @@ export async function getProducts(params: GetProductsParams) {
       where.categories = {
         some: {
           category: {
-            name: selectedCategory,
+            id: selectedCategory,
           },
         },
       };
