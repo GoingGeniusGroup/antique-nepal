@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/page-header";
 import { PageTransition } from "@/components/admin/page-transition";
-import { Save } from "lucide-react";
 import { GeneralSettingsCard } from "@/components/admin/settings/general-settings-card";
 import { HeroSettingsCard } from "@/components/admin/settings/hero-settings-card";
 import { BannerSettingsCard } from "@/components/admin/settings/banner-settings-card";
@@ -19,7 +17,9 @@ import { FooterSettingsCardNew } from "@/components/admin/settings/footer-settin
  * - Hero section content management
  * - Banner text configuration
  * - Footer content management
- * - Real-time preview and save functionality
+ * - Individual save buttons for each section
+ * - Confirmation dialogs before saving
+ * - Toast notifications for feedback
  */
 
 type Settings = {
@@ -95,7 +95,6 @@ export default function SettingsPage() {
     homepage: {},
   });
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -113,33 +112,15 @@ export default function SettingsPage() {
     return () => { alive = false; };
   }, []);
 
-  const save = async () => {
-    setSaving(true);
-    try {
-      await fetch("/api/admin/site-settings", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(settings),
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
-
   return (
     <PageTransition>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-        <PageHeader title="Site Settings" />
-        <Button 
-          onClick={save} 
-          disabled={saving || loading}
-          className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-        >
-          <Save className="h-4 w-4 mr-2" />
-          {saving ? "Saving..." : "Save Changes"}
-        </Button>
-      </div>
+        <div>
+          <PageHeader title="Site Settings" />
+          <p className="text-sm text-muted-foreground mt-2">
+            Manage your website content and appearance. Each section can be saved independently.
+          </p>
+        </div>
 
       {loading ? (
         <div className="flex h-[30vh] items-center justify-center text-sm text-muted-foreground">

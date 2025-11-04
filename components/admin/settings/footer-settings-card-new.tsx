@@ -2,9 +2,11 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { FileText, Mail, Phone, MapPin, Bell, Plus, Trash2, Link as LinkIcon, List } from "lucide-react";
+import { FileText, Mail, Phone, MapPin, Bell, Plus, Trash2, Link as LinkIcon, List, Save, Building2, Share2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import toast from "react-hot-toast";
 
 type FooterData = {
   brand?: {
@@ -52,6 +54,23 @@ type Props = {
 
 export function FooterSettingsCardNew({ footer, onChange }: Props) {
   const [saving, setSaving] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/footer", { cache: "no-store" });
+        const data = await res.json();
+        onChange(data);
+      } catch (error) {
+        console.error("Error fetching footer data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const updateBrand = (field: string, value: string) => {
     onChange({
@@ -261,40 +280,65 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       }
 
       if (results.length > 0) {
-        alert(`✅ Footer saved successfully!\n\nUpdated: ${results.join(", ")}`);
+        toast.success(`Footer saved successfully! Updated: ${results.join(", ")}`, {
+          duration: 4000,
+          position: "top-right",
+        });
         // Refresh the page to show updated data
-        window.location.reload();
+        setTimeout(() => window.location.reload(), 1000);
       } else {
-        alert("⚠️ No data to save. Please fill in at least one section.");
+        toast.error("No data to save. Please fill in at least one section.", {
+          duration: 3000,
+          position: "top-right",
+        });
       }
     } catch (error) {
       console.error("Error saving footer:", error);
-      alert(`❌ Failed to save footer settings:\n\n${error instanceof Error ? error.message : "Unknown error"}`);
+      toast.error(`Failed to save: ${error instanceof Error ? error.message : "Unknown error"}`, {
+        duration: 4000,
+        position: "top-right",
+      });
     } finally {
       setSaving(false);
     }
   };
 
-  return (
-    <Card className="p-6 border-l-4 border-l-indigo-500 dark:!bg-slate-800 dark:!border-slate-600">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <FileText className="h-5 w-5 text-indigo-600" />
-          <div className="text-lg font-semibold text-foreground">Footer Content</div>
+  if (loading) {
+    return (
+      <Card className="p-6 border-l-4 border-l-indigo-500 dark:!bg-slate-800 dark:!border-slate-600">
+        <div className="flex items-center justify-center h-32">
+          <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"/> 
+            Loading...
+          </span>
         </div>
-        <Button
-          onClick={saveFooter}
-          disabled={saving}
-          className="bg-indigo-600 hover:bg-indigo-700"
-        >
-          {saving ? "Saving..." : "Save Footer"}
-        </Button>
-      </div>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <Card className="p-6 border-l-4 border-l-indigo-500 dark:!bg-slate-800 dark:!border-slate-600">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-indigo-600" />
+            <div className="text-lg font-semibold text-foreground">Footer Content</div>
+          </div>
+          <Button
+            onClick={() => setShowConfirm(true)}
+            disabled={saving || loading}
+            size="sm"
+            className="bg-indigo-600 hover:bg-indigo-700"
+          >
+            <Save className="h-4 w-4 mr-2" />
+            {saving ? "Saving..." : "Save"}
+          </Button>
+        </div>
       
       {/* Brand Section */}
       <div className="mb-6">
         <h4 className="text-md font-semibold text-foreground mb-4 flex items-center gap-2">
-          <span className="w-1 h-4 bg-indigo-500 rounded"></span>
+          <Building2 className="h-4 w-4 text-indigo-600" />
           Brand Information
         </h4>
         <div className="grid gap-4 md:grid-cols-2">
@@ -395,7 +439,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       <div className="mb-6 pt-6 border-t border-border">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-md font-semibold text-foreground flex items-center gap-2">
-            <span className="w-1 h-4 bg-indigo-500 rounded"></span>
+            <Share2 className="h-4 w-4 text-indigo-600" />
             Social Media Links
           </h4>
           <Button
@@ -468,7 +512,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       </div>
 
       {/* Newsletter Section */}
-      <div className="pt-6 border-t border-border">
+      <div className="pt-6">
         <h4 className="text-md font-semibold text-foreground mb-4 flex items-center gap-2">
           <Bell className="h-4 w-4 text-indigo-600" />
           Newsletter Section
@@ -498,7 +542,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       </div>
 
       {/* Footer Sections & Links */}
-      <div className="pt-6 border-t border-border">
+      <div className="pt-6 mt-6 border-t border-border">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-md font-semibold text-foreground flex items-center gap-2">
             <List className="h-4 w-4 text-indigo-600" />
@@ -627,5 +671,15 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
         </div>
       </div>
     </Card>
+
+    <ConfirmationDialog
+      open={showConfirm}
+      onOpenChange={setShowConfirm}
+      onConfirm={saveFooter}
+      title="Save Footer Settings?"
+      description="This will update all footer content including brand, contact, social links, and navigation sections."
+      confirmText="Save Changes"
+    />
+  </>
   );
 }
