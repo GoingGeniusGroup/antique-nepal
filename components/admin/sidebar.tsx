@@ -4,14 +4,25 @@ import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Settings, ShoppingCart, Package, Users, Sun, Moon } from "lucide-react";
+import {
+  LayoutDashboard,
+  Settings,
+  ShoppingCart,
+  Package,
+  Users,
+  Sun,
+  Moon,
+  LogOut,
+} from "lucide-react";
 import { Sidebar, SidebarBody } from "@/components/ui/sidebar";
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-context";
+import { Button } from "../ui/button";
+import { signOut } from "next-auth/react";
 
 /**
  * Admin Sidebar Component
- * 
+ *
  * Features:
  * - Collapsible sidebar with smooth animations
  * - Navigation links with active state highlighting
@@ -22,24 +33,44 @@ import { useTheme } from "@/contexts/theme-context";
  */
 
 const LINKS = [
-  { href: "/admin", label: "Dashboard", icon: <LayoutDashboard className="text-white h-5 w-5 flex-shrink-0" /> },
-  { href: "/admin/orders", label: "Orders", icon: <ShoppingCart className="text-white h-5 w-5 flex-shrink-0" /> },
-  { href: "/admin/products", label: "Products", icon: <Package className="text-white h-5 w-5 flex-shrink-0" /> },
-  { href: "/admin/users", label: "Users", icon: <Users className="text-white h-5 w-5 flex-shrink-0" /> },
-  { href: "/admin/settings", label: "Site Settings", icon: <Settings className="text-white h-5 w-5 flex-shrink-0" /> },
+  {
+    href: "/admin",
+    label: "Dashboard",
+    icon: <LayoutDashboard className="text-white h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    href: "/admin/orders",
+    label: "Orders",
+    icon: <ShoppingCart className="text-white h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    href: "/admin/products",
+    label: "Products",
+    icon: <Package className="text-white h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    href: "/admin/users",
+    label: "Users",
+    icon: <Users className="text-white h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    href: "/admin/settings",
+    label: "Site Settings",
+    icon: <Settings className="text-white h-5 w-5 flex-shrink-0" />,
+  },
 ];
 
 // Custom SidebarLink that uses Next.js Link for smooth navigation
-const CustomSidebarLink = ({ 
-  href, 
-  label, 
-  icon, 
-  isActive, 
-  open 
-}: { 
-  href: string; 
-  label: string; 
-  icon: React.ReactNode; 
+const CustomSidebarLink = ({
+  href,
+  label,
+  icon,
+  isActive,
+  open,
+}: {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
   isActive: boolean;
   open: boolean;
 }) => {
@@ -49,7 +80,9 @@ const CustomSidebarLink = ({
       className={cn(
         "flex items-center gap-2 group/sidebar py-2 rounded-md transition-all duration-300 ease-in-out text-white",
         open ? "justify-start px-3" : "justify-center px-2",
-        isActive ? "bg-gray-700 dark:bg-gray-800" : "hover:bg-gray-700/50 dark:hover:bg-gray-800/50"
+        isActive
+          ? "bg-gray-700 dark:bg-gray-800"
+          : "hover:bg-gray-700/50 dark:hover:bg-gray-800/50"
       )}
     >
       {icon}
@@ -67,7 +100,13 @@ const CustomSidebarLink = ({
   );
 };
 
-export function AdminSidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+export function AdminSidebar({
+  collapsed,
+  onToggle,
+}: {
+  collapsed: boolean;
+  onToggle: () => void;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(!collapsed);
   const { theme, toggleTheme, isReady } = useTheme();
@@ -91,10 +130,20 @@ export function AdminSidebar({ collapsed, onToggle }: { collapsed: boolean; onTo
   return (
     <div className="sticky top-0 h-screen z-20">
       <Sidebar open={open} setOpen={setOpen} animate>
-        <SidebarBody className={cn("justify-between gap-6 sm:gap-10 !bg-gray-800 dark:!bg-gray-900 transition-all duration-500 ease-in-out", open ? "px-4" : "px-2")}> 
+        <SidebarBody
+          className={cn(
+            "justify-between gap-6 sm:gap-10 !bg-gray-800 dark:!bg-gray-900 transition-all duration-500 ease-in-out",
+            open ? "px-4" : "px-2"
+          )}
+        >
           <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             {/* Brand Logo and text */}
-            <div className={cn("flex items-center py-4 transition-all duration-500 ease-in-out", open ? "space-x-2 justify-start" : "justify-center")}>
+            <div
+              className={cn(
+                "flex items-center py-4 transition-all duration-500 ease-in-out",
+                open ? "space-x-2 justify-start" : "justify-center"
+              )}
+            >
               <div className="h-7 w-7 bg-gradient-to-br from-primary/20 to-primary/40 rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
               <motion.span
                 animate={{
@@ -107,7 +156,7 @@ export function AdminSidebar({ collapsed, onToggle }: { collapsed: boolean; onTo
                 Antique Admin
               </motion.span>
             </div>
-            
+
             {/* Navigation Links */}
             <div className="mt-8 flex flex-col gap-2">
               {LINKS.map((link, idx) => (
@@ -121,9 +170,8 @@ export function AdminSidebar({ collapsed, onToggle }: { collapsed: boolean; onTo
                 />
               ))}
             </div>
-            
           </div>
-          
+
           {/* Bottom User */}
           <div>
             <CustomSidebarLink
@@ -141,6 +189,16 @@ export function AdminSidebar({ collapsed, onToggle }: { collapsed: boolean; onTo
               isActive={false}
               open={open}
             />
+            {/* logout button */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-2 hover:shadow-soft transition-all"
+              onClick={() => signOut({ callbackUrl: "/" })}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
           </div>
         </SidebarBody>
       </Sidebar>

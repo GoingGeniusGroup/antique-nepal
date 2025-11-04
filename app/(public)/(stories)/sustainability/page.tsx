@@ -5,13 +5,15 @@ import { Card } from "@/components/ui/card";
 import { Leaf, Droplets, Recycle, Sun, TreePine, Wind } from "lucide-react";
 import paperTexture from "@/public/paper-texture.jpg";
 import hempField from "@/public/hemp-field.jpg";
+import { ReactNode } from "react";
 
 // Framer Motion imports
-import { motion } from "framer-motion";
+
+import { backOut, easeInOut, easeOut, motion, Variants } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
 // Animation variants
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -22,19 +24,19 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.8,
-      ease: "easeOut",
+      ease: easeOut,
     },
   },
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 40, scale: 0.95 },
   visible: {
     opacity: 1,
@@ -42,7 +44,7 @@ const cardVariants = {
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: "easeOut",
+      ease: easeOut,
     },
   },
   hover: {
@@ -50,42 +52,49 @@ const cardVariants = {
     scale: 1.02,
     transition: {
       duration: 0.3,
-      ease: "easeInOut",
+      ease: easeInOut,
     },
   },
 };
 
-const imageVariants = {
+const imageVariants: Variants = {
   hidden: { opacity: 0, scale: 1.1 },
   visible: {
     opacity: 1,
     scale: 1,
     transition: {
       duration: 1,
-      ease: "easeOut",
+      ease: easeOut,
     },
   },
 };
 
-const numberVariants = {
+const numberVariants: Variants = {
   hidden: { opacity: 0, scale: 0.5 },
   visible: {
     opacity: 1,
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: "backOut",
+      ease: backOut,
     },
   },
 };
 
 // Animated components
-const AnimatedBadge = motion.create(Badge);
-const AnimatedCard = motion.create(Card);
-const AnimatedImage = motion.create(Image);
+const AnimatedBadge = motion(Badge);
+const AnimatedCard = motion(Card);
+const AnimatedImage = motion(Image);
 
 // Reusable animated section component
-const AnimatedSection = ({ children, className = "" }) => {
+
+const AnimatedSection = ({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -308,7 +317,7 @@ const SustainabilityPage = () => {
                     whileHover={{ rotate: 15, scale: 1.1 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <Sun className="w-8 h-8 text-primary flex-shrink-0" />
+                    <Sun className="w-8 h-8 text-primary shrink-0" />
                   </motion.div>
                   <div>
                     <h3 className="font-serif text-2xl font-semibold mb-2">
@@ -327,7 +336,7 @@ const SustainabilityPage = () => {
                     whileHover={{ rotate: 15, scale: 1.1 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <Droplets className="w-8 h-8 text-primary flex-shrink-0" />
+                    <Droplets className="w-8 h-8 text-primary shrink-0" />
                   </motion.div>
                   <div>
                     <h3 className="font-serif text-2xl font-semibold mb-2">
@@ -345,7 +354,7 @@ const SustainabilityPage = () => {
                     whileHover={{ rotate: 15, scale: 1.1 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <Wind className="w-8 h-8 text-primary flex-shrink-0" />
+                    <Wind className="w-8 h-8 text-primary shrink-0" />
                   </motion.div>
                   <div>
                     <h3 className="font-serif text-2xl font-semibold mb-2">
