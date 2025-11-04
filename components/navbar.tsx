@@ -25,17 +25,42 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/contexts/theme-context";
 import navigationData from "@/data/navigation.json";
 import { signOut, useSession } from "next-auth/react";
 import { useAutoLogout } from "@/hooks/useAutoLogout";
 import { useAdminUser } from "@/hooks/useAdminUser";
+import logoImgDark from "@/public/logo/Antique-Nepal-Logo-2.png";
+import logoTextImgDark from "@/public/logo/Antique-Nepal-Logo-3.png";
+import logoTextImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-2.png";
+import logoImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-3.png";
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  color?: string;
+  count?: number;
+}
 
 export const Navbar = () => {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
-  const { brand, categories, stories } = navigationData;
+  const { stories } = navigationData;
+  const { theme, isReady } = useTheme();
+  const isDark = isReady && theme === "dark";
   useAutoLogout();
   useAdminUser();
+
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((res) => res.json())
+      .then(setCategories)
+      .catch(console.error);
+  }, []);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-elegant">
@@ -43,17 +68,24 @@ export const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* ✅ Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative">
-              <Mountain className="w-8 h-8 text-primary transition-all duration-300 group-hover:scale-110 group-hover:rotate-6" />
-              <div className="absolute -inset-2 bg-gradient-primary rounded-full blur-md opacity-0 group-hover:opacity-30 transition-all duration-300" />
+            {/* Logo Icon */}
+            <div className="relative w-8 h-8">
+              <Image
+                src={isDark ? logoImgWhite : logoImgDark}
+                alt="Brand Logo"
+                fill
+                className="object-contain transition-all duration-300 group-hover:scale-110"
+              />
             </div>
-            <div className="flex flex-col">
-              <span className="text-2xl font-bold text-foreground font-serif tracking-tight transition-colors group-hover:text-primary">
-                {brand.name}
-              </span>
-              <span className="text-xs text-muted-foreground font-sans tracking-wide">
-                {brand.tagline}
-              </span>
+
+            {/* Brand Name */}
+            <div className="relative w-32 h-8">
+              <Image
+                src={isDark ? logoTextImgWhite : logoTextImgDark}
+                alt="Brand Name"
+                fill
+                className="object-contain transition-colors duration-300 group-hover:opacity-80"
+              />
             </div>
           </Link>
 
@@ -98,16 +130,18 @@ export const Navbar = () => {
                       <li key={category.id}>
                         <NavigationMenuLink asChild>
                           <Link
-                            href={category.href}
+                            href={`/category/${category.slug}`}
                             className="group block select-none rounded-lg leading-none no-underline outline-none transition-all hover:shadow-soft overflow-hidden border border-border/50 hover:border-primary/30"
                           >
                             <div className="relative h-32 overflow-hidden">
-                              <Image
-                                src={category.image}
-                                alt={category.name}
-                                fill
-                                className="object-cover transition-transform duration-500 group-hover:scale-110"
-                              />
+                              <div className="relative h-80 overflow-hidden">
+                                <Image
+                                  src={category.image ?? "/hemp-bag-1.jpg"}
+                                  alt={category.name}
+                                  fill // fill the parent div
+                                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                />
+                              </div>
                               <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent" />
                             </div>
                             <div className="p-3">
@@ -288,8 +322,8 @@ export const Navbar = () => {
                   <div className="pl-4 space-y-2">
                     {categories.map((cat) => (
                       <Link
-                        key={cat.id}
-                        href={cat.href}
+                        key={cat.slug}
+                        href={`/category/${cat.slug}`}
                         className="block text-sm text-foreground hover:text-primary py-1"
                       >
                         {cat.name}

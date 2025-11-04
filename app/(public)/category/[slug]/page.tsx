@@ -1,12 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 
-import { categories } from "@/data/categories";
-import { Product } from "@/lib/types";
-
+import { ProductData } from "@/app/(public)/products/actions/products";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProductControls } from "@/components/products/product-controls";
 import { ProductGrid } from "@/components/products/product-grid";
@@ -15,20 +13,78 @@ import ProductsBannerSection from "@/components/products/ProductsBannerSection";
 
 const PRODUCTS_PER_PAGE = 8;
 
+interface Category {
+  id: string;
+  name: string;
+  description?: string;
+  hero?: { subtitle?: string };
+}
+
 const CategoryPage = () => {
   const params = useParams(); // { slug: "shoulder-bags" }
-  const category = categories.find((c) => c.slug === params.slug);
 
-  const [inStockOnly, setInStockOnly] = useState<boolean>(false);
-  const [sortBy, setSortBy] = useState<string>("newest");
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [category, setCategory] = useState<Category | null>(null);
+  const [products, setProducts] = useState<ProductData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // filter products
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const [sortBy, setSortBy] = useState("newest");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    if (!params.slug) return;
+
+    const fetchCategoryProducts = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/categories/${params.slug}/products`);
+        const data = await res.json();
+
+        setCategory(data.category);
+        const formattedProducts: ProductData[] = data.products.map(
+          (product: any) => {
+            const imageUrl =
+              product.images?.find((img: any) => img.isPrimary)?.url ||
+              product.images?.[0]?.url;
+
+            let image = "/product_placeholder.jpeg";
+            if (imageUrl) {
+              const cleanedUrl = imageUrl
+                .trim()
+                .replace(/^[\/\\]+/, "")
+                .replace(/["\']/g, "");
+              image = cleanedUrl.startsWith("http")
+                ? cleanedUrl
+                : `/${cleanedUrl}`;
+            }
+
+            return {
+              id: product.id,
+              name: product.name,
+              category: data.category.name,
+              price: Number(product.price),
+              image,
+              inStock: product.isActive, // Assuming isActive indicates stock
+              badge: data.category.name,
+            };
+          }
+        );
+        setProducts(formattedProducts);
+        setCurrentPage(1);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategoryProducts();
+  }, [params.slug]);
+
+  // filter & sort products
   const filteredProducts = useMemo(() => {
-    if (!category) return [];
-
-    let filtered: Product[] = category.products as Product[];
+    let filtered: ProductData[] = [...products];
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -43,25 +99,25 @@ const CategoryPage = () => {
       filtered = filtered.filter((p) => p.inStock);
     }
 
-    // sorting
     if (sortBy === "price-low") {
-      filtered = [...filtered].sort((a, b) => a.price - b.price);
+      filtered.sort((a, b) => a.price - b.price);
     } else if (sortBy === "price-high") {
-      filtered = [...filtered].sort((a, b) => b.price - a.price);
+      filtered.sort((a, b) => b.price - a.price);
     } else if (sortBy === "name") {
-      filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     return filtered;
-  }, [category, inStockOnly, sortBy, searchQuery]);
-
-  if (!category) return <p className="text-center py-20">Category not found</p>;
+  }, [products, inStockOnly, sortBy, searchQuery]);
 
   const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * PRODUCTS_PER_PAGE,
     currentPage * PRODUCTS_PER_PAGE
   );
+
+  if (loading) return <p className="text-center py-20">Loading...</p>;
+  if (!category) return <p className="text-center py-20">Category not found</p>;
 
   const handleInStockChange = (checked: boolean) => {
     setInStockOnly(checked);
@@ -85,8 +141,8 @@ const CategoryPage = () => {
 
       {/* Banner */}
       <ProductsBannerSection
-        title={category?.name || "Product"}
-        subtitle={category?.hero?.subtitle || "Explore our collection"}
+        title={category.name}
+        subtitle={category.hero?.subtitle || "Explore our collection"}
       />
 
       <div className="flex flex-col gap-8 p-6 mx-3 lg:mx-16 md:p-8">
@@ -112,7 +168,7 @@ const CategoryPage = () => {
           />
         </motion.div>
 
-        {/* products section */}
+        {/* Products Grid */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -121,7 +177,7 @@ const CategoryPage = () => {
         >
           <ProductGrid products={paginatedProducts} />
 
-          {/* pagination */}
+          {/* Pagination */}
           {totalPages > 1 && (
             <Pagination
               currentPage={currentPage}
