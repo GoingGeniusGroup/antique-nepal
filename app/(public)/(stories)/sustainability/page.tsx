@@ -8,11 +8,8 @@ import hempField from "@/public/hemp-field.jpg";
 import { ReactNode } from "react";
 
 // Framer Motion imports
-<<<<<<< HEAD
-import { backOut, easeInOut, easeOut, motion } from "framer-motion";
-=======
-import { motion, Variants } from "framer-motion";
->>>>>>> 121c2c9e8c2af6965c8316cca92a6030177d5e6f
+
+import { backOut, easeInOut, easeOut, motion, Variants } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
 // Animation variants
@@ -90,11 +87,14 @@ const AnimatedCard = motion(Card);
 const AnimatedImage = motion(Image);
 
 // Reusable animated section component
-<<<<<<< HEAD
-const AnimatedSection = ({ children, className = "" }: any) => {
-=======
-const AnimatedSection = ({ children, className = "" }: { children: ReactNode, className?: string }) => {
->>>>>>> 121c2c9e8c2af6965c8316cca92a6030177d5e6f
+
+const AnimatedSection = ({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
