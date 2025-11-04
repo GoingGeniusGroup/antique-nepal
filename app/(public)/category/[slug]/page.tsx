@@ -26,6 +26,7 @@ const CategoryPage = () => {
   const [category, setCategory] = useState<Category | null>(null);
   const [products, setProducts] = useState<ProductData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(0);
 
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
@@ -33,13 +34,35 @@ const CategoryPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    if (!params.slug) return;
+    console.log("useEffect triggered. slug:", params.slug);
+    if (!params.slug) {
+      console.log("No slug yet, returning.");
+      return;
+    }
 
     const fetchCategoryProducts = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/categories/${params.slug}/products`);
+        const queryParams = new URLSearchParams({
+          page: currentPage.toString(),
+          perPage: PRODUCTS_PER_PAGE.toString(),
+          searchQuery: searchQuery,
+          inStockOnly: inStockOnly.toString(),
+          sortBy: sortBy,
+        });
+        const url = `/api/categories/${params.slug}/products?${queryParams.toString()}`;
+        console.log("Fetching from URL:", url);
+        const res = await fetch(url);
         const data = await res.json();
+
+        console.log("API response:", data);
+
+        if (!data.category) {
+          setCategory(null);
+          setProducts([]);
+          setTotalPages(0);
+          return;
+        }
 
         setCategory(data.category);
         const formattedProducts: ProductData[] = data.products.map(
@@ -71,50 +94,18 @@ const CategoryPage = () => {
           }
         );
         setProducts(formattedProducts);
-        setCurrentPage(1);
+        setTotalPages(data.totalPages);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching category products:", err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchCategoryProducts();
-  }, [params.slug]);
+  }, [params.slug, currentPage, searchQuery, inStockOnly, sortBy]);
 
-  // filter & sort products
-  const filteredProducts = useMemo(() => {
-    let filtered: ProductData[] = [...products];
-
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (p) =>
-          p.name.toLowerCase().includes(query) ||
-          (p.badge && p.badge.toLowerCase().includes(query))
-      );
-    }
-
-    if (inStockOnly) {
-      filtered = filtered.filter((p) => p.inStock);
-    }
-
-    if (sortBy === "price-low") {
-      filtered.sort((a, b) => a.price - b.price);
-    } else if (sortBy === "price-high") {
-      filtered.sort((a, b) => b.price - a.price);
-    } else if (sortBy === "name") {
-      filtered.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    return filtered;
-  }, [products, inStockOnly, sortBy, searchQuery]);
-
-  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * PRODUCTS_PER_PAGE,
-    currentPage * PRODUCTS_PER_PAGE
-  );
+  const paginatedProducts = products;
 
   if (loading) return <p className="text-center py-20">Loading...</p>;
   if (!category) return <p className="text-center py-20">Category not found</p>;
