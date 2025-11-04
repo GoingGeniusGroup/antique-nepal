@@ -89,7 +89,7 @@ export function BannerSettingsCard({ banner, onChange }: Props) {
             onClick={() => setShowConfirm(true)}
             disabled={saving || loading}
             size="sm"
-            className="bg-yellow-600 hover:bg-yellow-700"
+            className="bg-yellow-600 hover:bg-yellow-700 text-white"
           >
             <Save className="h-4 w-4 mr-2" />
             {saving ? "Saving..." : "Save"}
