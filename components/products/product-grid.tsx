@@ -1,10 +1,9 @@
-import { StaticImageData } from "next/image";
 import { ProductCard } from "./product-card";
 
-import { Product } from "@/lib/types";
+import { ProductData } from "@/app/(public)/products/actions/products";
 
 interface ProductGridProps {
-  products: Product[];
+  products: ProductData[];
 }
 
 export function ProductGrid({ products }: ProductGridProps) {
@@ -17,7 +16,7 @@ export function ProductGrid({ products }: ProductGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-5">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
       {products.map((product, index) => {
         // ensure required fields have values
         const safeProduct = {
@@ -26,9 +25,7 @@ export function ProductGrid({ products }: ProductGridProps) {
           inStock: product.inStock ?? true,
           badge: product.badge ?? "",
           image:
-            typeof product.image === "string"
-              ? product.image
-              : product.image.src, // if using StaticImageData
+            typeof product.image === "string" ? product.image : product.image, // if using StaticImageData
         };
 
         return (

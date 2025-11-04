@@ -15,7 +15,23 @@ type SettingsPayload = {
     };
   };
   banner?: { text?: string; isVisible?: boolean };
-  footer?: { text?: string };
+  footer?: { 
+    brandName?: string;
+    tagline?: string;
+    description?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    newsletterTitle?: string;
+    newsletterDescription?: string;
+    copyrightText?: string;
+    social?: {
+      facebook?: string;
+      instagram?: string;
+      twitter?: string;
+      linkedin?: string;
+    };
+  };
   homepage?: {
     featuredTitle?: string;
     featuredSubtitle?: string;

@@ -9,6 +9,16 @@ import toteBagImg from "@/public/hemp-bag-1.jpg";
 import backpackImg from "@/public/hemp-bag-2.jpg";
 import shoulderBagImg from "@/public/hemp-bag-3.jpg";
 import clutchImg from "@/public/artisan-hands.jpg";
+import { useEffect, useState } from "react";
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  color?: string;
+  count?: number;
+}
 
 // 🗂️ Dictionary-style data with slugs
 const pageData = {
@@ -18,40 +28,6 @@ const pageData = {
       "Explore our curated selection of handcrafted hemp bags, each category telling its own story of tradition and sustainability",
     background: paperTexture,
   },
-  categories: [
-    {
-      name: "Tote Bags",
-      slug: "tote-bags",
-      description: "Spacious everyday carriers handcrafted for modern life",
-      image: toteBagImg,
-      count: 24,
-      color: "bg-hemp/10",
-    },
-    {
-      name: "Backpacks",
-      slug: "backpacks",
-      description: "Adventure-ready designs for the conscious traveler",
-      image: backpackImg,
-      count: 18,
-      color: "bg-mountain/10",
-    },
-    {
-      name: "Shoulder Bags",
-      slug: "shoulder-bags",
-      description: "Elegant & functional pieces for every occasion",
-      image: shoulderBagImg,
-      count: 32,
-      color: "bg-terracotta/10",
-    },
-    {
-      name: "Clutches",
-      slug: "clutches",
-      description: "Perfect for special moments and evening elegance",
-      image: clutchImg,
-      count: 15,
-      color: "bg-primary/10",
-    },
-  ],
   whyChoose: [
     {
       icon: "🌿",
@@ -75,6 +51,15 @@ const pageData = {
 };
 
 const CategoriesPage = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((res) => res.json())
+      .then(setCategories)
+      .catch(console.error);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Hero Section */}
@@ -108,7 +93,7 @@ const CategoriesPage = () => {
           />
         </div>
         <div className="container px-4 relative z-10 mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8">
-          {pageData.categories.map((category) => (
+          {categories.map((category) => (
             <Link
               key={category.slug}
               href={`/category/${category.slug}`} // Use slug for dynamic routing
@@ -116,11 +101,14 @@ const CategoriesPage = () => {
             >
               <Card className="overflow-hidden border-2 hover:border-primary transition-all duration-300 hover:shadow-elegant h-full">
                 <div className="relative h-80 overflow-hidden">
-                  <Image
-                    src={category.image}
-                    alt={category.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
+                  <div className="relative h-80 overflow-hidden">
+                    <Image
+                      src={category.image ?? "/hemp-bag-1.jpg"}
+                      alt={category.name}
+                      fill // fill the parent div
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent opacity-80 group-hover:opacity-70 transition-opacity" />
                   <div
                     className={`absolute top-4 right-4 ${category.color} backdrop-blur-sm px-4 py-2 rounded-full`}

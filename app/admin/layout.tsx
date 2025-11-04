@@ -7,6 +7,7 @@ import { AdminSidebar } from "@/components/admin/sidebar";
 import { useTheme } from "@/contexts/theme-context";
 import { Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Toaster } from "react-hot-toast";
 
 /**
  * Admin Layout Component
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils";
  * - Collapsible sidebar navigation
  * - Main content area with smooth animations
  * - Responsive design for mobile and desktop
+ * - Toast notifications
  */
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
@@ -82,6 +84,31 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </div>
         </motion.main>
       </div>
+      
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: theme === "dark" ? "#1e293b" : "#ffffff",
+            color: theme === "dark" ? "#f1f5f9" : "#0f172a",
+            border: `1px solid ${theme === "dark" ? "#334155" : "#e2e8f0"}`,
+          },
+          success: {
+            iconTheme: {
+              primary: "#10b981",
+              secondary: "#ffffff",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#ffffff",
+            },
+          },
+        }}
+      />
     </div>
   );
 }
