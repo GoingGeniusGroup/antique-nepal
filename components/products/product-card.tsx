@@ -1,18 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import { Heart, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useTheme } from "@/contexts/theme-context";
 import { motion } from "framer-motion";
-import { Product } from "@/lib/types";
+import { ProductData } from "@/app/(public)/products/actions/products";
 
 interface ProductCardProps {
-  product: Product;
-  image: string;
+  product: ProductData;
   index?: number;
 }
 
@@ -41,7 +40,7 @@ export function ProductCard({ product, image, index = 0 }: ProductCardProps) {
       <Link href={`/products/${product.id}`} className="flex flex-col h-full">
         <div className="relative w-full aspect-square bg-muted overflow-hidden">
           <Image
-            src={image || "/placeholder.svg"}
+            src={product.image || "/product_placeholder.jpeg"}
             alt={product.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
