@@ -6,7 +6,7 @@ export interface Product {
   name: string;
   category: string;
   price: number;
-  image: string | StaticImageData;
+  images: { url: string; altText?: string; isPrimary?: boolean }[];
   inStock: boolean;
   badge?: string;
   rating?: number;
