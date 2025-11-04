@@ -66,7 +66,7 @@ const SignupForm = () => {
         toast.success(result.message ?? "Account created successfully");
         // Redirect after a short delay
         setTimeout(() => {
-          router.push("/signin");
+          router.push("/login");
         }, 500);
       }
     } catch (err) {
