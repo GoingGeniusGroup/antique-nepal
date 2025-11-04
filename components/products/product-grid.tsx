@@ -19,20 +19,10 @@ export function ProductGrid({ products }: ProductGridProps) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-5">
       {products.map((product, index) => {
-        // ensure required fields have values
-        const safeProduct = {
-          ...product,
-          category: product.category ?? "Unknown",
-          inStock: product.inStock ?? true,
-          badge: product.badge ?? "",
-          image:
-            typeof product.image === "string"
-              ? product.image
-              : product.image.src, // if using StaticImageData
-        };
+        const image = product.images?.find(img => img.isPrimary)?.url || product.images?.[0]?.url || "/placeholder.jpg";
 
         return (
-          <ProductCard key={product.id} product={safeProduct} index={index} />
+          <ProductCard key={product.id} product={product} image={image} index={index} />
         );
       })}
     </div>

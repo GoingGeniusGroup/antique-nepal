@@ -12,10 +12,11 @@ import { Product } from "@/lib/types";
 
 interface ProductCardProps {
   product: Product;
+  image: string;
   index?: number;
 }
 
-export function ProductCard({ product, index = 0 }: ProductCardProps) {
+export function ProductCard({ product, image, index = 0 }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
@@ -40,7 +41,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       <Link href={`/products/${product.id}`} className="flex flex-col h-full">
         <div className="relative w-full aspect-square bg-muted overflow-hidden">
           <Image
-            src={product.image || "/placeholder.svg"}
+            src={image || "/placeholder.svg"}
             alt={product.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
