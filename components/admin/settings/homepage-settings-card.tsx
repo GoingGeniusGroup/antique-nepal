@@ -100,7 +100,7 @@ export function HomepageSettingsCard({ homepage, onChange }: Props) {
             onClick={() => setShowConfirm(true)}
             disabled={saving || loading}
             size="sm"
-            className="bg-amber-600 hover:bg-amber-700"
+            className="bg-amber-600 hover:bg-amber-700 text-white"
           >
             <Save className="h-4 w-4 mr-2" />
             {saving ? "Saving..." : "Save"}

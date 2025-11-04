@@ -101,7 +101,7 @@ export function HeroSettingsCard({ hero, onChange }: Props) {
             onClick={() => setShowConfirm(true)}
             disabled={saving || loading}
             size="sm"
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-green-600 hover:bg-green-700 text-white"
           >
             <Save className="h-4 w-4 mr-2" />
             {saving ? "Saving..." : "Save"}
