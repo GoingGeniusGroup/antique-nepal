@@ -29,7 +29,6 @@ import { useTheme } from "@/contexts/theme-context";
 import navigationData from "@/data/navigation.json";
 import { signOut, useSession } from "next-auth/react";
 import { useAutoLogout } from "@/hooks/useAutoLogout";
-import { useAdminUser } from "@/hooks/useAdminUser";
 import logoImgDark from "@/public/logo/Antique-Nepal-Logo-2.png";
 import logoTextImgDark from "@/public/logo/Antique-Nepal-Logo-3.png";
 import logoTextImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-2.png";
@@ -51,7 +50,6 @@ export const Navbar = () => {
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
   useAutoLogout();
-  useAdminUser();
 
   const [categories, setCategories] = useState<Category[]>([]);
 
