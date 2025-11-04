@@ -13,6 +13,17 @@ import { Search, Filter } from "lucide-react";
 import { useTheme } from "@/contexts/theme-context";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  displayOrder: number;
+  count: number;
+}
 
 interface ProductControlsProps {
   selectedCategory: string | null;
@@ -37,7 +48,20 @@ export function ProductControls({
 }: ProductControlsProps) {
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
-  const categories = ["All", "Accessories", "Bags"];
+  // const categories = ["All", "Accessories", "Bags"];
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((res) => res.json())
+      .then((data: Category[]) =>
+        setCategories([
+          { id: "all", name: "All", slug: "all", displayOrder: 0, count: 0 },
+          ...data,
+        ])
+      )
+      .catch((err) => console.error("Failed to fetch categories:", err));
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">
@@ -49,12 +73,14 @@ export function ProductControls({
         className="relative w-full group"
       >
         <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-          <Search className={cn(
-            "w-4 h-4 transition-colors duration-200",
-            isDark 
-              ? "text-white/60 group-focus-within:text-white" 
-              : "text-[#2d2520]/60 group-focus-within:text-primary"
-          )} />
+          <Search
+            className={cn(
+              "w-4 h-4 transition-colors duration-200",
+              isDark
+                ? "text-white/60 group-focus-within:text-white"
+                : "text-[#2d2520]/60 group-focus-within:text-primary"
+            )}
+          />
         </div>
         <Input
           type="text"
@@ -63,8 +89,8 @@ export function ProductControls({
           onChange={(e) => onSearchChange(e.target.value)}
           className={cn(
             "pl-10 h-12 transition-all duration-300",
-            isDark 
-              ? "bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:bg-white/10 focus:border-white/30 focus:shadow-lg focus:shadow-white/10" 
+            isDark
+              ? "bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:bg-white/10 focus:border-white/30 focus:shadow-lg focus:shadow-white/10"
               : "bg-white border-[#e8e0d8] text-[#2d2520] focus:border-primary focus:shadow-lg focus:shadow-primary/10"
           )}
         />
@@ -75,8 +101,8 @@ export function ProductControls({
             onClick={() => onSearchChange("")}
             className={cn(
               "absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors",
-              isDark 
-                ? "hover:bg-white/10 text-white/60" 
+              isDark
+                ? "hover:bg-white/10 text-white/60"
                 : "hover:bg-[#e8e0d8] text-[#2d2520]/60"
             )}
           >
@@ -98,10 +124,12 @@ export function ProductControls({
           className="relative flex items-center"
         >
           <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-            <Filter className={cn(
-              "w-4 h-4",
-              isDark ? "text-white/60" : "text-[#2d2520]/60"
-            )} />
+            <Filter
+              className={cn(
+                "w-4 h-4",
+                isDark ? "text-white/60" : "text-[#2d2520]/60"
+              )}
+            />
           </div>
           <Select
             value={selectedCategory || "all"}
@@ -109,21 +137,21 @@ export function ProductControls({
               onCategoryChange(value === "all" ? null : value)
             }
           >
-            <SelectTrigger className={cn(
-              "w-40 pl-10 transition-all duration-200",
-              isDark 
-                ? "bg-white/5 border-white/10 hover:bg-white/10" 
-                : "bg-white border-[#e8e0d8] hover:border-primary"
-            )}>
+            <SelectTrigger
+              className={cn(
+                "w-40 pl-10 transition-all duration-200",
+                isDark
+                  ? "bg-white/5 border-white/10 hover:bg-white/10"
+                  : "bg-white border-[#e8e0d8] hover:border-primary"
+              )}
+            >
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
               {categories.map((category) => (
-                <SelectItem
-                  key={category}
-                  value={category === "All" ? "all" : category}
-                >
-                  {category}
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}{" "}
+                  {category.count > 0 ? `(${category.count})` : ""}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -138,9 +166,11 @@ export function ProductControls({
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors cursor-pointer"
             style={{
-              backgroundColor: inStockOnly 
-                ? (isDark ? "rgba(255,255,255,0.1)" : "rgba(16,185,129,0.1)")
-                : "transparent"
+              backgroundColor: inStockOnly
+                ? isDark
+                  ? "rgba(255,255,255,0.1)"
+                  : "rgba(16,185,129,0.1)"
+                : "transparent",
             }}
             onClick={() => onInStockChange(!inStockOnly)}
           >
@@ -149,8 +179,8 @@ export function ProductControls({
               checked={inStockOnly}
               onCheckedChange={(checked) => onInStockChange(checked as boolean)}
             />
-            <label 
-              htmlFor="in-stock" 
+            <label
+              htmlFor="in-stock"
               className={cn(
                 "text-sm cursor-pointer select-none",
                 isDark ? "text-white/90" : "text-[#2d2520]"
@@ -161,17 +191,16 @@ export function ProductControls({
           </motion.div>
 
           {/* Sort By */}
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Select value={sortBy} onValueChange={onSortChange}>
-              <SelectTrigger className={cn(
-                "w-40 transition-all duration-200",
-                isDark 
-                  ? "bg-white/5 border-white/10 hover:bg-white/10" 
-                  : "bg-white border-[#e8e0d8] hover:border-primary"
-              )}>
+              <SelectTrigger
+                className={cn(
+                  "w-40 transition-all duration-200",
+                  isDark
+                    ? "bg-white/5 border-white/10 hover:bg-white/10"
+                    : "bg-white border-[#e8e0d8] hover:border-primary"
+                )}
+              >
                 <SelectValue placeholder="Sort By" />
               </SelectTrigger>
               <SelectContent>
