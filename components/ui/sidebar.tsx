@@ -140,12 +140,14 @@ export const MobileSidebar = ({
               )}
             >
               <div
-                className="absolute right-10 top-10 z-50 text-neutral-800 dark:text-neutral-200"
-                onClick={() => setOpen(!open)}
+                className="absolute right-6 top-6 z-50 text-neutral-800 dark:text-neutral-200 cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-full p-2 transition-colors"
+                onClick={() => setOpen(false)}
               >
-                <IconX />
+                <IconX className="h-6 w-6" />
               </div>
-              {children}
+              <div onClick={() => setOpen(false)}>
+                {children}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

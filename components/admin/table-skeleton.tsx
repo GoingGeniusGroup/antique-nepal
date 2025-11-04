@@ -15,26 +15,26 @@ interface TableSkeletonProps {
 
 export function TableSkeleton({ rows = 5, columns = 4, className }: TableSkeletonProps) {
   return (
-    <div className={cn("rounded-lg border bg-card overflow-hidden", className)}>
+    <div className={cn("rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden", className)}>
       {/* Header skeleton */}
-      <div className="bg-muted/50 border-b-2 border-border">
+      <div className="bg-slate-100 dark:bg-slate-900 border-b-2 border-slate-200 dark:border-slate-700">
         <div className="flex">
           {Array.from({ length: columns }).map((_, i) => (
             <div key={i} className="flex-1 px-4 py-3">
-              <div className="h-3 bg-muted rounded animate-pulse" />
+              <div className="h-3 bg-slate-300 dark:bg-slate-700 rounded animate-pulse" />
             </div>
           ))}
         </div>
       </div>
       
       {/* Rows skeleton */}
-      <div className="divide-y divide-border/50">
+      <div className="divide-y divide-slate-200 dark:divide-slate-700">
         {Array.from({ length: rows }).map((_, rowIndex) => (
-          <div key={rowIndex} className="flex hover:bg-muted/30 transition-colors duration-200">
+          <div key={rowIndex} className="flex hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors duration-200">
             {Array.from({ length: columns }).map((_, colIndex) => (
               <div key={colIndex} className="flex-1 px-4 py-3">
                 <div 
-                  className="h-4 bg-muted/70 rounded animate-pulse"
+                  className="h-4 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"
                   style={{
                     animationDelay: `${(rowIndex * columns + colIndex) * 50}ms`,
                     width: `${Math.random() * 40 + 60}%` // Random width between 60-100%
@@ -47,12 +47,12 @@ export function TableSkeleton({ rows = 5, columns = 4, className }: TableSkeleto
       </div>
       
       {/* Pagination skeleton */}
-      <div className="flex items-center justify-between p-4 border-t border-border/50">
-        <div className="h-4 w-32 bg-muted/70 rounded animate-pulse" />
+      <div className="flex items-center justify-between p-4 border-t border-slate-200 dark:border-slate-700">
+        <div className="h-4 w-32 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
         <div className="flex items-center gap-2">
-          <div className="h-8 w-20 bg-muted/70 rounded animate-pulse" />
-          <div className="h-8 w-16 bg-muted/70 rounded animate-pulse" />
-          <div className="h-8 w-16 bg-muted/70 rounded animate-pulse" />
+          <div className="h-8 w-20 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+          <div className="h-8 w-16 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+          <div className="h-8 w-16 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
         </div>
       </div>
     </div>

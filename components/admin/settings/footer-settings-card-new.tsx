@@ -56,6 +56,12 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
   const [saving, setSaving] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    type: 'social' | 'section' | 'link';
+    index: number;
+    linkIndex?: number;
+  } | null>(null);
+  const [originalData, setOriginalData] = useState<FooterData | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +69,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
         const res = await fetch("/api/footer", { cache: "no-store" });
         const data = await res.json();
         onChange(data);
+        setOriginalData(JSON.parse(JSON.stringify(data))); // Deep clone
       } catch (error) {
         console.error("Error fetching footer data:", error);
       } finally {
@@ -133,6 +140,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       ...footer,
       socials: updatedSocials,
     });
+    setDeleteConfirm(null);
   };
 
   // Section management functions
@@ -166,6 +174,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       ...footer,
       sections: updatedSections,
     });
+    setDeleteConfirm(null);
   };
 
   const addLink = (sectionIndex: number) => {
@@ -202,6 +211,12 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       ...footer,
       sections: updatedSections,
     });
+    setDeleteConfirm(null);
+  };
+
+  const hasChanged = (section: string) => {
+    if (!originalData) return true;
+    return JSON.stringify(footer[section as keyof FooterData]) !== JSON.stringify(originalData[section as keyof FooterData]);
   };
 
   const saveFooter = async () => {
@@ -209,8 +224,8 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
     try {
       const results = [];
 
-      // Save brand
-      if (footer.brand && footer.brand.name) {
+      // Save brand (only if changed)
+      if (footer.brand && footer.brand.name && hasChanged('brand')) {
         const res = await fetch("/api/admin/footer-brand", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -223,8 +238,8 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
         results.push("Brand");
       }
 
-      // Save contact
-      if (footer.contact && (footer.contact.email || footer.contact.phone || footer.contact.address)) {
+      // Save contact (only if changed)
+      if (footer.contact && (footer.contact.email || footer.contact.phone || footer.contact.address) && hasChanged('contact')) {
         const res = await fetch("/api/admin/footer-contact", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -237,8 +252,8 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
         results.push("Contact");
       }
 
-      // Save newsletter
-      if (footer.newsletter && (footer.newsletter.title || footer.newsletter.description)) {
+      // Save newsletter (only if changed)
+      if (footer.newsletter && (footer.newsletter.title || footer.newsletter.description) && hasChanged('newsletter')) {
         const res = await fetch("/api/admin/footer-newsletter", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -251,8 +266,8 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
         results.push("Newsletter");
       }
 
-      // Save socials (batch)
-      if (footer.socials && footer.socials.length > 0) {
+      // Save socials (batch, only if changed)
+      if (footer.socials && footer.socials.length > 0 && hasChanged('socials')) {
         const res = await fetch("/api/admin/footer-social", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -265,8 +280,8 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
         results.push("Socials");
       }
 
-      // Save sections (batch)
-      if (footer.sections && footer.sections.length > 0) {
+      // Save sections (batch, only if changed)
+      if (footer.sections && footer.sections.length > 0 && hasChanged('sections')) {
         const res = await fetch("/api/admin/footer-sections", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -280,23 +295,53 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       }
 
       if (results.length > 0) {
-        toast.success(`Footer saved successfully! Updated: ${results.join(", ")}`, {
+        let message = "";
+        
+        if (results.length === 1) {
+          // Single section updated
+          const sectionName = results[0];
+          message = `${sectionName} information saved successfully!`;
+        } else if (results.length === 2) {
+          // Two sections updated
+          message = `${results[0]} and ${results[1]} saved successfully!`;
+        } else {
+          // Multiple sections updated
+          const lastItem = results.pop();
+          message = `${results.join(", ")}, and ${lastItem} saved successfully!`;
+        }
+        
+        toast.success(message, {
           duration: 4000,
           position: "top-right",
+          style: {
+            fontSize: '14px',
+            fontWeight: '500',
+          },
         });
-        // Refresh the page to show updated data
-        setTimeout(() => window.location.reload(), 1000);
+        
+        // Update original data to reflect saved changes
+        const res = await fetch("/api/footer", { cache: "no-store" });
+        const updatedData = await res.json();
+        onChange(updatedData);
+        setOriginalData(JSON.parse(JSON.stringify(updatedData)));
       } else {
-        toast.error("No data to save. Please fill in at least one section.", {
+        toast.error("⚠️ No changes detected. Please update at least one field before saving.", {
           duration: 3000,
           position: "top-right",
+          style: {
+            fontSize: '14px',
+          },
         });
       }
     } catch (error) {
       console.error("Error saving footer:", error);
-      toast.error(`Failed to save: ${error instanceof Error ? error.message : "Unknown error"}`, {
-        duration: 4000,
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      toast.error(`❌ Save failed: ${errorMessage}. Please try again.`, {
+        duration: 5000,
         position: "top-right",
+        style: {
+          fontSize: '14px',
+        },
       });
     } finally {
       setSaving(false);
@@ -305,7 +350,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
 
   if (loading) {
     return (
-      <Card className="p-6 border-l-4 border-l-indigo-500 dark:!bg-slate-800 dark:!border-slate-600">
+      <Card className="p-6 border-l-4 border-l-purple-500 dark:border-l-purple-400 dark:!bg-slate-800 dark:!border-slate-600">
         <div className="flex items-center justify-center h-32">
           <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"/> 
@@ -318,17 +363,17 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
 
   return (
     <>
-      <Card className="p-6 border-l-4 border-l-indigo-500 dark:!bg-slate-800 dark:!border-slate-600">
+      <Card className="p-6 border-l-4 border-l-purple-500 dark:border-l-purple-400 dark:!bg-slate-800 dark:!border-slate-600">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-indigo-600" />
+            <FileText className="h-5 w-5 text-purple-600 dark:text-purple-400" />
             <div className="text-lg font-semibold text-foreground">Footer Content</div>
           </div>
           <Button
             onClick={() => setShowConfirm(true)}
             disabled={saving || loading}
             size="sm"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="bg-purple-600 hover:bg-purple-700 text-white"
           >
             <Save className="h-4 w-4 mr-2" />
             {saving ? "Saving..." : "Save"}
@@ -338,7 +383,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       {/* Brand Section */}
       <div className="mb-6">
         <h4 className="text-md font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Building2 className="h-4 w-4 text-indigo-600" />
+          <Building2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
           Brand Information
         </h4>
         <div className="grid gap-4 md:grid-cols-2">
@@ -388,7 +433,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       {/* Contact Section */}
       <div className="mb-6 pt-6 border-t border-border">
         <h4 className="text-md font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Phone className="h-4 w-4 text-indigo-600" />
+          <Phone className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
           Contact Information
         </h4>
         <div className="grid gap-4 md:grid-cols-3">
@@ -439,7 +484,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       <div className="mb-6 pt-6 border-t border-border">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-md font-semibold text-foreground flex items-center gap-2">
-            <Share2 className="h-4 w-4 text-indigo-600" />
+            <Share2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
             Social Media Links
           </h4>
           <Button
@@ -493,7 +538,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
                   />
                 </div>
                 <Button
-                  onClick={() => removeSocial(index)}
+                  onClick={() => setDeleteConfirm({ type: 'social', index })}
                   size="sm"
                   variant="destructive"
                   className="mt-7"
@@ -514,7 +559,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       {/* Newsletter Section */}
       <div className="pt-6">
         <h4 className="text-md font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Bell className="h-4 w-4 text-indigo-600" />
+          <Bell className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
           Newsletter Section
         </h4>
         <div className="grid gap-4 md:grid-cols-2">
@@ -545,7 +590,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       <div className="pt-6 mt-6 border-t border-border">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-md font-semibold text-foreground flex items-center gap-2">
-            <List className="h-4 w-4 text-indigo-600" />
+            <List className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
             Navigation Sections & Links
           </h4>
           <Button
@@ -561,7 +606,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
         
         <div className="space-y-6">
           {footer.sections?.map((section, sectionIndex) => (
-            <div key={sectionIndex} className="p-4 border-2 border-border rounded-lg bg-muted/30">
+            <div key={sectionIndex} className="p-4 border-2 border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800/50">
               {/* Section Header */}
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex-1 grid gap-4 md:grid-cols-3">
@@ -585,7 +630,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
                   </div>
                 </div>
                 <Button
-                  onClick={() => removeSection(sectionIndex)}
+                  onClick={() => setDeleteConfirm({ type: 'section', index: sectionIndex })}
                   size="sm"
                   variant="destructive"
                   className="mt-7"
@@ -613,7 +658,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
                 </div>
 
                 {section.links.map((link, linkIndex) => (
-                  <div key={linkIndex} className="grid gap-3 md:grid-cols-4 items-end p-3 bg-background border border-border rounded">
+                  <div key={linkIndex} className="grid gap-3 md:grid-cols-4 items-end p-3 bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 rounded">
                     <div>
                       <Label className="text-xs text-muted-foreground">Link Name</Label>
                       <Input
@@ -643,7 +688,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
                         />
                       </div>
                       <Button
-                        onClick={() => removeLink(sectionIndex, linkIndex)}
+                        onClick={() => setDeleteConfirm({ type: 'link', index: sectionIndex, linkIndex })}
                         size="sm"
                         variant="ghost"
                         className="h-9 w-9 p-0 mt-5"
@@ -655,7 +700,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
                 ))}
 
                 {section.links.length === 0 && (
-                  <p className="text-xs text-muted-foreground text-center py-3 bg-background border border-dashed border-border rounded">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 text-center py-3 bg-slate-50 dark:bg-slate-900/20 border border-dashed border-slate-300 dark:border-slate-700 rounded">
                     No links yet. Click "Add Link" to create one.
                   </p>
                 )}
@@ -664,7 +709,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
           ))}
 
           {(!footer.sections || footer.sections.length === 0) && (
-            <p className="text-sm text-muted-foreground text-center py-8 bg-muted/20 border border-dashed border-border rounded">
+            <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-8 bg-slate-50 dark:bg-slate-900/20 border border-dashed border-slate-300 dark:border-slate-700 rounded">
               No sections added yet. Click "Add Section" to create navigation sections like Shop, Company, Legal, etc.
             </p>
           )}
@@ -679,6 +724,26 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       title="Save Footer Settings?"
       description="This will update all footer content including brand, contact, social links, and navigation sections."
       confirmText="Save Changes"
+    />
+
+    <ConfirmationDialog
+      open={deleteConfirm !== null}
+      onOpenChange={(open) => !open && setDeleteConfirm(null)}
+      onConfirm={() => {
+        if (deleteConfirm) {
+          if (deleteConfirm.type === 'social') {
+            removeSocial(deleteConfirm.index);
+          } else if (deleteConfirm.type === 'section') {
+            removeSection(deleteConfirm.index);
+          } else if (deleteConfirm.type === 'link' && deleteConfirm.linkIndex !== undefined) {
+            removeLink(deleteConfirm.index, deleteConfirm.linkIndex);
+          }
+        }
+      }}
+      title="Delete Item?"
+      description={`Are you sure you want to delete this ${deleteConfirm?.type === 'social' ? 'social link' : deleteConfirm?.type === 'section' ? 'section and all its links' : 'link'}? This action cannot be undone.`}
+      confirmText="Delete"
+      variant="destructive"
     />
   </>
   );
