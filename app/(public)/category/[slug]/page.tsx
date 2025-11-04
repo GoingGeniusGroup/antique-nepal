@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 
-import { Product } from "@/lib/types";
+import { ProductData } from "@/app/(public)/products/actions/products";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProductControls } from "@/components/products/product-controls";
 import { ProductGrid } from "@/components/products/product-grid";
@@ -24,7 +24,7 @@ const CategoryPage = () => {
   const params = useParams(); // { slug: "shoulder-bags" }
 
   const [category, setCategory] = useState<Category | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductData[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [inStockOnly, setInStockOnly] = useState(false);
@@ -42,7 +42,35 @@ const CategoryPage = () => {
         const data = await res.json();
 
         setCategory(data.category);
-        setProducts(data.products);
+        const formattedProducts: ProductData[] = data.products.map(
+          (product: any) => {
+            const imageUrl =
+              product.images?.find((img: any) => img.isPrimary)?.url ||
+              product.images?.[0]?.url;
+
+            let image = "/product_placeholder.jpeg";
+            if (imageUrl) {
+              const cleanedUrl = imageUrl
+                .trim()
+                .replace(/^[\/\\]+/, "")
+                .replace(/["\']/g, "");
+              image = cleanedUrl.startsWith("http")
+                ? cleanedUrl
+                : `/${cleanedUrl}`;
+            }
+
+            return {
+              id: product.id,
+              name: product.name,
+              category: data.category.name,
+              price: Number(product.price),
+              image,
+              inStock: product.isActive, // Assuming isActive indicates stock
+              badge: data.category.name,
+            };
+          }
+        );
+        setProducts(formattedProducts);
         setCurrentPage(1);
       } catch (err) {
         console.error(err);
@@ -56,7 +84,7 @@ const CategoryPage = () => {
 
   // filter & sort products
   const filteredProducts = useMemo(() => {
-    let filtered: Product[] = [...products];
+    let filtered: ProductData[] = [...products];
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
