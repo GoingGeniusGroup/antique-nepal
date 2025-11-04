@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { ProductSchema } from "@/app/validations/product/product-schema";
+import { AddProductSchema } from "@/app/validations/product/product-schema";
 import { success, ZodError } from "zod";
 
 // Fetch all products
@@ -52,7 +52,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const data = ProductSchema.parse(body);
+    const data = AddProductSchema.parse(body);
 
     // Check duplicate slug or sku
     const existing = await prisma.product.findFirst({

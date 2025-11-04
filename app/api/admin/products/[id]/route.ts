@@ -1,0 +1,85 @@
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { UpdateProductSchema } from "@/app/validations/product/product-schema";
+import { ZodError } from "zod";
+
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = await params;
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "Product ID missing" },
+        { status: 400 }
+      );
+    }
+    const body = await req.json();
+    const data = UpdateProductSchema.parse(body);
+
+    const existing = await prisma.product.findUnique({ where: { id } });
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, message: "Product not found" },
+        { status: 404 }
+      );
+    }
+
+    const updated = await prisma.product.update({
+      where: { id },
+      data,
+    });
+
+    return NextResponse.json(
+      { success: true, product: updated },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Product update error:", error);
+
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { success: false, errors: error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: false, message: "Server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = await params;
+
+    const existing = await prisma.product.findUnique({ where: { id } });
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, message: "Product not found" },
+        { status: 404 }
+      );
+    }
+
+    await prisma.product.delete({ where: { id } });
+
+    return NextResponse.json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    console.error("Product delete error:", error);
+    return NextResponse.json(
+      { success: false, message: "Server error" },
+      { status: 500 }
+    );
+  }
+}
