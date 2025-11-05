@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
 import { Mail, Phone } from "lucide-react";
 import type {
@@ -108,7 +108,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
   const totalSpent =
     recentOrders.reduce(
       (acc, order) => acc + parseFloat(order.total.toString()),
-      0,
+      0
     ) || 0;
 
   return (
@@ -125,6 +125,9 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                     src={user.image || ""}
                     alt={user.firstName || ""}
                   />
+                  <AvatarFallback>
+                    {user.firstName?.[0]}{user.lastName?.[0]}
+                  </AvatarFallback>
                 </Avatar>
 
                 <div className="flex-1">
@@ -159,7 +162,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                             {
                               year: "numeric",
                               month: "long",
-                            },
+                            }
                           )}
                         </span>
                       </div>
@@ -271,7 +274,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                                 year: "numeric",
                                 month: "long",
                                 day: "numeric",
-                              },
+                              }
                             )}
                           </p>
                         </div>
@@ -451,7 +454,9 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                       <div className="flex items-center justify-between">
                         <div>
                           <h4 className="font-semibold mb-1">Login History</h4>
-                          <p className="text-sm text-muted-foreground">View recent activity</p>
+                          <p className="text-sm text-muted-foreground">
+                            View recent activity
+                          </p>
                         </div>
                         <Button variant="ghost" size="sm">
                           View
