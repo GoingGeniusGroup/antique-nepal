@@ -1,9 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@heroui/table";
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  getKeyValue,
+} from "@heroui/table";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { debounce, getPaginationInfo, handleApiError } from "@/lib/admin-utils";
@@ -14,9 +28,9 @@ import { IconEdit, IconTrash } from "@tabler/icons-react";
 
 /**
  * Enhanced HeroUI Table Component
- * 
+ *
  * A reusable, feature-rich table component for admin data management.
- * 
+ *
  * Features:
  * - Real-time data fetching with debounced search
  * - Server-side sorting and pagination
@@ -25,7 +39,7 @@ import { IconEdit, IconTrash } from "@tabler/icons-react";
  * - Customizable column rendering
  * - Error handling and user feedback
  * - Accessible design with proper ARIA labels
- * 
+ *
  * Usage:
  * ```tsx
  * <HeroTable<User>
@@ -107,35 +121,37 @@ export function HeroTable<T extends { id: string }>({
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       // Add timeout for faster perceived performance
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-      
-      const res = await fetch(`${fetchUrl}?${params}`, { 
+
+      const res = await fetch(`${fetchUrl}?${params}`, {
         cache: "no-store",
         signal: controller.signal,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-      
+
       clearTimeout(timeoutId);
-      
+
       if (!res.ok) {
         // Handle 404 or 500 as empty data for better UX during development
         if (res.status === 404 || res.status === 500) {
-          console.warn(`API endpoint ${fetchUrl} returned ${res.status}, showing empty state`);
+          console.warn(
+            `API endpoint ${fetchUrl} returned ${res.status}, showing empty state`
+          );
           setRows([]);
           setTotal(0);
           return;
         }
         throw new Error(`HTTP error! status: ${res.status}`);
       }
-      
+
       const json = await res.json();
-      
+
       // Handle different response formats
       if (json.data) {
         setRows(json.data as T[]);
@@ -149,11 +165,15 @@ export function HeroTable<T extends { id: string }>({
         setTotal(0);
       }
     } catch (e) {
-      if (e instanceof Error && e.name === 'AbortError') {
-        setError('Request timed out. Please try again.');
-      } else if (e instanceof Error && (e.message.includes('Failed to fetch') || e.message.includes('NetworkError'))) {
+      if (e instanceof Error && e.name === "AbortError") {
+        setError("Request timed out. Please try again.");
+      } else if (
+        e instanceof Error &&
+        (e.message.includes("Failed to fetch") ||
+          e.message.includes("NetworkError"))
+      ) {
         // Treat network errors as "no data" for better UX
-        console.warn('Network error, treating as no data:', e.message);
+        console.warn("Network error, treating as no data:", e.message);
         setRows([]);
         setTotal(0);
         setError(null);
@@ -217,19 +237,23 @@ export function HeroTable<T extends { id: string }>({
               className="h-10 w-full sm:w-72 pl-10 pr-4 border-2 border-border dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-lg shadow-sm dark:bg-slate-800 dark:text-slate-100 placeholder:text-muted-foreground dark:placeholder:text-slate-500 transition-colors"
             />
           </div>
-          
+
           {/* Total items badge with refresh - next to search */}
           <div className="hidden sm:flex items-center gap-2">
             {total > 0 && (
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/30 border-2 border-blue-200 dark:border-blue-800">
-                <span className="text-xs font-medium text-muted-foreground dark:text-slate-400">Total items:</span>
+                <span className="text-xs font-medium text-muted-foreground dark:text-slate-400">
+                  Total items:
+                </span>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400 animate-pulse"></div>
-                  <span className="text-sm font-bold text-blue-700 dark:text-blue-300">{total}</span>
+                  <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
+                    {total}
+                  </span>
                 </div>
               </div>
             )}
-            
+
             {/* Refresh Button */}
             <Button
               variant="outline"
@@ -239,11 +263,16 @@ export function HeroTable<T extends { id: string }>({
               className="h-10 w-10 p-0 border-2 border-border dark:border-slate-600 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-600 transition-all"
               title="Refresh data"
             >
-              <RefreshCw className={cn("h-4 w-4 text-blue-600 dark:text-blue-400", loading && "animate-spin")} />
+              <RefreshCw
+                className={cn(
+                  "h-4 w-4 text-blue-600 dark:text-blue-400",
+                  loading && "animate-spin"
+                )}
+              />
             </Button>
           </div>
         </div>
-        
+
         {/* Sort and Add Controls */}
         <div className="flex items-center gap-2 justify-between sm:justify-end">
           <div className="flex items-center gap-2">
@@ -253,19 +282,23 @@ export function HeroTable<T extends { id: string }>({
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                {columns.filter(c => c.sortable).map((c) => (
-                  <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>
-                ))}
+                {columns
+                  .filter((c) => c.sortable)
+                  .map((c) => (
+                    <SelectItem key={c.key} value={c.key}>
+                      {c.label}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               size="sm"
               className={cn(
                 "h-10 w-10 p-0 border-2 border-border dark:border-slate-600 dark:bg-slate-800 transition-all",
-                order === "desc" 
-                  ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 dark:border-blue-500" 
+                order === "desc"
+                  ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 dark:border-blue-500"
                   : "hover:bg-muted dark:hover:bg-slate-700 dark:text-slate-200"
               )}
               onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
@@ -274,10 +307,10 @@ export function HeroTable<T extends { id: string }>({
               <ArrowUpDown className="h-4 w-4" />
             </Button>
           </div>
-          
+
           {/* Add Button - Icon only */}
           {onAdd && (
-            <Button 
+            <Button
               onClick={onAdd}
               className="h-10 w-10 p-0 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 text-white shadow-md hover:shadow-lg transition-all"
               title="Add new item"
@@ -290,11 +323,14 @@ export function HeroTable<T extends { id: string }>({
 
       {/* HeroUI Table with Skeleton Loading */}
       {loading ? (
-        <TableSkeleton rows={pageSize} columns={columns.length + (onEdit || onDelete ? 1 : 0)} />
+        <TableSkeleton
+          rows={pageSize}
+          columns={columns.length + (onEdit || onDelete ? 1 : 0)}
+        />
       ) : error ? (
         <div className="rounded-lg border border-border dark:border-slate-600 bg-card dark:!bg-slate-800 overflow-hidden shadow-sm">
           {/* Show table header even with error */}
-          <Table 
+          <Table
             aria-label={title}
             className="min-w-full"
             classNames={{
@@ -313,13 +349,20 @@ export function HeroTable<T extends { id: string }>({
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell colSpan={tableColumns.length} className="px-4 py-12 text-center">
+                <TableCell
+                  colSpan={tableColumns.length}
+                  className="px-4 py-12 text-center"
+                >
                   <div className="text-destructive dark:text-red-400">
-                    <p className="font-semibold text-base">Error loading data</p>
-                    <p className="text-sm mt-2 text-muted-foreground dark:text-slate-400">{error}</p>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <p className="font-semibold text-base">
+                      Error loading data
+                    </p>
+                    <p className="text-sm mt-2 text-muted-foreground dark:text-slate-400">
+                      {error}
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={handleRefresh}
                       className="mt-4 border-2 hover:bg-blue-50 dark:hover:bg-blue-900/30"
                     >
@@ -335,7 +378,7 @@ export function HeroTable<T extends { id: string }>({
       ) : (
         <div className="rounded-lg border border-border dark:border-slate-600 bg-card dark:!bg-slate-800 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <Table 
+            <Table
               aria-label={title}
               className="min-w-full"
               classNames={{
@@ -345,82 +388,95 @@ export function HeroTable<T extends { id: string }>({
                 tr: "hover:bg-blue-50/50 dark:!hover:bg-slate-700/70 transition-all duration-150 border-b border-border/30 dark:!border-slate-600/30 last:border-b-0",
               }}
             >
-            <TableHeader>
-              {tableColumns.map((column) => (
-                <TableColumn key={column.key} className="px-4 py-3">
-                  {column.label}
-                </TableColumn>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {tableRows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={tableColumns.length} className="px-4 py-8 text-center">
-                    <div className="text-muted-foreground">
-                      <p>No results found</p>
-                      {q && <p className="text-xs mt-1">Try adjusting your search terms</p>}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                tableRows.map((row) => (
-                  <TableRow key={row.key} className="px-4 py-3">
-                    {(columnKey) => {
-                      // Handle Actions column
-                      if (columnKey === "actions") {
-                        const actionLinks = [];
-                        
-                        if (onEdit) {
-                          actionLinks.push({
-                            title: "Edit",
-                            icon: (
-                              <IconEdit className="h-full w-full text-blue-500 dark:text-blue-400" />
-                            ),
-                            href: "#",
-                            onClick: (e: React.MouseEvent) => {
-                              e.preventDefault();
-                              onEdit(row as T);
-                            },
-                          });
-                        }
-                        
-                        if (onDelete) {
-                          actionLinks.push({
-                            title: "Delete",
-                            icon: (
-                              <IconTrash className="h-full w-full text-red-500 dark:text-red-400" />
-                            ),
-                            href: "#",
-                            onClick: (e: React.MouseEvent) => {
-                              e.preventDefault();
-                              onDelete(row as T);
-                            },
-                          });
-                        }
-                        
-                        return (
-                          <TableCell className="px-2 py-1.5">
-                            <div className="flex items-center justify-center gap-0.5 scale-75">
-                              <FloatingDock
-                                items={actionLinks}
-                                desktopClassName="transform-none [&>div]:h-5 [&>div]:w-5 [&>div>a]:h-5 [&>div>a]:w-5 [&>div>a>svg]:h-2.5 [&>div>a>svg]:w-2.5 [&>div]:transition-all [&>div]:duration-75 [&>div>a]:transition-all [&>div>a]:duration-75 [&>div:hover]:scale-105 [&>div>a:hover]:scale-105"
-                                mobileClassName="transform-none [&>div]:h-5 [&>div]:w-5 [&>div>a]:h-5 [&>div>a]:w-5 [&>div>a>svg]:h-2.5 [&>div>a>svg]:w-2.5 [&>div]:transition-all [&>div]:duration-75 [&>div>a]:transition-all [&>div>a]:duration-75 [&>div:hover]:scale-105 [&>div>a:hover]:scale-105"
-                              />
-                            </div>
-                          </TableCell>
-                        );
-                      }
-                      
-                      // Handle regular columns
-                      const column = columns.find(c => c.key === String(columnKey));
-                      const value = column?.render ? column.render(row as T) : getKeyValue(row, columnKey);
-                      return <TableCell className="px-2 py-1.5">{value}</TableCell>;
-                    }}
+              <TableHeader>
+                {tableColumns.map((column) => (
+                  <TableColumn key={column.key} className="px-4 py-3">
+                    {column.label}
+                  </TableColumn>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {tableRows.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={tableColumns.length}
+                      className="px-4 py-8 text-center"
+                    >
+                      <div className="text-muted-foreground">
+                        <p>No results found</p>
+                        {q && (
+                          <p className="text-xs mt-1">
+                            Try adjusting your search terms
+                          </p>
+                        )}
+                      </div>
+                    </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  tableRows.map((row) => (
+                    <TableRow key={row.key} className="px-4 py-3">
+                      {(columnKey) => {
+                        // Handle Actions column
+                        if (columnKey === "actions") {
+                          const actionLinks = [];
+
+                          if (onEdit) {
+                            actionLinks.push({
+                              title: "Edit",
+                              icon: (
+                                <IconEdit className="h-full w-full text-blue-500 dark:text-blue-400" />
+                              ),
+                              href: "#",
+                              onClick: (e: React.MouseEvent) => {
+                                e.preventDefault();
+                                onEdit(row as T);
+                              },
+                            });
+                          }
+
+                          if (onDelete) {
+                            actionLinks.push({
+                              title: "Delete",
+                              icon: (
+                                <IconTrash className="h-full w-full text-red-500 dark:text-red-400" />
+                              ),
+                              href: "#",
+                              onClick: (e: React.MouseEvent) => {
+                                e.preventDefault();
+                                onDelete(row as T);
+                              },
+                            });
+                          }
+
+                          return (
+                            <TableCell className="px-2 py-1.5">
+                              <div className="flex items-center justify-center gap-0.5 scale-75">
+                                <FloatingDock
+                                  items={actionLinks}
+                                  desktopClassName="transform-none [&>div]:h-5 [&>div]:w-5 [&>div>a]:h-5 [&>div>a]:w-5 [&>div>a>svg]:h-2.5 [&>div>a>svg]:w-2.5 [&>div]:transition-all [&>div]:duration-75 [&>div>a]:transition-all [&>div>a]:duration-75 [&>div:hover]:scale-105 [&>div>a:hover]:scale-105"
+                                  mobileClassName="transform-none [&>div]:h-5 [&>div]:w-5 [&>div>a]:h-5 [&>div>a]:w-5 [&>div>a>svg]:h-2.5 [&>div>a>svg]:w-2.5 [&>div]:transition-all [&>div]:duration-75 [&>div>a]:transition-all [&>div>a]:duration-75 [&>div:hover]:scale-105 [&>div>a:hover]:scale-105"
+                                />
+                              </div>
+                            </TableCell>
+                          );
+                        }
+
+                        // Handle regular columns
+                        const column = columns.find(
+                          (c) => c.key === String(columnKey)
+                        );
+                        const value = column?.render
+                          ? column.render(row as T)
+                          : getKeyValue(row, columnKey);
+                        return (
+                          <TableCell className="px-2 py-1.5">{value}</TableCell>
+                        );
+                      }}
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
           </div>
         </div>
       )}
@@ -434,43 +490,52 @@ export function HeroTable<T extends { id: string }>({
             return `Showing ${paginationInfo.start} to ${paginationInfo.end} of ${paginationInfo.total} results`;
           })()}
         </div>
-        
+
         {/* Controls - Responsive layout */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground dark:text-slate-400 hidden sm:inline">Rows per page:</span>
-            <span className="text-xs text-muted-foreground dark:text-slate-400 sm:hidden">Per page:</span>
-            <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
+            <span className="text-xs text-muted-foreground dark:text-slate-400 hidden sm:inline">
+              Rows per page:
+            </span>
+            <span className="text-xs text-muted-foreground dark:text-slate-400 sm:hidden">
+              Per page:
+            </span>
+            <Select
+              value={String(pageSize)}
+              onValueChange={(v) => setPageSize(Number(v))}
+            >
               <SelectTrigger className="h-8 w-16 sm:w-20 border-border dark:border-slate-600 dark:bg-slate-800 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {pageSizeOptions.map((n) => (
-                  <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                  <SelectItem key={n} value={String(n)}>
+                    {n}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          
+
           {/* Page Navigation with Numbers */}
           <div className="flex items-center gap-1">
             {/* Previous Button */}
-            <Button 
-              variant="outline" 
-              className="h-8 px-2 sm:px-3 text-xs border-border dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 disabled:opacity-50 dark:bg-slate-800 dark:text-slate-200" 
-              disabled={page <= 1} 
+            <Button
+              variant="outline"
+              className="h-8 px-2 sm:px-3 text-xs border-border dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 disabled:opacity-50 dark:bg-slate-800 dark:text-slate-200"
+              disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
               <span className="hidden sm:inline">Previous</span>
               <span className="sm:hidden">Prev</span>
             </Button>
-            
+
             {/* Page Numbers */}
             <div className="flex items-center gap-1">
               {(() => {
                 const pageNumbers = [];
                 const maxVisiblePages = 5;
-                
+
                 if (totalPages <= maxVisiblePages) {
                   // Show all pages if total is small
                   for (let i = 1; i <= totalPages; i++) {
@@ -483,18 +548,33 @@ export function HeroTable<T extends { id: string }>({
                     pageNumbers.push(1, 2, 3, 4, -1, totalPages);
                   } else if (page >= totalPages - 2) {
                     // Near end: 1 ... last-3 last-2 last-1 last
-                    pageNumbers.push(1, -1, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+                    pageNumbers.push(
+                      1,
+                      -1,
+                      totalPages - 3,
+                      totalPages - 2,
+                      totalPages - 1,
+                      totalPages
+                    );
                   } else {
                     // Middle: 1 ... current-1 current current+1 ... last
-                    pageNumbers.push(1, -1, page - 1, page, page + 1, -2, totalPages);
+                    pageNumbers.push(
+                      1,
+                      -1,
+                      page - 1,
+                      page,
+                      page + 1,
+                      -2,
+                      totalPages
+                    );
                   }
                 }
-                
+
                 return pageNumbers.map((pageNum, idx) => {
                   if (pageNum === -1 || pageNum === -2) {
                     // Ellipsis
                     return (
-                      <span 
+                      <span
                         key={`ellipsis-${idx}`}
                         className="px-2 text-muted-foreground dark:text-slate-500"
                       >
@@ -502,7 +582,7 @@ export function HeroTable<T extends { id: string }>({
                       </span>
                     );
                   }
-                  
+
                   const isActive = pageNum === page;
                   return (
                     <Button
@@ -510,8 +590,8 @@ export function HeroTable<T extends { id: string }>({
                       variant={isActive ? "default" : "outline"}
                       className={cn(
                         "h-8 w-8 p-0 text-xs font-medium transition-colors",
-                        isActive 
-                          ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 dark:border-blue-500" 
+                        isActive
+                          ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 dark:border-blue-500"
                           : "border-border dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 dark:bg-slate-800 dark:text-slate-200"
                       )}
                       onClick={() => setPage(pageNum)}
@@ -522,12 +602,12 @@ export function HeroTable<T extends { id: string }>({
                 });
               })()}
             </div>
-            
+
             {/* Next Button */}
-            <Button 
-              variant="outline" 
-              className="h-8 px-2 sm:px-3 text-xs border-border dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 disabled:opacity-50 dark:bg-slate-800 dark:text-slate-200" 
-              disabled={page >= totalPages} 
+            <Button
+              variant="outline"
+              className="h-8 px-2 sm:px-3 text-xs border-border dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 disabled:opacity-50 dark:bg-slate-800 dark:text-slate-200"
+              disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >
               <span className="hidden sm:inline">Next</span>

@@ -1,47 +1,65 @@
 "use client";
 
+import { useState } from "react";
 import { HeroTable, HeroColumn } from "@/components/admin/hero-table";
 import { PageHeader } from "@/components/admin/page-header";
 import { PageTransition } from "@/components/admin/page-transition";
-import { ProductForm } from "@/components/admin/product/product-form";
 import { Button } from "@/components/ui/button";
-import { AnimatePresence, motion } from "framer-motion";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { formatCurrency, formatDate } from "@/lib/admin-utils";
-import { useState } from "react";
+import { ProductWithImagesForm } from "@/components/admin/product/product-and-image-edit-form";
+
+type Row = {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  shortDescription?: string | null;
+  sku: string;
+  price: number;
+  isActive: boolean;
+  isFeatured: boolean;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  createdAt: string;
+  categories?: { id: string; name: string }[];
+  images?: { id: string; url: string; altText?: string | null }[];
+};
 
 export default function ProductsPage() {
-  type Row = {
-    id: string;
-    name: string;
-    slug: string;
-    description?: string | null;
-    shortDescription?: string | null;
-    sku: string;
-    price: number;
-    isActive: boolean;
-    isFeatured: boolean;
-    metaTitle?: string | null;
-    metaDescription?: string | null;
-    createdAt: string;
-    categories?: { id: string; name: string }[];
-    images?: { id: string; url: string; altText?: string | null }[];
+  const [editingProduct, setEditingProduct] = useState<Row | null>(null);
+  const [tableKey, setTableKey] = useState(0); // reload table
+  const [deleteProduct, setDeleteProduct] = useState<Row | null>(null);
+
+  const handleAddProduct = () => setEditingProduct({} as Row);
+  const handleEditProduct = (product: Row) => setEditingProduct(product);
+  const handleCancel = () => setEditingProduct(null);
+
+  const handleSave = () => {
+    setEditingProduct(null);
+    setTableKey((prev) => prev + 1);
   };
 
-  const [openForm, setOpenForm] = useState(false);
-  // CRUD Operations for Products
-  const handleAddProduct = () => {
-    setOpenForm(true);
-  };
+  const confirmDeleteProduct = async () => {
+    if (!deleteProduct) return;
 
-  const handleEditProduct = (product: Row) => {
-    // setSelectedProduct(product);
-    // setOpenForm(true);
-  };
-
-  const handleDeleteProduct = (product: Row) => {
-    if (confirm(`Are you sure you want to delete product: ${product.name}?`)) {
-      alert("Delete Product functionality - to be implemented with API call");
+    try {
+      const res = await fetch(`/api/admin/products/${deleteProduct.id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) setTableKey((prev) => prev + 1);
+      setDeleteProduct(null);
+    } catch (error) {
+      console.error(error);
+      setDeleteProduct(null);
     }
   };
 
@@ -50,7 +68,7 @@ export default function ProductsPage() {
       key: "name",
       label: "Product Name",
       sortable: true,
-      render: (r: Row) => (
+      render: (r) => (
         <div className="flex flex-col">
           <span className="font-medium text-foreground">{r.name}</span>
           <span className="text-xs text-muted-foreground font-mono">
@@ -63,12 +81,12 @@ export default function ProductsPage() {
       key: "price",
       label: "Price",
       sortable: true,
-      render: (r: Row) => <span>{formatCurrency(r.price)}</span>,
+      render: (r) => <span>{formatCurrency(r.price)}</span>,
     },
     {
       key: "isActive",
       label: "Status",
-      render: (r: Row) => (
+      render: (r) => (
         <span
           className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
             r.isActive
@@ -84,26 +102,28 @@ export default function ProductsPage() {
       key: "createdAt",
       label: "Created At",
       sortable: true,
-      render: (r: Row) => formatDate(r.createdAt),
+      render: (r) => formatDate(r.createdAt),
     },
     {
       key: "categories",
       label: "Categories",
-      render: (r: Row) =>
-        r.categories?.map((c: any) => c.name).join(", ") || "-",
+      render: (r) => r.categories?.map((c) => c.name).join(", ") || "-",
     },
     {
       key: "images",
       label: "Images",
-      render: (r: Row) =>
-        r.images?.map((img: any) => (
-          <img
-            key={img.id}
-            src={img.url}
-            alt={img.altText || "product"}
-            className="w-12 h-12 object-cover inline-block mr-2"
-          />
-        )),
+      render: (r) => (
+        <div className="flex items-center space-x-2">
+          {r.images?.map((img) => (
+            <img
+              key={img.id}
+              src={img.url}
+              alt={img.altText || "product"}
+              className="w-12 h-12 object-cover"
+            />
+          ))}
+        </div>
+      ),
     },
   ];
 
@@ -111,44 +131,62 @@ export default function ProductsPage() {
     <PageTransition>
       <div className="space-y-6">
         <PageHeader title="Products" />
+
+        {/* Form */}
+        {editingProduct && (
+          <div className="p-6 rounded-md shadow-md">
+            <ProductWithImagesForm
+              product={editingProduct.id ? editingProduct : undefined}
+              images={
+                editingProduct.images?.map((img) => ({
+                  ...img,
+                  displayOrder: 0,
+                  isPrimary: false,
+                })) || []
+              }
+              onSave={handleSave}
+            />
+            <div className="mt-4 flex justify-end">
+              <Button variant="outline" onClick={handleCancel}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-end mb-4">
+          <Button onClick={handleAddProduct}>Add Product</Button>
+        </div>
+
         <HeroTable<Row>
+          key={tableKey}
           title="Product Management"
           fetchUrl="/api/admin/products"
           columns={columns}
           defaultSort="createdAt"
           defaultOrder="desc"
           pageSizeOptions={[10, 20, 50]}
-          onAdd={handleAddProduct}
           onEdit={handleEditProduct}
-          onDelete={handleDeleteProduct}
+          onDelete={(product) => setDeleteProduct(product)}
         />
 
-        <AnimatePresence>
-          {openForm && (
-            <Dialog open={openForm} onOpenChange={setOpenForm}>
-              <DialogContent className="p-0">
-                <motion.div
-                  className="w-full max-w-[1200px] mx-auto rounded-lg p-6"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <ProductForm onSave={() => setOpenForm(false)} />
-
-                  <div className="mt-4 flex justify-end">
-                    <Button
-                      variant="outline"
-                      onClick={() => setOpenForm(false)}
-                    >
-                      Close
-                    </Button>
-                  </div>
-                </motion.div>
-              </DialogContent>
-            </Dialog>
-          )}
-        </AnimatePresence>
+        {/* ShadCN AlertDialog for Delete */}
+        <AlertDialog
+          open={!!deleteProduct}
+          onOpenChange={() => setDeleteProduct(null)}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDeleteProduct}>
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </PageTransition>
   );

@@ -69,7 +69,7 @@ export async function PUT(
 
     return NextResponse.json(updatedImage, { status: 200 });
   } catch (error: any) {
-    console.error("⚠️ PUT Error:", error);
+    console.error("PUT Error:", error);
     return NextResponse.json(
       { error: "Failed to update image", details: error.message },
       { status: 500 }
@@ -111,7 +111,7 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("⚠️ DELETE Error:", error);
+    console.error(" DELETE Error:", error);
     return NextResponse.json(
       { error: "Failed to delete image", details: error.message },
       { status: 500 }

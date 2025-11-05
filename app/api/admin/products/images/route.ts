@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
     }
 
     const file = formData.get("image") as File | null;
+    console.log("File:", file);
 
     if (!file) {
       return NextResponse.json(

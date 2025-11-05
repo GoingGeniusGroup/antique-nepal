@@ -1,0 +1,101 @@
+"use client";
+
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { ProductImage } from "./types";
+
+type Props = {
+  images: ProductImage[];
+  onChange: (index: number, field: keyof ProductImage, value: any) => void;
+  onAdd: () => void;
+  onRemove: (index: number) => void;
+};
+
+export function ProductImagesForm({
+  images,
+  onChange,
+  onAdd,
+  onRemove,
+}: Props) {
+  return (
+    <div className="space-y-6">
+      {images.map((img, idx) => (
+        <div
+          key={idx}
+          className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg space-y-4 bg-white dark:bg-gray-800 shadow-sm"
+        >
+          <div className="flex items-center justify-between">
+            <Label className="font-medium text-gray-800 dark:text-gray-200">
+              Image {idx + 1}
+            </Label>
+            <button
+              onClick={() => onRemove(idx)}
+              className="text-red-500 hover:text-red-600"
+            >
+              Remove
+            </button>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <Label className="text-gray-700 dark:text-gray-300">
+                Upload File
+              </Label>
+              <Input
+                type="file"
+                className="mt-1"
+                onChange={(e) => onChange(idx, "file", e.target.files?.[0])}
+              />
+            </div>
+
+            <div>
+              <Label className="text-gray-700 dark:text-gray-300">
+                Alt Text
+              </Label>
+              <Input
+                value={img.altText ?? ""}
+                className="mt-1"
+                onChange={(e) => onChange(idx, "altText", e.target.value)}
+                placeholder="Alt text"
+              />
+            </div>
+
+            <div>
+              <Label className="text-gray-700 dark:text-gray-300">
+                Display Order
+              </Label>
+              <Input
+                type="number"
+                value={img.displayOrder}
+                className="mt-1"
+                onChange={(e) =>
+                  onChange(idx, "displayOrder", parseInt(e.target.value) || 0)
+                }
+              />
+            </div>
+
+            <div className="flex items-center space-x-2 mt-5">
+              <Switch
+                checked={img.isPrimary}
+                onCheckedChange={(v) => onChange(idx, "isPrimary", v)}
+              />
+              <span className="text-gray-700 dark:text-gray-300">
+                {img.isPrimary ? "Primary" : "Not Primary"}
+              </span>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      <div className="flex justify-center">
+        <button
+          onClick={onAdd}
+          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors duration-200"
+        >
+          Add New Image
+        </button>
+      </div>
+    </div>
+  );
+}
