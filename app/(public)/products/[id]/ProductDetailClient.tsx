@@ -1,6 +1,9 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import toast from "react-hot-toast";
 import {
   Star,
   Heart,
@@ -16,10 +19,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Image from "next/image";
 import { useTheme } from "@/contexts/theme-context";
 import { cn } from "@/lib/utils";
-import toast from "react-hot-toast";
 
 interface ProductImage {
   id: string;
@@ -33,16 +34,11 @@ interface ProductReview {
   rating: number;
   comment: string;
   createdAt: Date;
-  user?: {
-    firstName?: string | null;
-  };
+  user?: { firstName?: string | null };
 }
 
 interface ProductCategory {
-  category: {
-    id: string;
-    name: string;
-  };
+  category: { id: string; name: string };
 }
 
 interface Product {
@@ -55,15 +51,24 @@ interface Product {
   categories: ProductCategory[];
   reviews: ProductReview[];
 }
+interface WishlistItem {
+  id: string;
+  product: {
+    id: string;
+    name: string;
+    images: { id: string; url: string; altText?: string | null }[];
+  };
+}
+
+interface Wishlist {
+  id: string;
+  items: WishlistItem[];
+}
 
 const calculateAverageRating = (reviews: ProductReview[]) => {
   if (reviews.length === 0) return 0;
   const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
   return (sum / reviews.length).toFixed(1);
-};
-
-const getPrimaryImage = (images: ProductImage[]) => {
-  return images.find((img) => img.isPrimary) || images[0];
 };
 
 const ProductDetailClient = ({ product }: { product: Product }) => {
@@ -73,10 +78,61 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
 
+  const userId = "cmhlfpblq0002ijmcd33f866n"; // Replace with real logged-in user ID
   const averageRating = calculateAverageRating(product.reviews);
   const primaryCategory = product.categories[0]?.category?.name || "Product";
   const badge = product.isFeatured ? "Featured" : primaryCategory;
-  const hasImages = product.images && product.images.length > 0;
+
+  // Fetch wishlist status on mount
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      try {
+        const res = await fetch(`/api/wishlist?userId=${userId}`);
+        const data: Wishlist = await res.json();
+        if (data?.items?.some((item) => item.product.id === product.id)) {
+          setIsWishlisted(true);
+        }
+      } catch (err) {
+        console.error("Failed to fetch wishlist", err);
+      }
+    };
+    fetchWishlist();
+  }, [product.id, userId]);
+
+  // Toggle wishlist
+  const handleWishlistToggle = async () => {
+    try {
+      if (!isWishlisted) {
+        // Add to wishlist
+        await fetch("/api/wishlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId, productId: product.id }),
+        });
+        toast.success("Added to wishlist!");
+        setIsWishlisted(true);
+      } else {
+        // Remove from wishlist
+        const wishlistRes = await fetch(`/api/wishlist?userId=${userId}`);
+        const wishlistData: Wishlist = await wishlistRes.json();
+        const item = wishlistData.items.find(
+          (i) => i.product.id === product.id
+        );
+        if (item) {
+          await fetch("/api/wishlist", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ wishlistItemId: item.id }),
+          });
+          toast.success("Removed from wishlist!");
+          setIsWishlisted(false);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update wishlist.");
+    }
+  };
 
   const handleShare = async () => {
     const shareData = {
@@ -84,7 +140,6 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
       text: "Check out this amazing product from HempCraft!",
       url: typeof window !== "undefined" ? window.location.href : "",
     };
-
     try {
       if (navigator.share) {
         await navigator.share(shareData);
@@ -102,7 +157,7 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
   return (
     <div className="min-h-screen bg-background pt-16">
       {/* Product Section */}
-      <section className="py-12 ">
+      <section className="py-12">
         <div className="container mx-auto px-4">
           <Link
             href="/products"
@@ -115,7 +170,6 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Images */}
             <div className="space-y-4">
-              {/* Main Image */}
               <Card className="overflow-hidden border-2 relative">
                 {badge && (
                   <span
@@ -130,8 +184,11 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
                   </span>
                 )}
                 <Image
-                  // product.images[selectedImage]?.url ||
-                  src={"/product_placeholder.jpeg"}
+                  src={
+                    product.images[selectedImage]?.url
+                      ? `/${product.images[selectedImage].url}`
+                      : "/product_placeholder.jpeg"
+                  }
                   alt={product.images[selectedImage]?.altText || product.name}
                   width={500}
                   height={500}
@@ -139,7 +196,6 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
                 />
               </Card>
 
-              {/* Thumbnails */}
               <div className="grid grid-cols-3 gap-4">
                 {product.images.map((image, index) => (
                   <button
@@ -152,8 +208,7 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
                     }`}
                   >
                     <Image
-                      // image.url ||
-                      src={"/product_placeholder.jpeg"}
+                      src={`/${image.url}` || "/product_placeholder.jpeg"}
                       alt={image.altText || `${product.name} ${index + 1}`}
                       width={150}
                       height={150}
@@ -236,7 +291,7 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
                   <Button
                     size="lg"
                     variant="outline"
-                    onClick={() => setIsWishlisted(!isWishlisted)}
+                    onClick={handleWishlistToggle}
                   >
                     <Heart
                       className={`h-5 w-5 ${
@@ -291,14 +346,12 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
                 >
                   Description
                 </TabsTrigger>
-                {/* {product.reviews.length > 0 && ( */}
                 <TabsTrigger
                   className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-600"
                   value="reviews"
                 >
                   Reviews ({product.reviews.length})
                 </TabsTrigger>
-                {/* )} */}
               </TabsList>
 
               <TabsContent value="description" className="mt-8">
