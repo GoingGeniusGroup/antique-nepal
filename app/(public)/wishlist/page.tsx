@@ -198,7 +198,7 @@ const Wishlist = () => {
                           <Image
                             src={
                               primaryImage?.url
-                                ? `/${primaryImage.url}`
+                                ? `${primaryImage.url}`
                                 : "/product_placeholder.jpeg"
                             }
                             alt={primaryImage?.altText || product.name}
