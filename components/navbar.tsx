@@ -33,6 +33,7 @@ import logoImgDark from "@/public/logo/Antique-Nepal-Logo-2.png";
 import logoTextImgDark from "@/public/logo/Antique-Nepal-Logo-3.png";
 import logoTextImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-2.png";
 import logoImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-3.png";
+import { useAdminUser } from "@/hooks/useAdminUser";
 interface Category {
   id: string;
   name: string;
@@ -50,6 +51,7 @@ export const Navbar = () => {
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
   useAutoLogout();
+  useAdminUser();
 
   const [categories, setCategories] = useState<Category[]>([]);
 

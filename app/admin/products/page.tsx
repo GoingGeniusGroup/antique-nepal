@@ -3,17 +3,12 @@
 import { HeroTable, HeroColumn } from "@/components/admin/hero-table";
 import { PageHeader } from "@/components/admin/page-header";
 import { PageTransition } from "@/components/admin/page-transition";
-import { getStatusColor, formatCurrency, formatDate } from "@/lib/admin-utils";
-
-/**
- * Products Management Page
- *
- * Features:
- * - View all products with search, sort, and pagination
- * - Add new products with variants and pricing
- * - Edit product details and inventory
- * - Manage product status (active/inactive)
- */
+import { ProductForm } from "@/components/admin/product/product-form";
+import { Button } from "@/components/ui/button";
+import { AnimatePresence, motion } from "framer-motion";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { formatCurrency, formatDate } from "@/lib/admin-utils";
+import { useState } from "react";
 
 export default function ProductsPage() {
   type Row = {
@@ -23,31 +18,25 @@ export default function ProductsPage() {
     description?: string | null;
     shortDescription?: string | null;
     sku: string;
-    price: string;
+    price: number;
     isActive: boolean;
     isFeatured: boolean;
     metaTitle?: string | null;
     metaDescription?: string | null;
     createdAt: string;
-    updatedAt: string;
     categories?: { id: string; name: string }[];
     images?: { id: string; url: string; altText?: string | null }[];
-    variants?: { id: string; name: string }[];
-    reviews?: { id: string; rating: number; comment: string }[];
-    wishlistItems?: { id: string; userId: string }[];
   };
 
+  const [openForm, setOpenForm] = useState(false);
   // CRUD Operations for Products
   const handleAddProduct = () => {
-    alert(
-      "Add Product functionality - to be implemented with comprehensive product form"
-    );
+    setOpenForm(true);
   };
 
   const handleEditProduct = (product: Row) => {
-    alert(
-      `Edit Product: ${product.name} - to be implemented with product form modal`
-    );
+    // setSelectedProduct(product);
+    // setOpenForm(true);
   };
 
   const handleDeleteProduct = (product: Row) => {
@@ -67,19 +56,8 @@ export default function ProductsPage() {
           <span className="text-xs text-muted-foreground font-mono">
             {r.sku}
           </span>
-          <span className="text-xs text-muted-foreground">{r.slug}</span>
         </div>
       ),
-    },
-    {
-      key: "description",
-      label: "Description",
-      render: (r: Row) => r.description || "-",
-    },
-    {
-      key: "shortDescription",
-      label: "Short Description",
-      render: (r: Row) => r.shortDescription || "-",
     },
     {
       key: "price",
@@ -103,31 +81,10 @@ export default function ProductsPage() {
       ),
     },
     {
-      key: "isFeatured",
-      label: "Featured",
-      render: (r: Row) => (r.isFeatured ? "Yes" : "No"),
-    },
-    {
-      key: "metaTitle",
-      label: "Meta Title",
-      render: (r: Row) => r.metaTitle || "-",
-    },
-    {
-      key: "metaDescription",
-      label: "Meta Description",
-      render: (r: Row) => r.metaDescription || "-",
-    },
-    {
       key: "createdAt",
       label: "Created At",
       sortable: true,
       render: (r: Row) => formatDate(r.createdAt),
-    },
-    {
-      key: "updatedAt",
-      label: "Updated At",
-      sortable: true,
-      render: (r: Row) => formatDate(r.updatedAt),
     },
     {
       key: "categories",
@@ -165,6 +122,33 @@ export default function ProductsPage() {
           onEdit={handleEditProduct}
           onDelete={handleDeleteProduct}
         />
+
+        <AnimatePresence>
+          {openForm && (
+            <Dialog open={openForm} onOpenChange={setOpenForm}>
+              <DialogContent className="p-0">
+                <motion.div
+                  className="w-full max-w-[1200px] mx-auto rounded-lg p-6"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ProductForm onSave={() => setOpenForm(false)} />
+
+                  <div className="mt-4 flex justify-end">
+                    <Button
+                      variant="outline"
+                      onClick={() => setOpenForm(false)}
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </motion.div>
+              </DialogContent>
+            </Dialog>
+          )}
+        </AnimatePresence>
       </div>
     </PageTransition>
   );

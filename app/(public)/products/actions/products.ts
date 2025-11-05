@@ -145,3 +145,32 @@ export async function getProducts(params: GetProductsParams) {
     throw new Error("Failed to fetch products");
   }
 }
+
+export async function getProductById(id: string) {
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: {
+      images: {
+        orderBy: { displayOrder: "asc" },
+      },
+      categories: {
+        include: {
+          category: true,
+        },
+      },
+      reviews: {
+        include: {
+          user: { select: { firstName: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+
+  if (!product) return null;
+
+  return {
+    ...product,
+    price: product.price.toNumber(), // 👈 convert Decimal -> number
+  };
+}

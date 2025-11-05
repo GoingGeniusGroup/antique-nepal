@@ -1,102 +1,126 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { Heart, ShoppingCart, Trash2 } from "lucide-react";
+import { Heart, ShoppingCart } from "lucide-react";
 import { Pagination } from "@/components/products/pagination";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/theme-context";
 import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner"; // ShadCN Spinner
 
-// Example images
-import bag1 from "@/public/hemp-bag-1.jpg";
-import bag2 from "@/public/hemp-bag-2.jpg";
-import bag3 from "@/public/hemp-bag-3.jpg";
+interface WishlistProductImage {
+  id: string;
+  url: string;
+  altText?: string | null;
+  isPrimary?: boolean;
+}
 
 interface WishlistItem {
-  id: number;
-  name: string;
-  price: number;
-  image: any;
-  inStock: boolean;
-  isWishlisted?: boolean;
+  id: string;
+  product: {
+    id: string;
+    name: string;
+    price: string;
+    images: WishlistProductImage[];
+  };
 }
 
 const ITEMS_PER_PAGE = 4;
 
 const Wishlist = () => {
-  const [items, setItems] = useState<WishlistItem[]>([
-    {
-      id: 1,
-      name: "Himalayan Hemp Tote Bag",
-      price: 89.99,
-      image: bag1,
-      inStock: true,
-      isWishlisted: true,
-    },
-    {
-      id: 2,
-      name: "Traditional Woven Backpack",
-      price: 129.99,
-      image: bag2,
-      inStock: true,
-      isWishlisted: true,
-    },
-    {
-      id: 3,
-      name: "Artisan Shoulder Bag",
-      price: 99.99,
-      image: bag3,
-      inStock: false,
-      isWishlisted: true,
-    },
-    {
-      id: 4,
-      name: "Mountain Sling Bag",
-      price: 59.99,
-      image: bag1,
-      inStock: true,
-      isWishlisted: true,
-    },
-    {
-      id: 5,
-      name: "Eco-Friendly Satchel",
-      price: 79.99,
-      image: bag2,
-      inStock: true,
-      isWishlisted: true,
-    },
-  ]);
-
+  const [items, setItems] = useState<WishlistItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [removingIds, setRemovingIds] = useState<string[]>([]);
+
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
+
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  // Redirect if not signed in
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  const userId = session?.user?.id;
+
+  // Fetch wishlist
+  useEffect(() => {
+    if (!userId) return;
+    setLoading(true);
+    fetch(`/api/wishlist?userId=${userId}`)
+      .then((res) => res.json())
+      .then((data) => setItems(data?.items || []))
+      .catch((err) => {
+        console.error("Failed to fetch wishlist:", err);
+        toast.error("Failed to load wishlist.");
+      })
+      .finally(() => setLoading(false));
+  }, [userId]);
 
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  const toggleWishlist = (id: number) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, isWishlisted: !item.isWishlisted } : item
-      )
-    );
-  };
+  // Remove item from wishlist
+  const removeItem = async (id: string) => {
+    try {
+      setRemovingIds((prev) => [...prev, id]);
+      const res = await fetch("/api/wishlist", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ wishlistItemId: id }),
+      });
+      if (!res.ok) throw new Error("Failed to remove item");
 
-  const removeItem = (id: number) => {
-    const updatedItems = items.filter((item) => item.id !== id);
-    setItems(updatedItems);
+      const updatedItems = items.filter((item) => item.id !== id);
+      setItems(updatedItems);
 
-    if (
-      (currentPage - 1) * ITEMS_PER_PAGE >= updatedItems.length &&
-      currentPage > 1
-    ) {
-      setCurrentPage(currentPage - 1);
+      if (
+        (currentPage - 1) * ITEMS_PER_PAGE >= updatedItems.length &&
+        currentPage > 1
+      ) {
+        setCurrentPage(currentPage - 1);
+      }
+
+      toast.success("Item removed from wishlist!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to remove item from wishlist.");
+    } finally {
+      setRemovingIds((prev) => prev.filter((rid) => rid !== id));
     }
   };
+
+  // Toggle wishlist
+  const toggleWishlist = async (item: WishlistItem) => {
+    if (!item) return;
+    await removeItem(item.id);
+  };
+
+  // --- RENDER ---
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <Spinner className="h-10 w-10 mb-4 text-primary" />
+          <p className="text-lg font-medium text-muted-foreground">
+            Loading wishlist...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -126,95 +150,92 @@ const Wishlist = () => {
           ) : (
             <>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {paginatedItems.map((item, index) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className={cn(
-                      "border rounded-lg overflow-hidden hover:shadow-lg transition-shadow relative group",
-                      isDark
-                        ? "border-white/10 bg-linear-to-br from-[#1f1f1f] to-[#2a2a2a]"
-                        : "border-[#e8e0d8] bg-white"
-                    )}
-                  >
-                    {/* Wishlist Heart Toggle */}
-                    <button
-                      onClick={() => toggleWishlist(item.id)}
+                {paginatedItems.map((item, index) => {
+                  const product = item.product;
+                  const primaryImage =
+                    product.images.find((img) => img.isPrimary) ||
+                    product.images[0];
+                  const isRemoving = removingIds.includes(item.id);
+
+                  return (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
                       className={cn(
-                        "absolute top-3 right-3 p-2 rounded-full transition-colors z-10",
+                        "border rounded-lg overflow-hidden hover:shadow-lg transition-shadow relative group",
                         isDark
-                          ? "bg-white/90 hover:bg-white"
-                          : "bg-white/95 hover:bg-white shadow-md"
+                          ? "border-white/10 bg-linear-to-br from-[#1f1f1f] to-[#2a2a2a]"
+                          : "border-[#e8e0d8] bg-white"
                       )}
                     >
-                      <Heart
-                        size={18}
+                      {/* Wishlist Heart Toggle */}
+                      <button
+                        onClick={() => toggleWishlist(item)}
+                        disabled={isRemoving}
                         className={cn(
-                          "transition-colors",
-                          item.isWishlisted
-                            ? "fill-red-500 stroke-red-500"
-                            : "stroke-black"
-                        )}
-                      />
-                    </button>
-
-                    {/* Product Image */}
-                    <div className="relative aspect-square">
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        className="object-cover"
-                        fill
-                      />
-                      {!item.inStock && (
-                        <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
-                          <span className="text-lg font-semibold">
-                            Out of Stock
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="p-4">
-                      <h3
-                        className={cn(
-                          "font-semibold mb-2 line-clamp-1",
-                          isDark ? "text-white" : "text-[#2d2520]"
+                          "absolute top-3 right-3 p-2 rounded-full transition-colors z-10",
+                          isDark
+                            ? "bg-white/90 hover:bg-white"
+                            : "bg-white/95 hover:bg-white shadow-md",
+                          isRemoving ? "opacity-50 cursor-not-allowed" : ""
                         )}
                       >
-                        {item.name}
-                      </h3>
-                      <p
-                        className={cn(
-                          "text-xl font-bold mb-4",
-                          isDark ? "text-amber-300" : "text-primary"
+                        {isRemoving ? (
+                          <Spinner className="h-5 w-5" />
+                        ) : (
+                          <Heart
+                            size={18}
+                            className="fill-red-500 stroke-red-500"
+                          />
                         )}
-                      >
-                        ${item.price}
-                      </p>
-                      <div className="flex gap-2">
-                        <Button
-                          className="flex-1 bg-green-600 hover:bg-green-700 text-white cursor-pointer"
-                          disabled={!item.inStock}
-                        >
-                          <ShoppingCart className="h-4 w-4 mr-2" />
-                          Add to Cart
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="hover:bg-red-500 cursor-pointer"
-                          onClick={() => removeItem(item.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      </button>
+
+                      {/* Product Image */}
+                      <div className="relative aspect-square">
+                        <Link href={`/products/${product.id}`}>
+                          <Image
+                            src={
+                              primaryImage?.url
+                                ? `/${primaryImage.url}`
+                                : "/product_placeholder.jpeg"
+                            }
+                            alt={primaryImage?.altText || product.name}
+                            className="object-cover"
+                            fill
+                          />
+                        </Link>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+
+                      {/* Product Info */}
+                      <div className="p-4">
+                        <h3
+                          className={cn(
+                            "font-semibold mb-2 line-clamp-1",
+                            isDark ? "text-white" : "text-[#2d2520]"
+                          )}
+                        >
+                          {product.name}
+                        </h3>
+                        <p
+                          className={cn(
+                            "text-xl font-bold mb-4",
+                            isDark ? "text-amber-300" : "text-primary"
+                          )}
+                        >
+                          ${Number(product.price).toFixed(2)}
+                        </p>
+                        <div className="flex gap-2">
+                          <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white cursor-pointer">
+                            <ShoppingCart className="h-4 w-4 mr-2" />
+                            Add to Cart
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
 
               {/* Pagination */}

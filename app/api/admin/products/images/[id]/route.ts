@@ -6,7 +6,10 @@ import fs from "fs";
 import { updateImageSchema } from "@/app/validations/product/image/image-schema";
 
 //UPDATE IMAGE
-export async function PUT(req: NextRequest, context: any) {
+export async function PUT(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   const { params } = await context;
   const { id } = await params;
   console.log("Id:", id);
@@ -75,7 +78,10 @@ export async function PUT(req: NextRequest, context: any) {
 }
 
 // DELETE IMAGE
-export async function DELETE(req: NextRequest, context: any) {
+export async function DELETE(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   const { params } = await context;
   const { id } = await params;
 
