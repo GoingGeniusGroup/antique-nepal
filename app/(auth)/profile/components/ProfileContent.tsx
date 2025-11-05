@@ -12,6 +12,7 @@ import type {
   Product,
   ProductImage,
 } from "@prisma/client";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -52,6 +53,7 @@ export type UserWithRelations = PrismaUser & {
 
 type ProfileContentProps = {
   user: UserWithRelations;
+  onEdit: () => void;
 };
 
 const getStatusBadge = (status: string) => {
@@ -101,7 +103,7 @@ const getStatusBadge = (status: string) => {
   }
 };
 
-export default function ProfileContent({ user }: ProfileContentProps) {
+export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
   console.log("User data:", user);
   const recentOrders = user.orders || [];
   const savedAddresses = user.addresses || [];
@@ -126,7 +128,8 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                     alt={user.firstName || ""}
                   />
                   <AvatarFallback>
-                    {user.firstName?.[0]}{user.lastName?.[0]}
+                    {user.firstName?.[0]}
+                    {user.lastName?.[0]}
                   </AvatarFallback>
                 </Avatar>
 
@@ -169,11 +172,13 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                     </div>
 
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" asChild>
-                        <a href="/profile/edit">
-                          <Edit className="w-4 h-4 mr-2" />
-                          Edit Profile
-                        </a>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={onEdit}
+                      >
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit Profile
                       </Button>
                       <Button variant="ghost" size="sm">
                         <LogOut className="w-4 h-4 mr-2" />
