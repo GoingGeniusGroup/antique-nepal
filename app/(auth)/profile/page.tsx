@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import ProfileContent from "./ProfileContent";
+import ProfileView from "./components/ProfileView";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -37,5 +37,5 @@ export default async function ProfilePage() {
 
   if (!user) redirect("/login");
 
-  return <ProfileContent user={user} />;
+  return <ProfileView user={user} />;
 }
