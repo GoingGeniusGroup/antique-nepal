@@ -172,11 +172,11 @@ export function AdminSidebar({
             </div>
           </div>
 
-          {/* Bottom User */}
-          <div>
+          {/* Bottom User Profile & Logout */}
+          <div className="space-y-2">
             <CustomSidebarLink
-              href="#"
-              label="Admin User"
+              href="/admin/profile"
+              label="Admin Profile"
               icon={
                 <img
                   src="https://assets.aceternity.com/manu.png"
@@ -190,15 +190,26 @@ export function AdminSidebar({
               open={open}
             />
             {/* logout button */}
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-2 hover:shadow-soft transition-all"
-              onClick={() => signOut({ callbackUrl: "/" })}
+            <button
+              onClick={() => signOut({ callbackUrl: "/admin/login" })}
+              className={cn(
+                "flex items-center gap-2 group/sidebar py-2 rounded-md transition-all duration-300 ease-in-out text-white w-full",
+                open ? "justify-start px-3" : "justify-center px-2",
+                "hover:bg-red-600/50 dark:hover:bg-red-700/50"
+              )}
             >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
+              <LogOut className="text-white h-5 w-5 flex-shrink-0" />
+              <motion.span
+                animate={{
+                  display: open ? "inline-block" : "none",
+                  opacity: open ? 1 : 0,
+                }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="text-white text-sm group-hover/sidebar:translate-x-1 transition duration-300 ease-in-out whitespace-pre inline-block !p-0 !m-0"
+              >
+                Logout
+              </motion.span>
+            </button>
           </div>
         </SidebarBody>
       </Sidebar>
