@@ -6,7 +6,7 @@ import { PageTransition } from "@/components/admin/page-transition";
 import { ProductForm } from "@/components/admin/product/product-form";
 import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { formatCurrency, formatDate } from "@/lib/admin-utils";
 import { useState } from "react";
 
@@ -126,6 +126,9 @@ export default function ProductsPage() {
         <AnimatePresence>
           {openForm && (
             <Dialog open={openForm} onOpenChange={setOpenForm}>
+              <DialogTitle className="text-xl font-semibold p-6 border-b">
+                  Add or Edit Product
+              </DialogTitle>
               <DialogContent className="p-0">
                 <motion.div
                   className="w-full max-w-[1200px] mx-auto rounded-lg p-6"
