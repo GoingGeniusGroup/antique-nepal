@@ -26,7 +26,6 @@ model User {
   addresses     Address[]
   adminUser     AdminUser?
   carts         Cart[]
-  couponUsages  CouponUsage[]
   orders        Order[]
   reviews       Review[]
   sessions      Session[]
@@ -260,7 +259,6 @@ model Order {
   subtotal          Decimal       @db.Decimal(10, 2)
   shippingCost      Decimal       @db.Decimal(10, 2)
   tax               Decimal       @db.Decimal(10, 2)
-  discount          Decimal       @default(0) @db.Decimal(10, 2)
   total             Decimal       @db.Decimal(10, 2)
   currency          String        @default("NPR")
   shippingAddressId String
@@ -270,7 +268,6 @@ model Order {
   trackingNumber    String?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
-  couponUsages      CouponUsage[]
   items             OrderItem[]
   billingAddress    Address       @relation("BillingAddress", fields: [billingAddressId], references: [id])
   shippingAddress   Address       @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
@@ -293,7 +290,6 @@ model OrderItem {
   sku              String
   quantity         Int
   price            Decimal        @db.Decimal(10, 2)
-  discount         Decimal        @default(0) @db.Decimal(10, 2)
   total            Decimal        @db.Decimal(10, 2)
   createdAt        DateTime       @default(now())
   order            Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
@@ -378,46 +374,6 @@ model ReviewImage {
 
   @@index([reviewId])
   @@map("review_images")
-}
-
-model Coupon {
-  id           String        @id @default(cuid())
-  code         String        @unique
-  type         CouponType
-  value        Decimal       @db.Decimal(10, 2)
-  minPurchase  Decimal?      @db.Decimal(10, 2)
-  maxDiscount  Decimal?      @db.Decimal(10, 2)
-  usageLimit   Int?
-  usedCount    Int           @default(0)
-  perUserLimit Int?
-  startsAt     DateTime
-  expiresAt    DateTime?
-  isActive     Boolean       @default(true)
-  description  String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  usages       CouponUsage[]
-
-  @@index([code])
-  @@index([isActive])
-  @@map("coupons")
-}
-
-model CouponUsage {
-  id             String   @id @default(cuid())
-  couponId       String
-  userId         String
-  orderId        String
-  discountAmount Decimal  @db.Decimal(10, 2)
-  usedAt         DateTime @default(now())
-  coupon         Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
-  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([couponId])
-  @@index([userId])
-  @@index([orderId])
-  @@map("coupon_usages")
 }
 
 model AdminUser {
@@ -590,10 +546,4 @@ enum ReviewStatus {
   PENDING
   APPROVED
   REJECTED
-}
-
-enum CouponType {
-  PERCENTAGE
-  FIXED
-  FREE_SHIPPING
 }
