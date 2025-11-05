@@ -33,7 +33,6 @@ import logoImgDark from "@/public/logo/Antique-Nepal-Logo-2.png";
 import logoTextImgDark from "@/public/logo/Antique-Nepal-Logo-3.png";
 import logoTextImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-2.png";
 import logoImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-3.png";
-import { useAdminUser } from "@/hooks/useAdminUser";
 interface Category {
   id: string;
   name: string;
@@ -51,7 +50,6 @@ export const Navbar = () => {
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
   useAutoLogout();
-  useAdminUser();
 
   const [categories, setCategories] = useState<Category[]>([]);
 
@@ -61,12 +59,6 @@ export const Navbar = () => {
       .then(setCategories)
       .catch(console.error);
   }, []);
-
-  // Hide navbar if user is admin
-  const userRole = (session?.user as any)?.role;
-  if (userRole === "ADMIN") {
-    return null;
-  }
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-elegant">
@@ -251,7 +243,7 @@ export const Navbar = () => {
             </Link>
 
             {/*  Auth Buttons*/}
-            {!session ? (
+            {!session || (session.user as any)?.role === "ADMIN" ? (
               <>
                 <Link href={"/login"}>
                   <Button
