@@ -10,6 +10,9 @@ import { Pagination } from "@/components/products/pagination";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/theme-context";
 import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner"; // ShadCN Spinner
 
 interface WishlistProductImage {
   id: string;
@@ -33,21 +36,36 @@ const ITEMS_PER_PAGE = 4;
 const Wishlist = () => {
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [removingIds, setRemovingIds] = useState<string[]>([]);
+
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
 
-  const userId = "cmhlfpblq0002ijmcd33f866n"; // get from session/auth
+  const router = useRouter();
+  const { data: session, status } = useSession();
 
-  // Fetch wishlist from API
+  // Redirect if not signed in
   useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  const userId = session?.user?.id;
+
+  // Fetch wishlist
+  useEffect(() => {
+    if (!userId) return;
+    setLoading(true);
     fetch(`/api/wishlist?userId=${userId}`)
       .then((res) => res.json())
-      .then((data) => {
-        if (data?.items) {
-          setItems(data.items);
-        }
+      .then((data) => setItems(data?.items || []))
+      .catch((err) => {
+        console.error("Failed to fetch wishlist:", err);
+        toast.error("Failed to load wishlist.");
       })
-      .catch((err) => console.error("Failed to fetch wishlist:", err));
+      .finally(() => setLoading(false));
   }, [userId]);
 
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
@@ -57,20 +75,17 @@ const Wishlist = () => {
   // Remove item from wishlist
   const removeItem = async (id: string) => {
     try {
+      setRemovingIds((prev) => [...prev, id]);
       const res = await fetch("/api/wishlist", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ wishlistItemId: id }),
       });
-
-      if (!res.ok) {
-        throw new Error("Failed to remove item");
-      }
+      if (!res.ok) throw new Error("Failed to remove item");
 
       const updatedItems = items.filter((item) => item.id !== id);
       setItems(updatedItems);
 
-      // Adjust current page if needed
       if (
         (currentPage - 1) * ITEMS_PER_PAGE >= updatedItems.length &&
         currentPage > 1
@@ -82,14 +97,30 @@ const Wishlist = () => {
     } catch (error) {
       console.error(error);
       toast.error("Failed to remove item from wishlist.");
+    } finally {
+      setRemovingIds((prev) => prev.filter((rid) => rid !== id));
     }
   };
 
-  // Toggle wishlist (remove only, since it's already in wishlist)
+  // Toggle wishlist
   const toggleWishlist = async (item: WishlistItem) => {
     if (!item) return;
     await removeItem(item.id);
   };
+
+  // --- RENDER ---
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <Spinner className="h-10 w-10 mb-4 text-primary" />
+          <p className="text-lg font-medium text-muted-foreground">
+            Loading wishlist...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -124,6 +155,7 @@ const Wishlist = () => {
                   const primaryImage =
                     product.images.find((img) => img.isPrimary) ||
                     product.images[0];
+                  const isRemoving = removingIds.includes(item.id);
 
                   return (
                     <motion.div
@@ -141,27 +173,39 @@ const Wishlist = () => {
                       {/* Wishlist Heart Toggle */}
                       <button
                         onClick={() => toggleWishlist(item)}
+                        disabled={isRemoving}
                         className={cn(
                           "absolute top-3 right-3 p-2 rounded-full transition-colors z-10",
                           isDark
                             ? "bg-white/90 hover:bg-white"
-                            : "bg-white/95 hover:bg-white shadow-md"
+                            : "bg-white/95 hover:bg-white shadow-md",
+                          isRemoving ? "opacity-50 cursor-not-allowed" : ""
                         )}
                       >
-                        <Heart
-                          size={18}
-                          className="fill-red-500 stroke-red-500"
-                        />
+                        {isRemoving ? (
+                          <Spinner className="h-5 w-5" />
+                        ) : (
+                          <Heart
+                            size={18}
+                            className="fill-red-500 stroke-red-500"
+                          />
+                        )}
                       </button>
 
                       {/* Product Image */}
                       <div className="relative aspect-square">
-                        <Image
-                          src={`/${primaryImage?.url}`}
-                          alt={primaryImage?.altText || product.name}
-                          className="object-cover"
-                          fill
-                        />
+                        <Link href={`/products/${product.id}`}>
+                          <Image
+                            src={
+                              primaryImage?.url
+                                ? `/${primaryImage.url}`
+                                : "/product_placeholder.jpeg"
+                            }
+                            alt={primaryImage?.altText || product.name}
+                            className="object-cover"
+                            fill
+                          />
+                        </Link>
                       </div>
 
                       {/* Product Info */}

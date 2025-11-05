@@ -21,6 +21,8 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "@/contexts/theme-context";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+import { Spinner } from "@/components/ui/spinner"; // ShadCN Spinner
 
 interface ProductImage {
   id: string;
@@ -51,6 +53,7 @@ interface Product {
   categories: ProductCategory[];
   reviews: ProductReview[];
 }
+
 interface WishlistItem {
   id: string;
   product: {
@@ -75,10 +78,13 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false); // Loading state for wishlist action
+
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
 
-  const userId = "cmhlfpblq0002ijmcd33f866n"; // Replace with real logged-in user ID
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
   const averageRating = calculateAverageRating(product.reviews);
   const primaryCategory = product.categories[0]?.category?.name || "Product";
   const badge = product.isFeatured ? "Featured" : primaryCategory;
@@ -86,6 +92,7 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
   // Fetch wishlist status on mount
   useEffect(() => {
     const fetchWishlist = async () => {
+      if (!userId) return;
       try {
         const res = await fetch(`/api/wishlist?userId=${userId}`);
         const data: Wishlist = await res.json();
@@ -101,6 +108,13 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
 
   // Toggle wishlist
   const handleWishlistToggle = async () => {
+    if (!userId) {
+      toast.error("You must be signed in to manage your wishlist.");
+      return;
+    }
+
+    setWishlistLoading(true); // Start spinner
+
     try {
       if (!isWishlisted) {
         // Add to wishlist
@@ -131,13 +145,15 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
     } catch (err) {
       console.error(err);
       toast.error("Failed to update wishlist.");
+    } finally {
+      setWishlistLoading(false); // Stop spinner
     }
   };
 
   const handleShare = async () => {
     const shareData = {
       title: product.name,
-      text: "Check out this amazing product from HempCraft!",
+      text: "Check out this amazing product!",
       url: typeof window !== "undefined" ? window.location.href : "",
     };
     try {
@@ -288,17 +304,23 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
                     <ShoppingCart className="h-5 w-5" />
                     Add to Cart
                   </Button>
+
                   <Button
                     size="lg"
                     variant="outline"
                     onClick={handleWishlistToggle}
                   >
-                    <Heart
-                      className={`h-5 w-5 ${
-                        isWishlisted ? "fill-red-500 text-red-500" : ""
-                      }`}
-                    />
+                    {wishlistLoading ? (
+                      <Spinner className="h-5 w-5" />
+                    ) : (
+                      <Heart
+                        className={`h-5 w-5 ${
+                          isWishlisted ? "fill-red-500 text-red-500" : ""
+                        }`}
+                      />
+                    )}
                   </Button>
+
                   <Button size="lg" onClick={handleShare} variant="outline">
                     <Share2 className="h-5 w-5" />
                   </Button>
