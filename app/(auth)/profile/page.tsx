@@ -1,10 +1,13 @@
+"use client";
+
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import ProfileView from "./components/ProfileView";
+import { useSession } from "next-auth/react";
 
 export default async function ProfilePage() {
-  const session = await auth();
+  const { data: session } = useSession();
 
   if (!session?.user?.id) {
     redirect("/login");

@@ -50,10 +50,6 @@ export const Navbar = () => {
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
   useAutoLogout();
-<<<<<<< HEAD
-  // useAdminUser();
-=======
->>>>>>> 12fc14b1ab60da144fc80d2d860eaf5de6f1d9ea
 
   const [categories, setCategories] = useState<Category[]>([]);
 

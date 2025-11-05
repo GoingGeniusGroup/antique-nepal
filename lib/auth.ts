@@ -5,6 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
+import { email } from "zod";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -74,7 +75,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       if (user) {
         token.id = user.id;
-        token.phone = (user as any).phone;
+        token.name = (user as any).firstName;
         token.role = (user as any).role;
         token.image = user.image;
         token.exp = now + maxAge;
@@ -84,14 +85,46 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.id as string;
-        (session.user as any).phone = token.phone;
+        (session.user as any).name = token.firstName;
         (session.user as any).role = token.role;
         session.user.image = token.image as string;
       }
       return session;
     },
   },
+
+  events: {
+    async signIn({ user }) {
+      try {
+        if (!user.email) return;
+
+        // Check if user already exists
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
+
+        if (!existingUser) {
+          // Split Google full name
+          const [firstName, ...rest] = (user.name || "").split(" ");
+          const lastName = rest.join(" ") || null;
+
+          await prisma.user.create({
+            data: {
+              email: user.email,
+              firstName,
+              lastName,
+              image: user.image,
+              role: "CUSTOMER",
+              isActive: true,
+            },
+          });
+        }
+      } catch (err) {
+        console.error("❌ Error saving Google user:", err);
+      }
+    },
+  },
   pages: {
-    signIn: "/admin/login",
+    signIn: "/login",
   },
 });
