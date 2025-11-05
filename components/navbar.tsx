@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -278,14 +279,18 @@ export const Navbar = () => {
                   Logout
                 </Button>
                 <Link href="/profile">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="ml-2 hover:shadow-soft transition-all"
-                  >
-                    <User className="w-4 h-4 mr-2" />
-                    {session.user?.name}
-                  </Button>
+                  <Avatar className="w-8 h-8 cursor-pointer">
+                    <AvatarImage
+                      src={session.user?.image || ""}
+                      alt={session.user?.name || ""}
+                    />
+                    <AvatarFallback>
+                      {session.user?.name
+                        ?.split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
                 </Link>
               </>
             )}
