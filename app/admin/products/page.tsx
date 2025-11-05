@@ -10,6 +10,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -154,10 +155,6 @@ export default function ProductsPage() {
           </div>
         )}
 
-        <div className="flex justify-end mb-4">
-          <Button onClick={handleAddProduct}>Add Product</Button>
-        </div>
-
         <HeroTable<Row>
           key={tableKey}
           title="Product Management"
@@ -166,6 +163,7 @@ export default function ProductsPage() {
           defaultSort="createdAt"
           defaultOrder="desc"
           pageSizeOptions={[10, 20, 50]}
+          onAdd={handleAddProduct}
           onEdit={handleEditProduct}
           onDelete={(product) => setDeleteProduct(product)}
         />
@@ -177,7 +175,11 @@ export default function ProductsPage() {
         >
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle>Delete Product?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this image? This action cannot
+                be undone.
+              </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>

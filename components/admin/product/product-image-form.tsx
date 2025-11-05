@@ -38,21 +38,33 @@ export function ProductImagesForm({
           </div>
 
           <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+            {/* Preview existing image */}
+            {img.url && !img.file && (
+              <div>
+                <Label>Preview</Label>
+                <img
+                  src={img.url}
+                  alt={img.altText || `Image ${idx + 1}`}
+                  className="w-full h-24 object-cover rounded-md mt-1"
+                />
+              </div>
+            )}
+
+            {/* File input (cannot prefill) */}
             <div>
-              <Label className="text-gray-700 dark:text-gray-300">
-                Upload File
-              </Label>
+              <Label>Upload File</Label>
               <Input
                 type="file"
                 className="mt-1"
-                onChange={(e) => onChange(idx, "file", e.target.files?.[0])}
+                onChange={(e) =>
+                  onChange(idx, "file", e.target.files?.[0] || null)
+                }
               />
             </div>
 
+            {/* Alt Text */}
             <div>
-              <Label className="text-gray-700 dark:text-gray-300">
-                Alt Text
-              </Label>
+              <Label>Alt Text</Label>
               <Input
                 value={img.altText ?? ""}
                 className="mt-1"
@@ -61,13 +73,12 @@ export function ProductImagesForm({
               />
             </div>
 
+            {/* Display Order */}
             <div>
-              <Label className="text-gray-700 dark:text-gray-300">
-                Display Order
-              </Label>
+              <Label>Display Order</Label>
               <Input
                 type="number"
-                value={img.displayOrder}
+                value={img.displayOrder ?? 0} // default to 0 if undefined
                 className="mt-1"
                 onChange={(e) =>
                   onChange(idx, "displayOrder", parseInt(e.target.value) || 0)
@@ -75,9 +86,10 @@ export function ProductImagesForm({
               />
             </div>
 
+            {/* Primary Switch */}
             <div className="flex items-center space-x-2 mt-5">
               <Switch
-                checked={img.isPrimary}
+                checked={img.isPrimary ?? false} // default false if undefined
                 onCheckedChange={(v) => onChange(idx, "isPrimary", v)}
               />
               <span className="text-gray-700 dark:text-gray-300">

@@ -3,10 +3,19 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { Save } from "lucide-react";
+import { Save, Trash } from "lucide-react";
 import { ProductForm } from "./product-form";
 import { ProductImagesForm } from "./product-image-form";
 import { ProductData, ProductImage } from "./types";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+} from "@/components/ui/alert-dialog";
 
 type Props = {
   product?: ProductData | null;
@@ -35,6 +44,10 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
 
   const [saving, setSaving] = useState(false);
 
+  // Image deletion dialog
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const updateProductField = (field: keyof ProductData, value: any) => {
     setProductData((prev) => ({ ...prev, [field]: value }));
   };
@@ -56,8 +69,30 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
     ]);
   };
 
-  const removeImage = (index: number) => {
-    setProductImages((prev) => prev.filter((_, i) => i !== index));
+  const confirmRemoveImage = (index: number) => setDeleteIndex(index);
+
+  const removeImage = async () => {
+    if (deleteIndex === null) return;
+    const img = productImages[deleteIndex];
+
+    setIsDeleting(true);
+
+    try {
+      if (img.id) {
+        const res = await fetch(`/api/admin/products/images/${img.id}`, {
+          method: "DELETE",
+        });
+        if (!res.ok) throw new Error("Failed to delete image");
+        toast.success("✅ Image deleted successfully");
+      }
+      setProductImages((prev) => prev.filter((_, i) => i !== deleteIndex));
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete image");
+    } finally {
+      setDeleteIndex(null);
+      setIsDeleting(false);
+    }
   };
 
   const saveAll = async () => {
@@ -85,32 +120,46 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
         toast.error(savedProduct.message || "Failed to save product.");
         return;
       }
-
       for (const img of productImages) {
-        if (img.file) {
+        // If all fields are empty, skip it
+        const isEmpty =
+          !img.file &&
+          !img.altText?.trim() &&
+          (img.displayOrder === undefined || img.displayOrder === null) &&
+          img.isPrimary === false;
+
+        if (isEmpty) continue; // Skip completely
+
+        // If image has an ID, update existing one (PUT)
+        if (img.id) {
+          const formData = new FormData();
+          if (img.variantId) formData.append("variantId", img.variantId);
+          formData.append("altText", img.altText || "");
+          formData.append("displayOrder", img.displayOrder?.toString() || "0");
+          formData.append("isPrimary", String(img.isPrimary));
+
+          // Include file only if a new one was selected
+          if (img.file) formData.append("image", img.file);
+
+          await fetch(`/api/admin/products/images/${img.id}`, {
+            method: "PUT",
+            body: formData,
+          });
+        }
+
+        // If image has no ID but has a file, it’s a new one (POST)
+        else if (img.file) {
           const formData = new FormData();
           formData.append("productId", savedProduct.product.id);
           if (img.variantId) formData.append("variantId", img.variantId);
           formData.append("image", img.file);
           formData.append("altText", img.altText || "");
-          formData.append("displayOrder", img.displayOrder.toString());
+          formData.append("displayOrder", img.displayOrder?.toString() || "0");
           formData.append("isPrimary", String(img.isPrimary));
 
           await fetch("/api/admin/products/images", {
             method: "POST",
             body: formData,
-          });
-        } else if (img.id) {
-          await fetch(`/api/admin/products/images/${img.id}`, {
-            method: "PUT",
-            body: (() => {
-              const formData = new FormData();
-              if (img.variantId) formData.append("variantId", img.variantId);
-              formData.append("altText", img.altText || "");
-              formData.append("displayOrder", img.displayOrder.toString());
-              formData.append("isPrimary", String(img.isPrimary));
-              return formData;
-            })(),
           });
         }
       }
@@ -150,10 +199,32 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
             images={productImages}
             onChange={updateImageField}
             onAdd={addNewImage}
-            onRemove={removeImage}
+            onRemove={confirmRemoveImage}
           />
         </div>
       </div>
+
+      {/* AlertDialog for confirming image deletion */}
+      <AlertDialog
+        open={deleteIndex !== null}
+        onOpenChange={() => setDeleteIndex(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Image?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this image? This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={removeImage} disabled={isDeleting}>
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

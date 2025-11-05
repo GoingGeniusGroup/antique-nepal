@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { UpdateProductSchema } from "@/app/validations/product/product-schema";
 import { ZodError } from "zod";
+import fs from "fs";
+import path from "path";
 
 export async function PUT(
   req: NextRequest,
@@ -60,7 +62,17 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const existing = await prisma.product.findUnique({ where: { id } });
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "Product ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const existing = await prisma.product.findUnique({
+      where: { id },
+      include: { images: true }, // fetch linked images
+    });
 
     if (!existing) {
       return NextResponse.json(
@@ -69,11 +81,23 @@ export async function DELETE(
       );
     }
 
+    // Delete physical files
+    for (const img of existing.images) {
+      const filePath = path.join(process.cwd(), "public/uploads", img.url);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    // Delete image records
+    await prisma.productImage.deleteMany({ where: { productId: id } });
+
+    // Delete the product
     await prisma.product.delete({ where: { id } });
 
     return NextResponse.json({
       success: true,
-      message: "Product deleted successfully",
+      message: "Product and associated images deleted successfully",
     });
   } catch (error) {
     console.error("Product delete error:", error);
