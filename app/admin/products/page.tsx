@@ -19,22 +19,12 @@ export default function ProductsPage() {
   type Row = {
     id: string;
     name: string;
-    slug: string;
-    description?: string | null;
-    shortDescription?: string | null;
     sku: string;
     price: string;
     isActive: boolean;
-    isFeatured: boolean;
-    metaTitle?: string | null;
-    metaDescription?: string | null;
     createdAt: string;
-    updatedAt: string;
     categories?: { id: string; name: string }[];
     images?: { id: string; url: string; altText?: string | null }[];
-    variants?: { id: string; name: string }[];
-    reviews?: { id: string; rating: number; comment: string }[];
-    wishlistItems?: { id: string; userId: string }[];
   };
 
   // CRUD Operations for Products
@@ -67,19 +57,8 @@ export default function ProductsPage() {
           <span className="text-xs text-muted-foreground font-mono">
             {r.sku}
           </span>
-          <span className="text-xs text-muted-foreground">{r.slug}</span>
         </div>
       ),
-    },
-    {
-      key: "description",
-      label: "Description",
-      render: (r: Row) => r.description || "-",
-    },
-    {
-      key: "shortDescription",
-      label: "Short Description",
-      render: (r: Row) => r.shortDescription || "-",
     },
     {
       key: "price",
@@ -103,31 +82,10 @@ export default function ProductsPage() {
       ),
     },
     {
-      key: "isFeatured",
-      label: "Featured",
-      render: (r: Row) => (r.isFeatured ? "Yes" : "No"),
-    },
-    {
-      key: "metaTitle",
-      label: "Meta Title",
-      render: (r: Row) => r.metaTitle || "-",
-    },
-    {
-      key: "metaDescription",
-      label: "Meta Description",
-      render: (r: Row) => r.metaDescription || "-",
-    },
-    {
       key: "createdAt",
       label: "Created At",
       sortable: true,
       render: (r: Row) => formatDate(r.createdAt),
-    },
-    {
-      key: "updatedAt",
-      label: "Updated At",
-      sortable: true,
-      render: (r: Row) => formatDate(r.updatedAt),
     },
     {
       key: "categories",
