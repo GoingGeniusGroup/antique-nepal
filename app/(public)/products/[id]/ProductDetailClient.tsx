@@ -202,7 +202,7 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
                 <Image
                   src={
                     product.images[selectedImage]?.url
-                      ? `/${product.images[selectedImage].url}`
+                      ? `${product.images[selectedImage].url}`
                       : "/product_placeholder.jpeg"
                   }
                   alt={product.images[selectedImage]?.altText || product.name}
@@ -224,7 +224,7 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
                     }`}
                   >
                     <Image
-                      src={`/${image.url}` || "/product_placeholder.jpeg"}
+                      src={`${image.url}` || "/product_placeholder.jpeg"}
                       alt={image.altText || `${product.name} ${index + 1}`}
                       width={150}
                       height={150}
