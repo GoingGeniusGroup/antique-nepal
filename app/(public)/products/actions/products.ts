@@ -87,9 +87,11 @@ export async function getProducts(params: GetProductsParams) {
 
     if (inStockOnly) {
       products = products.filter((p) => {
-        const hasStock = p.variants.some(
-          (v) => v.inventory && v.inventory.quantity > 0
-        );
+        // If no variants, consider it in stock
+        // If has variants, check inventory
+        const hasStock = p.variants.length === 0
+          ? true
+          : p.variants.some((v) => v.inventory && v.inventory.quantity > 0);
         return hasStock;
       });
     }
@@ -113,9 +115,12 @@ export async function getProducts(params: GetProductsParams) {
           image = url.startsWith("http") ? url : `/${url}`; // local or external
         }
 
-        const hasStock = product.variants.some(
-          (v) => v.inventory && v.inventory.quantity > 0
-        );
+        // Check if product has stock
+        // If no variants exist, assume product is in stock (simple product)
+        // If variants exist, check if any variant has inventory
+        const hasStock = product.variants.length === 0 
+          ? true 
+          : product.variants.some((v) => v.inventory && v.inventory.quantity > 0);
 
         return {
           id: product.id,
@@ -139,4 +144,33 @@ export async function getProducts(params: GetProductsParams) {
     console.error("[v0] Error fetching products:", error);
     throw new Error("Failed to fetch products");
   }
+}
+
+export async function getProductById(id: string) {
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: {
+      images: {
+        orderBy: { displayOrder: "asc" },
+      },
+      categories: {
+        include: {
+          category: true,
+        },
+      },
+      reviews: {
+        include: {
+          user: { select: { firstName: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+
+  if (!product) return null;
+
+  return {
+    ...product,
+    price: product.price.toNumber(), // 👈 convert Decimal -> number
+  };
 }
