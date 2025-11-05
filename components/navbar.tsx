@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,7 +34,6 @@ import logoImgDark from "@/public/logo/Antique-Nepal-Logo-2.png";
 import logoTextImgDark from "@/public/logo/Antique-Nepal-Logo-3.png";
 import logoTextImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-2.png";
 import logoImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-3.png";
-import { useAdminUser } from "@/hooks/useAdminUser";
 interface Category {
   id: string;
   name: string;
@@ -51,7 +51,10 @@ export const Navbar = () => {
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
   useAutoLogout();
+<<<<<<< HEAD
   // useAdminUser();
+=======
+>>>>>>> c1fe2fe8c7159f8a6fc2c7c4e8647279fbf92b65
 
   const [categories, setCategories] = useState<Category[]>([]);
 
@@ -245,7 +248,7 @@ export const Navbar = () => {
             </Link>
 
             {/*  Auth Buttons*/}
-            {!session ? (
+            {!session || (session.user as any)?.role === "ADMIN" ? (
               <>
                 <Link href={"/login"}>
                   <Button
@@ -280,14 +283,18 @@ export const Navbar = () => {
                   Logout
                 </Button>
                 <Link href="/profile">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="ml-2 hover:shadow-soft transition-all"
-                  >
-                    <User className="w-4 h-4 mr-2" />
-                    {session.user?.name}
-                  </Button>
+                  <Avatar className="w-8 h-8 cursor-pointer">
+                    <AvatarImage
+                      src={session.user?.image || ""}
+                      alt={session.user?.name || ""}
+                    />
+                    <AvatarFallback>
+                      {session.user?.name
+                        ?.split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
                 </Link>
               </>
             )}

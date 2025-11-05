@@ -13,16 +13,25 @@ import {
   Truck,
   RotateCcw,
   Shield,
+  Trash2,
+  Edit2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useTheme } from "@/contexts/theme-context";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
-import { Spinner } from "@/components/ui/spinner"; // ShadCN Spinner
+import { Spinner } from "@/components/ui/spinner";
 
 interface ProductImage {
   id: string;
@@ -35,8 +44,10 @@ interface ProductReview {
   id: string;
   rating: number;
   comment: string;
+  title?: string | null;
   createdAt: Date;
-  user?: { firstName?: string | null };
+  userId: string;
+  user?: { firstName?: string | null; id?: string };
 }
 
 interface ProductCategory {
@@ -74,11 +85,25 @@ const calculateAverageRating = (reviews: ProductReview[]) => {
   return (sum / reviews.length).toFixed(1);
 };
 
-const ProductDetailClient = ({ product }: { product: Product }) => {
+const ProductDetailClient = ({
+  product: initialProduct,
+}: {
+  product: Product;
+}) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [wishlistLoading, setWishlistLoading] = useState(false); // Loading state for wishlist action
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+
+  const [product, setProduct] = useState(initialProduct);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    rating: 5,
+    title: "",
+    comment: "",
+  });
 
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
@@ -113,11 +138,10 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
       return;
     }
 
-    setWishlistLoading(true); // Start spinner
+    setWishlistLoading(true);
 
     try {
       if (!isWishlisted) {
-        // Add to wishlist
         await fetch("/api/wishlist", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -126,7 +150,6 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
         toast.success("Added to wishlist!");
         setIsWishlisted(true);
       } else {
-        // Remove from wishlist
         const wishlistRes = await fetch(`/api/wishlist?userId=${userId}`);
         const wishlistData: Wishlist = await wishlistRes.json();
         const item = wishlistData.items.find(
@@ -146,7 +169,7 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
       console.error(err);
       toast.error("Failed to update wishlist.");
     } finally {
-      setWishlistLoading(false); // Stop spinner
+      setWishlistLoading(false);
     }
   };
 
@@ -168,6 +191,109 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
       console.error("Error sharing:", error);
       toast.error("Failed to share product.");
     }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!userId) {
+      toast.error("You must be signed in to leave a review.");
+      return;
+    }
+
+    if (!formData.comment.trim()) {
+      toast.error("Please write a comment.");
+      return;
+    }
+
+    setReviewLoading(true);
+    try {
+      const method = editingReviewId ? "PUT" : "POST";
+      const body = editingReviewId
+        ? { reviewId: editingReviewId, ...formData }
+        : { productId: product.id, ...formData };
+
+      const res = await fetch("/api/reviews", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        toast.error(error.error || "Failed to submit review.");
+        return;
+      }
+
+      const updatedReview = await res.json();
+
+      // Update product reviews
+      if (editingReviewId) {
+        setProduct((prev) => ({
+          ...prev,
+          reviews: prev.reviews.map((r) =>
+            r.id === editingReviewId ? { ...r, ...updatedReview } : r
+          ),
+        }));
+        toast.success("Review updated successfully!");
+        setEditingReviewId(null);
+      } else {
+        setProduct((prev) => ({
+          ...prev,
+          reviews: [...prev.reviews, updatedReview],
+        }));
+        toast.success("Review added successfully!");
+      }
+
+      setFormData({ rating: 5, title: "", comment: "" });
+      setShowReviewModal(false);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to submit review.");
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!confirm("Are you sure you want to delete this review?")) return;
+
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviewId }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        toast.error(error.error || "Failed to delete review.");
+        return;
+      }
+
+      setProduct((prev) => ({
+        ...prev,
+        reviews: prev.reviews.filter((r) => r.id !== reviewId),
+      }));
+      toast.success("Review deleted successfully!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete review.");
+    }
+  };
+
+  const handleEditReview = (review: ProductReview) => {
+    setFormData({
+      rating: review.rating,
+      title: review.title || "",
+      comment: review.comment,
+    });
+    setEditingReviewId(review.id);
+    setShowReviewModal(true);
+  };
+
+  const closeReviewModal = () => {
+    setShowReviewModal(false);
+    setEditingReviewId(null);
+    setFormData({ rating: 5, title: "", comment: "" });
   };
 
   return (
@@ -363,13 +489,13 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
             <Tabs defaultValue="description" className="w-full">
               <TabsList className={`grid w-full grid-cols-2 max-w-2xl`}>
                 <TabsTrigger
-                  className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-600"
+                  className="data-[state=active]:bg-white cursor-pointer dark:data-[state=active]:bg-gray-600"
                   value="description"
                 >
                   Description
                 </TabsTrigger>
                 <TabsTrigger
-                  className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-600"
+                  className="data-[state=active]:bg-white cursor-pointer dark:data-[state=active]:bg-gray-600"
                   value="reviews"
                 >
                   Reviews ({product.reviews.length})
@@ -400,6 +526,148 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
               <TabsContent value="reviews" className="mt-8">
                 <Card>
                   <CardContent className="p-6">
+                    {/* Write Review Button */}
+                    <div className="flex mb-6">
+                      {userId ? (
+                        <div className="flex w-full justify-between items-center">
+                          <h1 className="text-2xl font-semibold">Reviews:</h1>
+                          <Button
+                            onClick={() => setShowReviewModal(true)}
+                            size="sm"
+                            variant="default"
+                            className="gap-2 bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                            {editingReviewId ? "Edit Review" : "Write a Review"}
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex w-full justify-between items-center">
+                          <h1 className="text-2xl font-semibold">Reviews:</h1>{" "}
+                          <Button
+                            onClick={() =>
+                              toast.error("Please login to leave a review")
+                            }
+                            size="sm"
+                            variant="default"
+                            className="gap-2 bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                            Write a Review
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Review Modal */}
+                    <Dialog
+                      open={showReviewModal}
+                      onOpenChange={setShowReviewModal}
+                    >
+                      <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                          <DialogTitle>
+                            {editingReviewId
+                              ? "Edit Your Review"
+                              : "Write a Review"}
+                          </DialogTitle>
+                        </DialogHeader>
+
+                        <div className="space-y-4 py-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Rating
+                            </label>
+                            <div className="flex gap-2">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                  key={star}
+                                  onClick={() =>
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      rating: star,
+                                    }))
+                                  }
+                                  className="transition-transform hover:scale-110"
+                                >
+                                  <Star
+                                    className={`h-6 w-6 ${
+                                      star <= formData.rating
+                                        ? "fill-orange-400 text-orange-400"
+                                        : "fill-muted text-muted"
+                                    }`}
+                                  />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Title (Optional)
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.title}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  title: e.target.value,
+                                }))
+                              }
+                              placeholder="e.g., Great quality!"
+                              className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Comment
+                            </label>
+                            <textarea
+                              value={formData.comment}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  comment: e.target.value,
+                                }))
+                              }
+                              placeholder="Share your thoughts about this product..."
+                              rows={4}
+                              className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                            />
+                          </div>
+                        </div>
+
+                        <DialogFooter className="flex gap-2">
+                          <Button
+                            onClick={handleSubmitReview}
+                            disabled={reviewLoading}
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                          >
+                            {reviewLoading ? (
+                              <>
+                                <Spinner className="mr-2 h-4 w-4" />
+                                Submitting...
+                              </>
+                            ) : editingReviewId ? (
+                              "Update Review"
+                            ) : (
+                              "Submit Review"
+                            )}
+                          </Button>
+                          <Button
+                            className="cursor-pointer"
+                            onClick={closeReviewModal}
+                            variant="outline"
+                          >
+                            Cancel
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+
+                    {/* Reviews List */}
                     {product.reviews.length === 0 ? (
                       <p className="text-muted-foreground text-center py-8">
                         No reviews yet. Be the first to write a review!
@@ -426,15 +694,44 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
                                   ))}
                                 </div>
                                 <span className="font-semibold">
-                                  {review.user?.firstName || "Anonymous"}
+                                  {review.user?.firstName ||
+                                    session?.user?.name ||
+                                    "Anonymous"}
                                 </span>
                               </div>
-                              <span className="text-sm text-muted-foreground">
-                                {new Date(
-                                  review.createdAt
-                                ).toLocaleDateString()}
-                              </span>
+                              <div className="flex items-center gap-2">
+                                {userId === review.userId && (
+                                  <>
+                                    <button
+                                      onClick={() => handleEditReview(review)}
+                                      className="p-1 cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
+                                      title="Edit review"
+                                    >
+                                      <Edit2 className="h-4 w-4" />
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleDeleteReview(review.id)
+                                      }
+                                      className="p-1 cursor-pointer text-muted-foreground hover:text-destructive transition-colors"
+                                      title="Delete review"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </button>
+                                  </>
+                                )}
+                                <span className="text-sm text-muted-foreground ml-2">
+                                  {new Date(
+                                    review.createdAt
+                                  ).toLocaleDateString()}
+                                </span>
+                              </div>
                             </div>
+                            {review.title && (
+                              <h4 className="font-semibold mb-1">
+                                {review.title}
+                              </h4>
+                            )}
                             <p className="text-muted-foreground">
                               {review.comment}
                             </p>

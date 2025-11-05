@@ -7,6 +7,7 @@ import { PageTransition } from "@/components/admin/page-transition";
 import { Users, Package, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDate } from "@/lib/admin-utils";
+import { useSession } from "next-auth/react";
 
 /**
  * Admin Dashboard Page
@@ -26,6 +27,7 @@ type Product = {
 };
 
 export default function AdminHomePage() {
+  const { data: session } = useSession();
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalProducts, setTotalProducts] = useState(0);
   const [recentProducts, setRecentProducts] = useState<Product[]>([]);
@@ -76,6 +78,13 @@ export default function AdminHomePage() {
   return (
     <PageTransition>
       <div className="space-y-6">
+        {/* Welcome Message */}
+        <div className="mb-2">
+          <h2 className="text-xl text-muted-foreground dark:text-slate-400">
+            Welcome, <span className="font-bold text-foreground dark:text-slate-100">{session?.user?.name || "Admin"}</span>
+          </h2>
+        </div>
+        
         <PageHeader title="Dashboard" />
 
         {/* Stats Cards */}

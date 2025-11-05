@@ -18,7 +18,11 @@ import { Sidebar, SidebarBody } from "@/components/ui/sidebar";
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-context";
 import { Button } from "../ui/button";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
+import logoImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-3.png";
+import logoTextImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-2.png";
 
 /**
  * Admin Sidebar Component
@@ -110,6 +114,7 @@ export function AdminSidebar({
   const pathname = usePathname();
   const [open, setOpen] = useState(!collapsed);
   const { theme, toggleTheme, isReady } = useTheme();
+  const { data: session } = useSession();
 
   // Keep open state in sync with collapsed prop (Ctrl/Cmd+B)
   useEffect(() => {
@@ -144,17 +149,32 @@ export function AdminSidebar({
                 open ? "space-x-2 justify-start" : "justify-center"
               )}
             >
-              <div className="h-7 w-7 bg-gradient-to-br from-primary/20 to-primary/40 rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-              <motion.span
+              {/* Logo Icon */}
+              <div className="relative h-7 w-7 flex-shrink-0">
+                <Image
+                  src={logoImgWhite}
+                  alt="Antique Nepal Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              
+              {/* Brand Name */}
+              <motion.div
                 animate={{
-                  display: open ? "inline-block" : "none",
+                  display: open ? "block" : "none",
                   opacity: open ? 1 : 0,
                 }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="font-medium text-white whitespace-pre"
+                className="relative h-7 w-28"
               >
-                Antique Admin
-              </motion.span>
+                <Image
+                  src={logoTextImgWhite}
+                  alt="Antique Nepal"
+                  fill
+                  className="object-contain"
+                />
+              </motion.div>
             </div>
 
             {/* Navigation Links */}
@@ -172,33 +192,47 @@ export function AdminSidebar({
             </div>
           </div>
 
-          {/* Bottom User */}
-          <div>
+          {/* Bottom User Profile & Logout */}
+          <div className="space-y-2">
             <CustomSidebarLink
-              href="#"
-              label="Admin User"
+              href="/admin/profile"
+              label={session?.user?.name || "Admin Profile"}
               icon={
-                <img
-                  src="https://assets.aceternity.com/manu.png"
-                  className="h-7 w-7 flex-shrink-0 rounded-full"
-                  width={50}
-                  height={50}
-                  alt="Avatar"
-                />
+                <Avatar className="h-7 w-7 flex-shrink-0">
+                  <AvatarImage src={session?.user?.image || undefined} />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                    {session?.user?.name
+                      ?.split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase() || "AD"}
+                  </AvatarFallback>
+                </Avatar>
               }
-              isActive={false}
+              isActive={pathname === "/admin/profile"}
               open={open}
             />
             {/* logout button */}
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-2 hover:shadow-soft transition-all"
-              onClick={() => signOut({ callbackUrl: "/" })}
+            <button
+              onClick={() => signOut({ callbackUrl: "/admin/login" })}
+              className={cn(
+                "flex items-center gap-2 group/sidebar py-2 rounded-md transition-all duration-300 ease-in-out text-white w-full",
+                open ? "justify-start px-3" : "justify-center px-2",
+                "hover:bg-red-600/50 dark:hover:bg-red-700/50"
+              )}
             >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
+              <LogOut className="text-white h-5 w-5 flex-shrink-0" />
+              <motion.span
+                animate={{
+                  display: open ? "inline-block" : "none",
+                  opacity: open ? 1 : 0,
+                }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="text-white text-sm group-hover/sidebar:translate-x-1 transition duration-300 ease-in-out whitespace-pre inline-block !p-0 !m-0"
+              >
+                Logout
+              </motion.span>
+            </button>
           </div>
         </SidebarBody>
       </Sidebar>

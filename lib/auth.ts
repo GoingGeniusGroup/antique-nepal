@@ -58,6 +58,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           email: user.email,
           phone: user.phone,
           role: user.role,
+          image: user.image,
         };
       },
     }),
@@ -75,6 +76,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id;
         token.phone = (user as any).phone;
         token.role = (user as any).role;
+        token.image = user.image;
         token.exp = now + maxAge;
       }
       return token;
@@ -84,11 +86,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as string;
         (session.user as any).phone = token.phone;
         (session.user as any).role = token.role;
+        session.user.image = token.image as string;
       }
       return session;
     },
   },
   pages: {
-    signIn: "/login",
+    signIn: "/admin/login",
   },
 });

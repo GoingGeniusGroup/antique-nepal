@@ -11,13 +11,18 @@ import { cn } from "@/lib/utils";
  * Automatically generates breadcrumbs from current pathname
  */
 
-export function PageHeader({ title, className }: { title: string; className?: string }) {
+export function PageHeader({ title, description, className }: { title: string; description?: string; className?: string }) {
   const pathname = usePathname();
   const parts = pathname.split("/").filter(Boolean);
 
   return (
     <div className={cn("mb-6", className)}>
       <div className="text-3xl font-bold tracking-tight">{title}</div>
+      {description && (
+        <div className="mt-1 text-base text-muted-foreground dark:text-slate-400">
+          {description}
+        </div>
+      )}
       <div className="mt-2 text-sm text-muted-foreground flex items-center gap-1">
         {parts.map((p, i) => {
           const href = "/" + parts.slice(0, i + 1).join("/");

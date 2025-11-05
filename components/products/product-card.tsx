@@ -1,6 +1,4 @@
 "use client";
-
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, ShoppingCart } from "lucide-react";
@@ -8,17 +6,43 @@ import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useTheme } from "@/contexts/theme-context";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 import { ProductData } from "@/app/(public)/products/actions/products";
 
 interface ProductCardProps {
   product: ProductData;
   index?: number;
+  isWishlisted: boolean;
+  toggleWishlist: (productId: string) => Promise<void>;
+  wishlistLoaded?: boolean;
 }
 
-export function ProductCard({ product, index = 0 }: ProductCardProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false);
+export function ProductCard({
+  product,
+  index = 0,
+  isWishlisted,
+  toggleWishlist,
+  wishlistLoaded,
+}: ProductCardProps) {
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
+  const [loading, setLoading] = useState(false);
+
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (loading) return;
+
+    try {
+      setLoading(true);
+      await toggleWishlist(product.id);
+    } catch (err) {
+      toast.error("Failed to update wishlist");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCartClick = () => {
     toast.success("Item added to cart!");
@@ -46,27 +70,33 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
 
+          {/*  Wishlist button */}
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsWishlisted(!isWishlisted);
-            }}
+            onClick={handleWishlistToggle}
             className={cn(
-              "absolute top-2 right-2 md:top-4 md:right-4 p-1.5 md:p-2 rounded-full transition-colors z-10",
+              "absolute top-2 right-2 cursor-pointer md:top-4 md:right-4 p-1.5 md:p-2 rounded-full transition-colors z-10 flex items-center justify-center",
               isDark
                 ? "bg-white/90 hover:bg-white"
                 : "bg-white/95 hover:bg-white shadow-md"
             )}
             aria-label="Add to wishlist"
+            disabled={loading}
           >
-            <Heart
-              size={16}
-              className={cn(
-                "md:w-5 md:h-5 transition-colors",
-                isWishlisted ? "fill-red-500 stroke-red-500" : "stroke-black"
-              )}
-            />
+            {loading ? (
+              <Spinner className="w-4 h-4 text-red-500" />
+            ) : (
+              <Heart
+                size={16}
+                className={cn(
+                  "md:w-5 md:h-5 transition-colors",
+                  !wishlistLoaded
+                    ? "stroke-gray-400 opacity-50"
+                    : isWishlisted
+                    ? "fill-red-500 stroke-red-500"
+                    : "stroke-black"
+                )}
+              />
+            )}
           </button>
 
           {!product.inStock && (
@@ -76,6 +106,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           )}
         </div>
 
+        {/* Product info */}
         <div
           className={cn(
             "flex-1 p-2 md:p-3 lg:p-4 flex flex-col gap-1.5 md:gap-2 lg:gap-3",
@@ -84,29 +115,29 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
               : "bg-white text-[#2d2520]"
           )}
         >
-          <div className="flex gap-2">
-            <span
-              className={cn(
-                "inline-block px-2 py-0.5 text-[10px] md:text-xs font-medium rounded-full",
-                isDark
-                  ? "bg-emerald-600 text-white"
-                  : "bg-emerald-500/20 text-emerald-700"
-              )}
-            >
-              {product.badge}
-            </span>
-          </div>
+          {product.badge && (
+            <div className="flex gap-2">
+              <span
+                className={cn(
+                  "inline-block px-2 py-0.5 text-[10px] md:text-xs font-medium rounded-full",
+                  isDark
+                    ? "bg-emerald-600 text-white"
+                    : "bg-emerald-500/20 text-emerald-700"
+                )}
+              >
+                {product.badge}
+              </span>
+            </div>
+          )}
 
-          <div className="flex-1">
-            <h3
-              className={cn(
-                "font-semibold text-[11px] md:text-xs lg:text-sm leading-tight line-clamp-2",
-                isDark ? "text-white" : "text-[#2d2520]"
-              )}
-            >
-              {product.name}
-            </h3>
-          </div>
+          <h3
+            className={cn(
+              "font-semibold text-[11px] md:text-xs lg:text-sm leading-tight line-clamp-2",
+              isDark ? "text-white" : "text-[#2d2520]"
+            )}
+          >
+            {product.name}
+          </h3>
 
           <div
             className={cn(
@@ -122,6 +153,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             >
               ${product.price.toFixed(2)}
             </span>
+
             <button
               className={cn(
                 "p-1.5 md:p-2 rounded-lg transition-colors",
