@@ -67,6 +67,7 @@ const getPrimaryImage = (images: ProductImage[]) => {
 };
 
 const ProductDetailClient = ({ product }: { product: Product }) => {
+  console.log(product);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -131,7 +132,11 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
                 )}
                 <Image
                   // product.images[selectedImage]?.url ||
-                  src={"/product_placeholder.jpeg"}
+                  src={
+                    product.images[selectedImage]?.url
+                      ? `/${product.images[selectedImage].url}`
+                      : "/product_placeholder.jpeg"
+                  }
                   alt={product.images[selectedImage]?.altText || product.name}
                   width={500}
                   height={500}
@@ -153,7 +158,7 @@ const ProductDetailClient = ({ product }: { product: Product }) => {
                   >
                     <Image
                       // image.url ||
-                      src={"/product_placeholder.jpeg"}
+                      src={`/${image.url}` || "/product_placeholder.jpeg"}
                       alt={image.altText || `${product.name} ${index + 1}`}
                       width={150}
                       height={150}
