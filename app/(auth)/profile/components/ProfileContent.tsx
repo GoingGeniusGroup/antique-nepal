@@ -12,7 +12,7 @@ import type {
   Product,
   ProductImage,
 } from "@prisma/client";
-import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -123,22 +123,14 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
             <CardContent className="pt-0 px-6 pb-6">
               <div className="flex flex-col md:flex-row items-start md:items-end gap-6 -mt-16">
                 <Avatar className="w-32 h-32 border-4 border-background shadow-elegant">
-                  <AvatarImage
-                    src={user.image || ""}
-                    alt={user.firstName || ""}
-                  />
-                  <AvatarFallback>
-                    {user.firstName?.[0]}
-                    {user.lastName?.[0]}
-                  </AvatarFallback>
+                  <AvatarImage src={user.image || ""} alt={user.name || ""} />
+                  <AvatarFallback>{user.name?.[0]}</AvatarFallback>
                 </Avatar>
 
                 <div className="flex-1">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                      <h1 className="text-3xl font-bold mb-2">
-                        {user.firstName} {user.lastName}
-                      </h1>
+                      <h1 className="text-3xl font-bold mb-2">{user.name}</h1>
                       <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                         <span className="flex items-center gap-2">
                           <Mail className="w-4 h-4" />
@@ -172,11 +164,7 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                     </div>
 
                     <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={onEdit}
-                      >
+                      <Button variant="outline" size="sm" onClick={onEdit}>
                         <Edit className="w-4 h-4 mr-2" />
                         Edit Profile
                       </Button>
@@ -348,10 +336,10 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                         Manage your delivery locations
                       </CardDescription>
                     </div>
-                    <Button>
+                    {/* <Button>
                       <MapPin className="w-4 h-4 mr-2" />
                       Add Address
-                    </Button>
+                    </Button> */}
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -378,7 +366,7 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                             </div>
                           </div>
                           <div className="flex gap-2">
-                            <Button variant="ghost" size="sm">
+                            <Button variant="ghost" size="sm" onClick={onEdit}>
                               <Edit className="w-4 h-4" />
                             </Button>
                             <Button variant="ghost" size="sm">

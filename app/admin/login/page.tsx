@@ -162,7 +162,7 @@ export default function AdminLoginPage() {
 
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600 dark:text-slate-400">
-                Don't have an account?{" "}
+                Not an admin?{" "}
                 <Link
                   href="/admin/signup"
                   className="font-semibold text-gray-700 hover:text-gray-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors"
