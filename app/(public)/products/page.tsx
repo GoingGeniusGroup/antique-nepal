@@ -130,7 +130,13 @@ const ProductsPage = () => {
               </div>
             ) : (
               <>
-                <ProductGrid products={products} />
+                <ProductGrid
+                  products={products}
+                  productVariants={products.reduce((acc, p) => {
+                    acc[p.id] = p.variants;
+                    return acc;
+                  }, {} as Record<string, (typeof products)[0]["variants"]>)}
+                />
 
                 {/* pagination */}
                 {totalPages > 1 && (
