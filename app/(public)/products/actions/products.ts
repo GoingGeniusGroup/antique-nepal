@@ -178,6 +178,6 @@ export async function getProductById(id: string) {
 
   return {
     ...product,
-    price: product.price.toNumber(), // 👈 convert Decimal -> number
+    price: product.price.toNumber(),
   };
 }
