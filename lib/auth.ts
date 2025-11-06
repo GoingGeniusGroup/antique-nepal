@@ -5,7 +5,6 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
-import { email } from "zod";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -55,17 +54,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const password = credentials?.password as string;
 
         if (!email || !password) {
-          return null;
+          throw new Error("Both email and password are required");
         }
 
+        // ✅ Use `findUnique` safely
         const user = await prisma.user.findUnique({
-          where: {
-            email,
-          },
+          where: { email: email },
         });
 
         if (!user?.password) {
           return null;
+        }
+
+        if (!user) {
+          throw new Error("Invalid email or password");
+        }
+
+        // ✅ Check for email verification
+        if (!user.emailVerified) {
+          throw new Error("EmailNotVerified"); // custom error
         }
 
         const isValid = await bcrypt.compare(password, user.password);

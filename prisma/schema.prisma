@@ -9,26 +9,29 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  email         String        @unique
-  emailVerified DateTime?
-  password      String?
-  phone         String?
-  image         String?
-  role          Role          @default(CUSTOMER)
-  isActive      Boolean       @default(true)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  name          String?
-  accounts      Account[]
-  activityLogs  ActivityLog[]
-  addresses     Address[]
-  adminUser     AdminUser?
-  carts         Cart[]
-  orders        Order[]
-  reviews       Review[]
-  sessions      Session[]
-  wishlists     Wishlist[]
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  name               String?
+  emailVerified      DateTime?
+  verificationToken  String?
+  verificationExpiry DateTime?
+  password           String?
+  phone              String?
+  image              String?
+  role               Role      @default(CUSTOMER)
+  isActive           Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  accounts     Account[]
+  activityLogs ActivityLog[]
+  addresses    Address[]
+  adminUser    AdminUser?
+  carts        Cart[]
+  orders       Order[]
+  reviews      Review[]
+  sessions     Session[]
+  wishlists    Wishlist[]
 
   @@index([email])
   @@map("users")

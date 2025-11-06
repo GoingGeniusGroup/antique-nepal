@@ -22,7 +22,7 @@ const backgroundFade = {
 
 const LoginPage = () => {
   const searchParams = useSearchParams();
-  const error = searchParams.get("error"); // ✅ correct way
+  const error = searchParams.get("error");
 
   useEffect(() => {
     if (error) {
@@ -37,12 +37,14 @@ const LoginPage = () => {
             "Invalid email or password. Please check your credentials and try again.";
           break;
         case "AccessDenied":
-          errorMessage = "Access Denied. You do not have permission to sign in.";
+          errorMessage =
+            "Access Denied. You do not have permission to sign in.";
           break;
       }
       toast.error(errorMessage);
     }
   }, [error]);
+
   return (
     <div className="overflow-hidden">
       {/* Theme Toggle */}

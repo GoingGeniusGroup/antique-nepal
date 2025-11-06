@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { signIn } from "next-auth/react";
@@ -19,6 +19,8 @@ const SigninForm = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const params = useSearchParams();
+  const error = params.get("error");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -41,20 +43,19 @@ const SigninForm = () => {
     } as any);
 
     setLoading(false);
-
     if (res?.error) {
-      // Show toast only
       let message = String(res.error);
+      console.log("Error message:", message);
 
-      if (message === "CredentialsSignin" || /invalid/i.test(message)) {
+      if (message === "Configuration") {
+        message = "Email not verified. Please check your inbox.";
+      } else if (message === "CredentialsSignin" || /invalid/i.test(message)) {
         message = "Invalid email or password";
       } else if (/both fields/i.test(message)) {
         message = "Both email and password are required";
       }
 
       toast.error(message);
-
-      // Do NOT set errors on the input fields
     } else {
       setErrors({});
       toast.success("Signed in successfully");
