@@ -138,10 +138,10 @@ export function Hero() {
               rotate: [0, 3, 0, -3, 0],
             }}
             transition={{
-              duration: 2 + i * 0.2,
+              duration: 0.6 + i * 0.08,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: i * 0.1,
+              delay: i * 0.04,
             }}
           >
             <div

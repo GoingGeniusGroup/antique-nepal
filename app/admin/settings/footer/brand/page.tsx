@@ -92,17 +92,17 @@ export default function FooterBrandPage() {
           </p>
         </div>
 
-        <Card className="p-6 border-l-4 border-l-indigo-500 dark:border-l-indigo-400 dark:!bg-slate-800 dark:!border-slate-600">
+        <Card className="p-6 border-l-4 border-l-blue-500 dark:border-l-blue-500 dark:!bg-slate-800 dark:!border-slate-600">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              <Building2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               <div className="text-lg font-semibold text-foreground">Brand Details</div>
             </div>
             <Button
               onClick={() => setShowConfirm(true)}
               disabled={saving}
               size="sm"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white"
             >
               <Save className="h-4 w-4 mr-2" />
               {saving ? "Saving..." : "Save Changes"}

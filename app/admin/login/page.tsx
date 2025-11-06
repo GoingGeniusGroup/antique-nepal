@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
         return;
       }
 
-      toast.success("Login successful!");
+      // Toast is handled by AuthSuccessHandler component
       router.push("/admin");
     } catch (error) {
       toast.error("An error occurred. Please try again.");

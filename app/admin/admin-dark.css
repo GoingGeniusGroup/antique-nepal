@@ -1,0 +1,59 @@
+/**
+ * Admin-specific dark mode styles
+ * These styles override the global dark mode colors only for admin pages
+ * Client site keeps its original brown/warm dark mode colors
+ * 
+ * Color Palette:
+ * - Deep Blue-Black backgrounds
+ * - Blue-gray text and borders
+ * - Varied blue shades for different sections
+ */
+
+/* Admin-specific dark mode color overrides */
+.admin-dark-mode.dark {
+  --background: 220, 15%, 8%;
+  --foreground: 220, 10%, 96%;
+
+  --card: 220, 15%, 10%;
+  --card-foreground: 220, 10%, 96%;
+
+  --popover: 220, 15%, 10%;
+  --popover-foreground: 220, 10%, 96%;
+
+  --primary: 220, 10%, 96%;
+  --primary-foreground: 220, 15%, 15%;
+
+  --secondary: 217, 30%, 40%;
+  --secondary-foreground: 220, 10%, 96%;
+
+  --muted: 220, 10%, 18%;
+  --muted-foreground: 217, 15%, 65%;
+
+  --accent: 217, 60%, 55%;
+  --accent-foreground: 220, 10%, 96%;
+
+  --destructive: 0, 70%, 50%;
+  --destructive-foreground: 220, 10%, 96%;
+  
+  --border: 220, 10%, 22%;
+  --input: 220, 10%, 22%;
+  --ring: 220, 10%, 96%;
+}
+
+/* Ensure admin backgrounds are blue-black in dark mode */
+.admin-dark-mode.dark .bg-background {
+  background-color: hsl(220, 15%, 8%) !important;
+}
+
+.admin-dark-mode.dark .bg-card {
+  background-color: hsl(220, 15%, 10%) !important;
+}
+
+.admin-dark-mode.dark .bg-muted {
+  background-color: hsl(220, 10%, 18%) !important;
+}
+
+/* Admin gradient overrides */
+.admin-dark-mode.dark .bg-gradient-to-b {
+  background-image: linear-gradient(to bottom, hsl(220, 15%, 8%), hsl(220, 12%, 12%)) !important;
+}

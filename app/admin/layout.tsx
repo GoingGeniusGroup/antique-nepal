@@ -8,6 +8,7 @@ import { AdminSidebar } from "@/components/admin/sidebar";
 import { useTheme } from "@/contexts/theme-context";
 import { Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import "./admin-dark.css";
 
 /**
  * Admin Layout Component
@@ -67,14 +68,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const isAuthPage = pathname === "/admin/login" || pathname === "/admin/signup";
 
   return (
-    <div className={`min-h-dvh w-full ${isAuthPage ? 'bg-transparent' : 'bg-background dark:!bg-slate-900'}`}>
+    <div className={`admin-dark-mode min-h-dvh w-full ${isAuthPage ? 'bg-transparent' : 'bg-background dark:!bg-[#0f1419]'}`}>
         <div className="flex h-full">
           {!isAuthPage && <AdminSidebar collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />}
           <motion.main
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className={`flex-1 min-w-0 relative ${isAuthPage ? 'w-full bg-transparent' : 'bg-gradient-to-b from-background to-muted/20 dark:!bg-gradient-to-b dark:!from-slate-900 dark:!to-slate-800'}`}
+            className={`flex-1 min-w-0 relative ${isAuthPage ? 'w-full bg-transparent' : 'bg-gradient-to-b from-background to-muted/20 dark:!bg-gradient-to-b dark:!from-[#0f1419] dark:!to-[#151b23]'}`}
           >
             {/* Theme Toggle - Middle Right */}
             {isReady && (
@@ -87,13 +88,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                   className={cn(
                     "rounded-full p-3 backdrop-blur-md shadow-lg border transition-all",
                     theme === "dark"
-                      ? "bg-white/20 border-white/30 hover:bg-white/30"
+                      ? "bg-slate-800/80 border-slate-600/50 hover:bg-slate-700/80"
                       : "bg-[#f7f5f2]/80 border-[#e8e0d8] hover:bg-white/90"
                   )}
                   aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
                 >
                   {theme === "dark" ? (
-                    <Moon className="h-5 w-5 md:h-6 md:w-6 text-amber-300" />
+                    <Moon className="h-5 w-5 md:h-6 md:w-6 text-blue-300" />
                   ) : (
                     <Sun className="h-5 w-5 md:h-6 md:w-6 text-[#2d2520]" />
                   )}

@@ -188,10 +188,10 @@ export default function FooterNavigationPage() {
           </p>
         </div>
 
-        <Card className="p-6 border-l-4 border-l-emerald-500 dark:border-l-emerald-400 dark:!bg-slate-800 dark:!border-slate-600">
+        <Card className="p-6 border-l-4 border-l-blue-500 dark:border-l-blue-500 dark:!bg-slate-800 dark:!border-slate-600">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <List className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              <List className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               <div className="text-lg font-semibold text-foreground">Navigation Sections</div>
               {sections.length > 0 && (
                 <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
@@ -234,7 +234,7 @@ export default function FooterNavigationPage() {
                 onClick={() => setShowConfirm(true)}
                 disabled={saving}
                 size="sm"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {saving ? "Saving..." : "Save All"}
@@ -258,11 +258,11 @@ export default function FooterNavigationPage() {
                     onClick={() => toggleSection(sectionIndex)}
                     className="flex-1 flex items-center gap-3 text-left"
                   >
-                    <div className="flex items-center justify-center w-8 h-8 rounded-md bg-emerald-100 dark:bg-emerald-900/30">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-md bg-blue-100 dark:bg-blue-900/30">
                       {isCollapsed ? (
-                        <ChevronDown className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        <ChevronDown className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       ) : (
-                        <ChevronUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        <ChevronUp className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       )}
                     </div>
                     <div className="flex-1">
