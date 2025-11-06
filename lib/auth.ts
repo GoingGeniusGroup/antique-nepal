@@ -5,25 +5,24 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
-import { email } from "zod";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: {
-    strategy: "jwt",
-    maxAge: 60 * 60,
-  },
-  jwt: {
-    maxAge: 60 * 60, // same — optional but recommended
+    strategy: "database",
+    maxAge: 60 * 60, // 1 hour
+    updateAge: 60 * 5, // Update session every 5 minutes
   },
   providers: [
     Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
     Facebook({
-      clientId: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      clientId: process.env.FACEBOOK_CLIENT_ID!,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
       credentials: {
@@ -39,9 +38,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         const user = await prisma.user.findUnique({
-          where: {
-            email,
-          },
+          where: { email },
         });
 
         if (!user?.password) {
@@ -51,6 +48,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) {
           return null;
+        }
+
+        if (!user.isActive) {
+          throw new Error("Account is deactivated");
         }
 
         return {
@@ -65,57 +66,41 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      const now = Math.floor(Date.now() / 1000);
-      const maxAge = 60 * 60;
-      // If token is older than 1 hour, force re-login
-      if (token.exp && now > token.exp) {
-        return {}; // Expired, will trigger logout
-      }
-
-      if (user) {
-        token.id = user.id;
-        token.name = (user as any).name;
-        token.role = (user as any).role;
-        token.image = user.image;
-        token.exp = now + maxAge;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user && token) {
-        session.user.id = token.id as string;
-        (session.user as any).name = token.name;
-        (session.user as any).role = token.role;
-        session.user.image = token.image as string;
+    async session({ session, user }) {
+      if (session.user) {
+        session.user.id = user.id;
+        session.user.name = user.name;
+        session.user.email = user.email;
+        session.user.image = user.image;
+        (session.user as any).role = (user as any).role;
+        (session.user as any).phone = (user as any).phone;
+        (session.user as any).isActive = (user as any).isActive;
       }
       return session;
     },
   },
-
   events: {
-    async signIn({ user }) {
-      try {
-        if (!user.email) return;
-
-        // Check if user already exists
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email },
-        });
-
-        if (!existingUser) {
-          await prisma.user.create({
+    async signIn({ user, account, profile, isNewUser }) {
+      // Log user sign-in activity
+      if (user.id) {
+        await prisma.activityLog
+          .create({
             data: {
-              email: user.email,
-              name: user.name,
-              image: user.image,
-              role: "CUSTOMER",
-              isActive: true,
+              userId: user.id,
+              action: isNewUser ? "USER_REGISTERED" : "USER_LOGIN",
+              entityType: "User",
+              entityId: user.id,
+              changes: {
+                provider: account?.provider || "credentials",
+                timestamp: new Date().toISOString(),
+                isNewUser,
+              },
+              // You can add these if you have access to request headers
+              // ipAddress: request?.headers?.get("x-forwarded-for") || null,
+              // userAgent: request?.headers?.get("user-agent") || null,
             },
-          });
-        }
-      } catch (err) {
-        console.error("❌ Error saving Google user:", err);
+          })
+          .catch((err) => console.error("Failed to log activity:", err));
       }
     },
   },
