@@ -51,13 +51,13 @@ export function GeneralSettingsCard({ general, onChange }: Props) {
 
       toast.success("General settings saved successfully!", {
         duration: 3000,
-        position: "top-right",
+        position: "bottom-right",
       });
     } catch (error) {
       console.error("Error saving general settings:", error);
       toast.error("Failed to save general settings", {
         duration: 3000,
-        position: "top-right",
+        position: "bottom-right",
       });
     } finally {
       setSaving(false);

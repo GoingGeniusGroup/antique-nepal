@@ -51,7 +51,6 @@ export default function AdminLoginPage() {
         return;
       }
 
-      toast.success("Login successful!");
       router.push("/admin");
     } catch (error) {
       toast.error("An error occurred. Please try again.");

@@ -39,30 +39,66 @@ export async function PATCH(req: Request) {
   try {
     const body = await req.json();
     
+    console.log("=== FOOTER SOCIAL PATCH ===");
+    console.log("Incoming body:", JSON.stringify(body, null, 2));
+    
     // Batch update all socials
     if (Array.isArray(body)) {
-      const updates = body.map((social) =>
-        prisma.footerSocial.upsert({
-          where: { id: social.id || 'new-' + social.name },
-          update: {
-            name: social.name,
-            icon: social.icon,
-            href: social.href,
-            displayOrder: social.displayOrder || 0,
-            isActive: social.isActive ?? true,
-          },
-          create: {
-            name: social.name,
-            icon: social.icon,
-            href: social.href,
-            displayOrder: social.displayOrder || 0,
-            isActive: social.isActive ?? true,
-          },
-        })
-      );
+      // Get all existing socials
+      const existingSocials = await prisma.footerSocial.findMany();
+      const existingIds = existingSocials.map(s => s.id);
+      const incomingIds = body.filter(s => s.id).map(s => s.id);
       
-      const results = await prisma.$transaction(updates);
-      return NextResponse.json(results);
+      console.log("Existing IDs in DB:", existingIds);
+      console.log("Incoming IDs:", incomingIds);
+      
+      // Find IDs to delete (exist in DB but not in incoming data)
+      const idsToDelete = existingIds.filter(id => !incomingIds.includes(id));
+      
+      console.log("IDs to DELETE:", idsToDelete);
+      
+      // Prepare operations
+      const operations = [];
+      
+      // Delete removed socials
+      if (idsToDelete.length > 0) {
+        console.log("Adding delete operation for:", idsToDelete);
+        operations.push(
+          prisma.footerSocial.deleteMany({
+            where: { id: { in: idsToDelete } }
+          })
+        );
+      }
+      
+      // Upsert all incoming socials
+      body.forEach((social) => {
+        operations.push(
+          prisma.footerSocial.upsert({
+            where: { id: social.id || 'new-' + Math.random().toString(36).substr(2, 9) },
+            update: {
+              name: social.name,
+              icon: social.icon,
+              href: social.href,
+              displayOrder: social.displayOrder || 0,
+              isActive: social.isActive ?? true,
+            },
+            create: {
+              name: social.name,
+              icon: social.icon,
+              href: social.href,
+              displayOrder: social.displayOrder || 0,
+              isActive: social.isActive ?? true,
+            },
+          })
+        );
+      });
+      
+      console.log("Executing transaction with", operations.length, "operations");
+      const results = await prisma.$transaction(operations);
+      console.log("Transaction completed successfully");
+      console.log("=== END FOOTER SOCIAL PATCH ===");
+      
+      return NextResponse.json({ success: true, results });
     }
     
     // Single update
