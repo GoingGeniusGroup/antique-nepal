@@ -18,9 +18,11 @@ const UpdateProfileSchema = z.object({
 
 export async function updateProfile(formData: FormData) {
   const session = await auth();
+
   if (!session?.user?.id) {
-    return { success: false, message: "Not authenticated" };
+    return { success: false, message: "User Not authenticated" };
   }
+  const userId = session.user.id;
 
   const rawData = {
     name: formData.get("name"),
@@ -86,7 +88,7 @@ export async function updateProfile(formData: FormData) {
       } else {
         await tx.address.create({
           data: {
-            userId: session.user.id,
+            userId: userId,
             addressLine1: addressData.street,
             city: addressData.city,
             postalCode: addressData.postal,

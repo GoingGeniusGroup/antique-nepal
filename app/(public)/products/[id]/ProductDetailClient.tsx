@@ -47,7 +47,7 @@ interface ProductReview {
   title?: string | null;
   createdAt: Date;
   userId: string;
-  user?: { firstName?: string | null; id?: string };
+  user?: { name?: string | null; id?: string };
 }
 
 interface ProductCategory {
@@ -694,7 +694,7 @@ const ProductDetailClient = ({
                                   ))}
                                 </div>
                                 <span className="font-semibold">
-                                  {review.user?.firstName ||
+                                  {review.user?.name ||
                                     session?.user?.name ||
                                     "Anonymous"}
                                 </span>

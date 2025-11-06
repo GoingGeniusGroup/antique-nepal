@@ -14,8 +14,7 @@ export async function GET(req: Request) {
     ? {
         OR: [
           { email: { contains: q, mode: Prisma.QueryMode.insensitive } },
-          { firstName: { contains: q, mode: Prisma.QueryMode.insensitive } },
-          { lastName: { contains: q, mode: Prisma.QueryMode.insensitive } },
+          { name: { contains: q, mode: Prisma.QueryMode.insensitive } },
         ],
       }
     : {};
@@ -28,8 +27,7 @@ export async function GET(req: Request) {
       select: {
         id: true,
         email: true,
-        firstName: true,
-        lastName: true,
+        name: true,
         role: true,
         isActive: true,
         createdAt: true,
