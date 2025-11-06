@@ -6,6 +6,7 @@ import SideContent from "@/components/from-side-content";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -24,14 +25,28 @@ const LoginPage = () => {
   const error = searchParams.get("error"); // ✅ correct way
 
   useEffect(() => {
-    if (error === "OAuthAccountNotLinked") {
-      toast.error(
-        "This email is already registered. Please sign in using your password instead of Google."
-      );
+    if (error) {
+      let errorMessage = "An unknown login error occurred. Please try again.";
+      switch (error) {
+        case "OAuthAccountNotLinked":
+          errorMessage =
+            "This email is already linked to an account. Please sign in with the original method.";
+          break;
+        case "CredentialsSignin":
+          errorMessage =
+            "Invalid email or password. Please check your credentials and try again.";
+          break;
+        case "AccessDenied":
+          errorMessage = "Access Denied. You do not have permission to sign in.";
+          break;
+      }
+      toast.error(errorMessage);
     }
   }, [error]);
   return (
     <div className="overflow-hidden">
+      {/* Theme Toggle */}
+      <ThemeToggle variant="fixed" position="right-4 top-4" zIndex={50} />
       <div className="relative flex flex-col md:flex-row w-full h-screen">
         {/* Background Image */}
         <motion.div

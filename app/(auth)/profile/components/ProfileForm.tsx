@@ -15,6 +15,7 @@ import { ArrowLeft, Camera, Save, X } from "lucide-react";
 import { UserWithRelations } from "./ProfileContent";
 import { updateProfile } from "@/app/actions/auth/updateProfile";
 import { toast } from "react-hot-toast";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 type ProfileFormProps = {
   user: UserWithRelations;
@@ -24,6 +25,7 @@ type ProfileFormProps = {
 export default function ProfileForm({ user, onCancel }: ProfileFormProps) {
   const primaryAddress = user.addresses?.[0];
   const [isPending, startTransition] = useTransition();
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   const [formData, setFormData] = useState({
     name: user.name || "",
@@ -57,7 +59,10 @@ export default function ProfileForm({ user, onCancel }: ProfileFormProps) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setShowSaveDialog(true);
+  };
 
+  const handleConfirmSave = () => {
     const data = new FormData();
     data.append("name", formData.name);
     data.append("phone", formData.phone);
@@ -318,6 +323,17 @@ export default function ProfileForm({ user, onCancel }: ProfileFormProps) {
           </form>
         </div>
       </section>
+      
+      <ConfirmationDialog
+        open={showSaveDialog}
+        onOpenChange={setShowSaveDialog}
+        onConfirm={handleConfirmSave}
+        title="Save Changes?"
+        description="Are you sure you want to save these changes to your profile?"
+        confirmText="Save Changes"
+        cancelText="Cancel"
+        variant="default"
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Heart, Users, Award } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 import paperTexture from "@/public/paper-texture.jpg";
 import artisanHands from "@/public/artisan-hands.jpg";
@@ -63,6 +64,8 @@ const artisans = [
 export default function Artisans() {
   return (
     <div className="min-h-screen bg-background">
+      {/* Theme Toggle */}
+      <ThemeToggle variant="fixed" position="right-4 top-24" />
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 opacity-5">

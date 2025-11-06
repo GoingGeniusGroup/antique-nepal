@@ -1,14 +1,18 @@
-import Image from "next/image";
+"use client";
 
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Hammer, Heart } from "lucide-react";
 import workshopImage from "@/public/workshop.jpg";
 import artisanHands from "@/public/artisan-hands.jpg";
 import hempField from "@/public/hemp-field.jpg";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const Workshop = () => {
   return (
     <div className="min-h-screen bg-background">
+      {/* Theme Toggle */}
+      <ThemeToggle variant="fixed" position="right-4 top-24" />
       {/* Hero Section */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <Image

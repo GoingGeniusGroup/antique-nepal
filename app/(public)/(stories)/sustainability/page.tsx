@@ -6,6 +6,7 @@ import { Leaf, Droplets, Recycle, Sun, TreePine, Wind } from "lucide-react";
 import paperTexture from "@/public/paper-texture.jpg";
 import hempField from "@/public/hemp-field.jpg";
 import { ReactNode } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 // Framer Motion imports
 
@@ -121,6 +122,8 @@ const SustainabilityPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Theme Toggle */}
+      <ThemeToggle variant="fixed" position="right-4 top-24" />
       {/* Hero Section */}
       <motion.section
         ref={heroRef}

@@ -33,6 +33,7 @@ import logoImgDark from "@/public/logo/Antique-Nepal-Logo-2.png";
 import logoTextImgDark from "@/public/logo/Antique-Nepal-Logo-3.png";
 import logoTextImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-2.png";
 import logoImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-3.png";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 interface Category {
   id: string;
   name: string;
@@ -46,6 +47,7 @@ interface Category {
 export const Navbar = () => {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const { stories } = navigationData;
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
@@ -61,6 +63,7 @@ export const Navbar = () => {
   }, []);
 
   return (
+    <>
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-elegant">
       <div className="container px-4">
         <div className="flex items-center justify-between h-20">
@@ -272,7 +275,7 @@ export const Navbar = () => {
                   variant="outline"
                   size="sm"
                   className="ml-2 hover:shadow-soft transition-all"
-                  onClick={() => signOut({ callbackUrl: "/" })}
+                  onClick={() => setShowLogoutDialog(true)}
                 >
                   <LogOut className="w-4 h-4 mr-2" />
                   Logout
@@ -381,5 +384,17 @@ export const Navbar = () => {
         )}
       </div>
     </nav>
+    
+    <ConfirmationDialog
+      open={showLogoutDialog}
+      onOpenChange={setShowLogoutDialog}
+      onConfirm={() => signOut({ callbackUrl: "/" })}
+      title="Logout Confirmation"
+      description="Are you sure you want to logout?"
+      confirmText="Logout"
+      cancelText="Cancel"
+      variant="destructive"
+    />
+    </>
   );
 };

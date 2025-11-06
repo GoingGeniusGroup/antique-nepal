@@ -18,7 +18,7 @@ export async function registerUser(formData: FormData) {
 
     // Combine prefix + phone if phone exists
     const fullPhone = data.phone ? `${data.prefix}${data.phone}` : undefined;
-    const fullName = data.firstName.concat("", data.lastName);
+    const fullName = `${data.firstName} ${data.lastName}`;
 
     // Check if user exists by email or phone
     const existingUser = await prisma.user.findUnique({
