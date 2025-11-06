@@ -5,7 +5,6 @@ import { ProductControls } from "@/components/products/product-controls";
 import { ProductGrid } from "@/components/products/product-grid";
 import ProductsBannerSection from "@/components/products/ProductsBannerSection";
 import { useCallback, useEffect, useState } from "react";
-import { useTheme } from "@/contexts/theme-context";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getProducts, type ProductData } from "./actions/products";
@@ -72,9 +71,6 @@ const ProductsPage = () => {
     setCurrentPage(1);
   };
 
-  const { theme, isReady } = useTheme();
-  const isDark = isReady && theme === "dark";
-
   return (
     <>
       <main className="pt-16 md:pt-20 min-h-screen bg-[#f7f5f2] dark:bg-[#0a0a0a] relative">
@@ -97,11 +93,7 @@ const ProductsPage = () => {
             transition={{ duration: 0.5 }}
             className="flex flex-col gap-4"
           >
-            <h1
-              className={`text-4xl font-bold font-inter ${
-                isDark ? "text-white" : "text-[#2d2520]"
-              }`}
-            >
+            <h1 className="text-4xl font-bold font-inter text-[#2d2520] dark:text-white">
               PRODUCTS
             </h1>
 
@@ -132,7 +124,7 @@ const ProductsPage = () => {
 
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
-                <p className={isDark ? "text-white" : "text-gray-600"}>
+                <p className="text-gray-600 dark:text-white">
                   Loading products...
                 </p>
               </div>
