@@ -62,16 +62,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email: email },
         });
 
-        if (!user?.password) {
+        if (!user) {
           return null;
         }
 
-        if (!user) {
-          throw new Error("Invalid email or password");
+        if (!user.password) {
+          return null;
         }
 
-        // ✅ Check for email verification
-        if (!user.emailVerified) {
+        // ✅ Check for email verification - ONLY for CUSTOMER role, not ADMIN
+        if (user.role === "CUSTOMER" && !user.emailVerified) {
           throw new Error("EmailNotVerified"); // custom error
         }
 

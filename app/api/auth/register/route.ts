@@ -44,6 +44,7 @@ export async function POST(req: Request) {
         password: hashedPassword,
         name: name || null,
         role: role === "ADMIN" ? "ADMIN" : "CUSTOMER",
+        emailVerified: new Date(), // Set email as verified for direct registrations
       },
       select: {
         id: true,

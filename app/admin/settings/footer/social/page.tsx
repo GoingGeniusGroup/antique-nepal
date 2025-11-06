@@ -150,10 +150,10 @@ export default function FooterSocialPage() {
           </p>
         </div>
 
-        <Card className="p-6 border-l-4 border-l-pink-500 dark:border-l-pink-400 dark:!bg-slate-800 dark:!border-slate-600">
+        <Card className="p-6 border-l-4 border-l-blue-500 dark:border-l-blue-500 dark:!bg-slate-800 dark:!border-slate-600">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <Share2 className="h-5 w-5 text-pink-600 dark:text-pink-400" />
+              <Share2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               <div className="text-lg font-semibold text-foreground">Social Links</div>
               {socials.length > 0 && (
                 <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
@@ -196,7 +196,7 @@ export default function FooterSocialPage() {
                 onClick={() => setShowConfirm(true)}
                 disabled={saving}
                 size="sm"
-                className="bg-pink-600 hover:bg-pink-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {saving ? "Saving..." : "Save All"}
@@ -219,11 +219,11 @@ export default function FooterSocialPage() {
                     onClick={() => toggleItem(index)}
                     className="flex-1 flex items-center gap-3 text-left"
                   >
-                    <div className="flex items-center justify-center w-8 h-8 rounded-md bg-pink-100 dark:bg-pink-900/30">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-md bg-blue-100 dark:bg-blue-900/30">
                       {isCollapsed ? (
-                        <ChevronDown className="h-4 w-4 text-pink-600 dark:text-pink-400" />
+                        <ChevronDown className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       ) : (
-                        <ChevronUp className="h-4 w-4 text-pink-600 dark:text-pink-400" />
+                        <ChevronUp className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       )}
                     </div>
                     <div className="flex-1">

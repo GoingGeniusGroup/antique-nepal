@@ -90,7 +90,7 @@ export default function FooterContactPage() {
           </p>
         </div>
 
-        <Card className="p-6 border-l-4 border-l-blue-500 dark:border-l-blue-400 dark:!bg-slate-800 dark:!border-slate-600">
+        <Card className="p-6 border-l-4 border-l-blue-500 dark:border-l-blue-500 dark:!bg-slate-800 dark:!border-slate-600">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <Phone className="h-5 w-5 text-blue-600 dark:text-blue-400" />

@@ -75,7 +75,7 @@ export function ThemeToggle({
           >
             {isReady ? (
               theme === "dark" ? (
-                <Moon className="h-5 w-5 md:h-6 md:w-6 text-amber-300" />
+                <Moon className="h-5 w-5 md:h-6 md:w-6 text-slate-300" />
               ) : (
                 <Sun className="h-5 w-5 md:h-6 md:w-6 text-[#2d2520]" />
               )
