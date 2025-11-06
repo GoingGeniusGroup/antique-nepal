@@ -113,12 +113,12 @@ export default async function RootLayout({
                     style: {
                       background: "hsl(var(--card))",
                       color: "hsl(var(--card-foreground))",
-                      border: "2px solid rgb(59, 130, 246)",
+                      border: "2px solid hsl(var(--border))",
                       boxShadow:
-                        "0 10px 40px rgba(59, 130, 246, 0.3), 0 0 30px rgba(59, 130, 246, 0.4), 0 4px 12px rgba(0, 0, 0, 0.15)",
+                        "0 10px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.15)",
                     },
                     iconTheme: {
-                      primary: "rgb(59, 130, 246)",
+                      primary: "hsl(var(--border))",
                       secondary: "hsl(var(--card))",
                     },
                   },

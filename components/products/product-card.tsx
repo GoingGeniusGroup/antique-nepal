@@ -208,7 +208,7 @@ export function ProductCard({
               <span
                 className={cn(
                   "text-sm md:text-base lg:text-lg font-semibold font-cinzel",
-                  isDark ? "text-amber-300" : "text-primary"
+                  isDark ? "text-slate-200" : "text-primary"
                 )}
               >
                 ${product.price.toFixed(2)}

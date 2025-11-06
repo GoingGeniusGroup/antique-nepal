@@ -363,7 +363,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
 
   if (loading) {
     return (
-      <Card className="p-6 border-l-4 border-l-purple-500 dark:border-l-purple-400 dark:!bg-slate-800 dark:!border-slate-600">
+      <Card className="p-6 border-l-4 border-l-blue-500 dark:border-l-blue-500 dark:!bg-slate-800 dark:!border-slate-600">
         <div className="flex items-center justify-center h-32">
           <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"/> 
@@ -376,17 +376,17 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
 
   return (
     <>
-      <Card className="p-6 border-l-4 border-l-purple-500 dark:border-l-purple-400 dark:!bg-slate-800 dark:!border-slate-600">
+      <Card className="p-6 border-l-4 border-l-blue-500 dark:border-l-blue-500 dark:!bg-slate-800 dark:!border-slate-600">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+            <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             <div className="text-lg font-semibold text-foreground">Footer Content</div>
           </div>
           <Button
             onClick={() => setShowConfirm(true)}
             disabled={saving || loading}
             size="sm"
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Save className="h-4 w-4 mr-2" />
             {saving ? "Saving..." : "Save"}

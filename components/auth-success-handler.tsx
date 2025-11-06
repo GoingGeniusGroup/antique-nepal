@@ -2,10 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import toast from "react-hot-toast";
 
 export function AuthSuccessHandler() {
   const { status } = useSession();
+  const pathname = usePathname();
   const previousStatus = useRef(status);
   const hasShownToast = useRef(false);
 
@@ -16,9 +18,10 @@ export function AuthSuccessHandler() {
       previousStatus.current !== "authenticated"
     ) {
       const sessionFlag = sessionStorage.getItem("loginSuccessToastShown");
+      const isAdminRoute = pathname?.startsWith("/admin");
 
-      // Only show toast if we haven't shown it yet (both in component and session)
-      if (!hasShownToast.current && !sessionFlag) {
+      // Only show toast if on admin route and we haven't shown it yet
+      if (!hasShownToast.current && !sessionFlag && isAdminRoute) {
         // Small delay to ensure UI has updated after OAuth redirect
         setTimeout(() => {
           toast.success("Logged in successfully!");
@@ -36,7 +39,7 @@ export function AuthSuccessHandler() {
 
     // Update previous status
     previousStatus.current = status;
-  }, [status]);
+  }, [status, pathname]);
 
   return null; // This component does not render any UI.
 }

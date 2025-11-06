@@ -87,13 +87,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                   className={cn(
                     "rounded-full p-3 backdrop-blur-md shadow-lg border transition-all",
                     theme === "dark"
-                      ? "bg-white/20 border-white/30 hover:bg-white/30"
+                      ? "bg-slate-800/80 border-slate-600/50 hover:bg-slate-700/80"
                       : "bg-[#f7f5f2]/80 border-[#e8e0d8] hover:bg-white/90"
                   )}
                   aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
                 >
                   {theme === "dark" ? (
-                    <Moon className="h-5 w-5 md:h-6 md:w-6 text-amber-300" />
+                    <Moon className="h-5 w-5 md:h-6 md:w-6 text-blue-300" />
                   ) : (
                     <Sun className="h-5 w-5 md:h-6 md:w-6 text-[#2d2520]" />
                   )}

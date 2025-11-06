@@ -47,7 +47,6 @@ export default function AdminLoginPage() {
 
       if (sessionData?.user?.role !== "ADMIN") {
         toast.error("Access denied. Admin privileges required.");
-        await signIn("credentials", { redirect: false }); // Sign out
         return;
       }
 

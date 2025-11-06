@@ -134,7 +134,7 @@ const getStatusIcon = (status: string) => {
     case "SHIPPED":
       return <Truck className="w-5 h-5 text-blue-600" />;
     case "PROCESSING":
-      return <Clock className="w-5 h-5 text-amber-600" />;
+      return <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />;
     default:
       return <Package className="w-5 h-5 text-muted-foreground" />;
   }

@@ -32,9 +32,9 @@ const items = [
     icon: Users,
     title: "Artisan Communities",
     desc: "Supporting over 200 skilled artisan families across rural Nepal",
-    iconColor: "text-amber-400",
-    bgColor: "bg-amber-500/10",
-    borderColor: "border-amber-500/20",
+    iconColor: "text-slate-400",
+    bgColor: "bg-slate-500/10",
+    borderColor: "border-slate-500/20",
   },
   {
     icon: Gem,

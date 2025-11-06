@@ -48,8 +48,8 @@ const FEATURE_CARDS: FeatureCard[] = [
   },
   {
     icon: Award,
-    iconColor: "text-amber-400",
-    hoverGradient: "from-amber-400/20",
+    iconColor: "text-slate-400",
+    hoverGradient: "from-slate-400/20",
     title: "Quality Crafted",
     description: "15+ years tradition",
     delay: 0.3,

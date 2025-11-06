@@ -233,7 +233,7 @@ export default function CartPage() {
                     </Button>
 
                     {shipping > 0 && (
-                      <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md text-xs text-amber-800 dark:text-amber-200">
+                      <div className="p-3 bg-amber-50 dark:bg-slate-800 border border-amber-200 dark:border-slate-600 rounded-md text-xs text-amber-800 dark:text-slate-200">
                         Add ₹{999 - subtotal} more for free shipping!
                       </div>
                     )}

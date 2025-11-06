@@ -224,7 +224,7 @@ const Wishlist = () => {
                         <p
                           className={cn(
                             "text-xl font-bold mb-4",
-                            isDark ? "text-amber-300" : "text-primary"
+                            isDark ? "text-slate-200" : "text-primary"
                           )}
                         >
                           ${Number(product.price).toFixed(2)}
