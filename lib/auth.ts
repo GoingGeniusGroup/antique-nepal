@@ -20,6 +20,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      allowDangerousEmailAccountLinking: true,
       profile(profile) {
         return {
           name: profile.name,
@@ -33,6 +34,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Facebook({
       clientId: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
       profile(profile) {
         return {
           name: profile.name,
@@ -84,6 +86,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // If the token has an ID, verify the user still exists in the database.
+      if (token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+        });
+        // If user is not found, invalidate the token to force logout.
+        if (!dbUser) {
+          return {};
+        }
+      }
+
       const now = Math.floor(Date.now() / 1000);
       const maxAge = 60 * 60;
       // If token is older than 1 hour, force re-login
@@ -91,6 +104,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return {}; // Expired, will trigger logout
       }
 
+      // This block only runs on initial sign-in
       if (user) {
         token.id = user.id;
         token.name = (user as any).name;
@@ -101,7 +115,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token) {
+      if (session.user && token.id) {
         session.user.id = token.id as string;
         (session.user as any).name = token.name;
         (session.user as any).role = token.role;
