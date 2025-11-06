@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/navigation-menu";
 
 import {
-  Mountain,
   ShoppingBag,
   Menu,
   X,
@@ -25,7 +24,7 @@ import {
   Search,
   LogOut,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+
 import { useTheme } from "@/contexts/theme-context";
 import navigationData from "@/data/navigation.json";
 import { signOut, useSession } from "next-auth/react";
@@ -51,7 +50,6 @@ export const Navbar = () => {
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
   useAutoLogout();
-
 
   const [categories, setCategories] = useState<Category[]>([]);
 

@@ -66,9 +66,10 @@ export async function getProducts(params: GetProductsParams) {
           },
         },
         images: {
-          where: { isPrimary: true },
+          orderBy: [{ isPrimary: "desc" }, { displayOrder: "asc" }],
           take: 1,
         },
+
         variants: {
           include: {
             inventory: true,
@@ -89,9 +90,10 @@ export async function getProducts(params: GetProductsParams) {
       products = products.filter((p) => {
         // If no variants, consider it in stock
         // If has variants, check inventory
-        const hasStock = p.variants.length === 0
-          ? true
-          : p.variants.some((v) => v.inventory && v.inventory.quantity > 0);
+        const hasStock =
+          p.variants.length === 0
+            ? true
+            : p.variants.some((v) => v.inventory && v.inventory.quantity > 0);
         return hasStock;
       });
     }
@@ -110,17 +112,22 @@ export async function getProducts(params: GetProductsParams) {
           product.categories[0]?.category?.name || "Uncategorized";
         // Ensure image is a valid URL for Next.js Image
         let image = "/product_placeholder.jpeg"; // default
-        if (product.images[0]?.url) {
-          const url = product.images[0].url.trim().replace(/^\/+|["']/g, ""); // remove leading slashes and quotes
-          image = url.startsWith("http") ? url : `/${url}`; // local or external
+
+        const chosenImage = product.images[0];
+        if (chosenImage?.url) {
+          const url = chosenImage.url.trim().replace(/^\/+|["']/g, "");
+          image = url.startsWith("http") ? url : `/${url}`;
         }
 
         // Check if product has stock
         // If no variants exist, assume product is in stock (simple product)
         // If variants exist, check if any variant has inventory
-        const hasStock = product.variants.length === 0 
-          ? true 
-          : product.variants.some((v) => v.inventory && v.inventory.quantity > 0);
+        const hasStock =
+          product.variants.length === 0
+            ? true
+            : product.variants.some(
+                (v) => v.inventory && v.inventory.quantity > 0
+              );
 
         return {
           id: product.id,

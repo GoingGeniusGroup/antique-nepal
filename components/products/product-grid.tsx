@@ -20,7 +20,7 @@ interface WishlistItem {
 }
 
 export function ProductGrid({ products }: ProductGridProps) {
-  console.log(products);
+  // console.log(products);
   const [wishlistItems, setWishlistItems] = useState<string[]>([]);
   const [wishlistLoaded, setWishlistLoaded] = useState(false);
   const { data: session } = useSession();
