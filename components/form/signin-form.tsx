@@ -142,7 +142,7 @@ const SigninForm = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full bg-primary hover:bg-[hsl(var(--earth))] text-[hsl(var(--paper))] font-sans font-semibold py-3 px-4 rounded transition-all duration-200 mt-6 flex items-center justify-center gap-2 ${
+            className={`w-full bg-primary hover:bg-primary/90 text-primary-foreground font-sans font-semibold py-3 px-4 rounded transition-all duration-200 mt-6 flex items-center justify-center gap-2 ${
               loading ? "opacity-70 cursor-not-allowed" : ""
             }`}
           >

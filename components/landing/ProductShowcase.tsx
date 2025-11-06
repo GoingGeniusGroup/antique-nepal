@@ -42,7 +42,7 @@ export default function ProductShowcase() {
 
   return (
     <section
-      className={`py-20 ${getThemeClass(theme, isReady, "bg-gradient-paper", "bg-[#0a0a0a]")}`}
+      className={`py-20 ${getThemeClass(theme, isReady, "bg-gradient-paper", "bg-[#1a1a1a]")}`}
     >
       <div className="container px-4 mx-auto">
         <div className="max-w-6xl mx-auto">

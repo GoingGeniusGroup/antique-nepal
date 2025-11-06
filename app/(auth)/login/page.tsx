@@ -6,6 +6,7 @@ import SideContent from "@/components/from-side-content";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -32,6 +33,8 @@ const LoginPage = () => {
   }, [error]);
   return (
     <div className="overflow-hidden">
+      {/* Theme Toggle */}
+      <ThemeToggle variant="fixed" position="right-4 top-4" zIndex={50} />
       <div className="relative flex flex-col md:flex-row w-full h-screen">
         {/* Background Image */}
         <motion.div

@@ -61,7 +61,13 @@ export function FeaturedCollection() {
           <path
             d="M0,150 L0,100 L200,50 L400,80 L600,30 L800,70 L1000,40 L1200,90 L1200,150 Z"
             fill="currentColor"
-            className={theme === "dark" ? "text-white/20" : "text-[#2d2520]/25"}
+            className={
+              !isReady
+                ? "text-[#2d2520]/25"
+                : theme === "dark"
+                ? "text-white/20"
+                : "text-[#2d2520]/25"
+            }
           />
         </svg>
       </div>

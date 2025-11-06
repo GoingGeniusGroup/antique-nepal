@@ -85,7 +85,7 @@ export const FAQ = () => {
 
   return (
     <section
-      className={`py-20 relative overflow-hidden ${getThemeClass(theme, isReady, "bg-gradient-paper", "bg-[#0a0a0a]")}`}
+      className={`py-20 relative overflow-hidden ${getThemeClass(theme, isReady, "bg-gradient-paper", "bg-[#1a1a1a]")}`}
     >
       {/* Decorative Elements */}
       <div className="absolute top-20 left-8 opacity-5 pointer-events-none">

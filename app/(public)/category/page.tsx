@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import paperTexture from "@/public/paper-texture.jpg";
 import toteBagImg from "@/public/hemp-bag-1.jpg";
 import backpackImg from "@/public/hemp-bag-2.jpg";
@@ -62,6 +63,8 @@ const CategoriesPage = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      {/* Theme Toggle */}
+      <ThemeToggle variant="fixed" position="right-4 top-24" />
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 opacity-30">
