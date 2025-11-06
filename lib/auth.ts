@@ -20,10 +20,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      profile(profile) {
+        return {
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+          role: "CUSTOMER",
+          isActive: true,
+        };
+      },
     }),
     Facebook({
       clientId: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      profile(profile) {
+        return {
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture.data.url,
+          role: "CUSTOMER",
+          isActive: true,
+        };
+      },
     }),
     Credentials({
       credentials: {
@@ -90,33 +108,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.image = token.image as string;
       }
       return session;
-    },
-  },
-
-  events: {
-    async signIn({ user }) {
-      try {
-        if (!user.email) return;
-
-        // Check if user already exists
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email },
-        });
-
-        if (!existingUser) {
-          await prisma.user.create({
-            data: {
-              email: user.email,
-              name: user.name,
-              image: user.image,
-              role: "CUSTOMER",
-              isActive: true,
-            },
-          });
-        }
-      } catch (err) {
-        console.error("❌ Error saving Google user:", err);
-      }
     },
   },
   pages: {
