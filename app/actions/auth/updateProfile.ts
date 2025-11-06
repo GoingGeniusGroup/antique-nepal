@@ -63,7 +63,7 @@ export async function updateProfile(formData: FormData) {
     await prisma.$transaction(async (tx) => {
       // 1. Update User
       await tx.user.update({
-        where: { id: session.user.id },
+        where: { id: session.user?.id },
         data: {
           firstName,
           lastName,
@@ -107,6 +107,9 @@ export async function updateProfile(formData: FormData) {
     return { success: true, message: "Profile updated successfully" };
   } catch (error) {
     console.error(error);
-    return { success: false, message: "An error occurred while updating the profile." };
+    return {
+      success: false,
+      message: "An error occurred while updating the profile.",
+    };
   }
 }

@@ -55,7 +55,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         return {
           id: user.id,
-          name: user.firstName,
+          name: user.name,
           email: user.email,
           phone: user.phone,
           role: user.role,
@@ -75,7 +75,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       if (user) {
         token.id = user.id;
-        token.name = (user as any).firstName;
+        token.name = (user as any).name;
         token.role = (user as any).role;
         token.image = user.image;
         token.exp = now + maxAge;
@@ -85,7 +85,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.id as string;
-        (session.user as any).name = token.firstName;
+        (session.user as any).name = token.name;
         (session.user as any).role = token.role;
         session.user.image = token.image as string;
       }
@@ -104,15 +104,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         if (!existingUser) {
-          // Split Google full name
-          const [firstName, ...rest] = (user.name || "").split(" ");
-          const lastName = rest.join(" ") || null;
-
           await prisma.user.create({
             data: {
               email: user.email,
-              firstName,
-              lastName,
+              name: user.name,
               image: user.image,
               role: "CUSTOMER",
               isActive: true,
