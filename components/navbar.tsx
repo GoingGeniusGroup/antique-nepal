@@ -389,14 +389,13 @@ export const Navbar = () => {
     <ConfirmationDialog
       open={showLogoutDialog}
       onOpenChange={setShowLogoutDialog}
-      onConfirm={() => {
-        toast.success("Logging out...", {
+      onConfirm={async () => {
+        await signOut({ redirect: false });
+        sessionStorage.removeItem("loginSuccessToastShown");
+        toast.success("Logged out successfully!", {
           duration: 2000,
           position: "bottom-right",
         });
-        setTimeout(() => {
-          signOut({ callbackUrl: "/" });
-        }, 500);
       }}
       title="Logout Confirmation"
       description="Are you sure you want to logout?"
