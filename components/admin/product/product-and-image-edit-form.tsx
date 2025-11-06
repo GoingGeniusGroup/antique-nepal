@@ -37,9 +37,16 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
     metaTitle: product?.metaTitle || "",
     metaDescription: product?.metaDescription || "",
   });
+  console.log("Images:", images);
 
   const [productImages, setProductImages] = useState<ProductImage[]>(
-    images.length ? images : [{ displayOrder: 0, isPrimary: false }]
+    images.length > 0
+      ? images.map((img) => ({
+          ...img,
+          displayOrder: Number(img.displayOrder) || 0,
+          isPrimary: Boolean(img.isPrimary),
+        }))
+      : [{ displayOrder: 0, isPrimary: false }]
   );
 
   const [saving, setSaving] = useState(false);
@@ -58,6 +65,10 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
     value: any
   ) => {
     const updated = [...productImages];
+    let newValue = value;
+
+    if (field === "displayOrder") newValue = Number(value) || 0;
+    if (field === "isPrimary") newValue = Boolean(value);
     updated[index] = { ...updated[index], [field]: value };
     setProductImages(updated);
   };

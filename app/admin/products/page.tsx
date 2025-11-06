@@ -34,7 +34,13 @@ type Row = {
   metaDescription?: string | null;
   createdAt: string;
   categories?: { id: string; name: string }[];
-  images?: { id: string; url: string; altText?: string | null }[];
+  images?: {
+    id: string;
+    url: string;
+    altText?: string | null;
+    displayOrder: number;
+    isPrimary: boolean;
+  }[];
 };
 
 export default function ProductsPage() {
@@ -140,13 +146,7 @@ export default function ProductsPage() {
           <div className="p-6 rounded-md shadow-md">
             <ProductWithImagesForm
               product={editingProduct.id ? editingProduct : undefined}
-              images={
-                editingProduct.images?.map((img) => ({
-                  ...img,
-                  displayOrder: 0,
-                  isPrimary: false,
-                })) || []
-              }
+              images={editingProduct.images || []}
               onSave={handleSave}
             />
             <div className="mt-4 flex justify-end">

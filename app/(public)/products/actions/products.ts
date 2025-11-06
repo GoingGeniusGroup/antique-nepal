@@ -167,7 +167,7 @@ export async function getProductById(id: string) {
       },
       reviews: {
         include: {
-          user: { select: { firstName: true } },
+          user: { select: { name: true } },
         },
         orderBy: { createdAt: "desc" },
       },
