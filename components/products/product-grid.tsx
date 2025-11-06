@@ -1,12 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ProductCard } from "./product-card";
-import { ProductData } from "@/app/(public)/products/actions/products";
+import type { ProductData } from "@/app/(public)/products/actions/products";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 
 interface ProductGridProps {
   products: ProductData[];
+  productVariants?: Record<
+    string,
+    Array<{
+      id: string;
+      name: string;
+      sku: string;
+      price?: number;
+      color?: string;
+      size?: string;
+    }>
+  >;
 }
 
 interface WishlistItem {
@@ -19,8 +30,10 @@ interface WishlistItem {
   };
 }
 
-export function ProductGrid({ products }: ProductGridProps) {
-  // console.log(products);
+export function ProductGrid({
+  products,
+  productVariants = {},
+}: ProductGridProps) {
   const [wishlistItems, setWishlistItems] = useState<string[]>([]);
   const [wishlistLoaded, setWishlistLoaded] = useState(false);
   const { data: session } = useSession();
@@ -104,6 +117,7 @@ export function ProductGrid({ products }: ProductGridProps) {
           isWishlisted={wishlistItems.includes(product.id)}
           toggleWishlist={toggleWishlist}
           wishlistLoaded={wishlistLoaded}
+          productVariants={productVariants[product.id] || []}
         />
       ))}
     </div>

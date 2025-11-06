@@ -1,80 +1,147 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import useSWR from "swr";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Pagination } from "@/components/products/pagination"; // adjust import path if needed
+import { Pagination } from "@/components/products/pagination";
+import { Spinner } from "@/components/ui/spinner";
+import toast from "react-hot-toast";
 
+// ---------------------- TYPES ----------------------
 interface CartItem {
-  id: number;
+  id: string;
   name: string;
   price: number;
-  image: string;
   quantity: number;
   color: string;
   size: string;
+  image: string;
 }
 
-const ITEMS_PER_PAGE = 2; // adjust how many items per page
+interface CartApiItem {
+  id: string;
+  price: number;
+  quantity: number;
+  productVariant: {
+    color: string;
+    size: string;
+    product: {
+      name: string;
+      images: { url: string }[];
+    };
+  };
+}
 
-const Cart = () => {
-  const [items, setItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Himalayan Hemp Tote Bag",
-      price: 89.99,
-      image: "/hemp-bag-1.jpg",
-      quantity: 1,
-      color: "Natural Beige",
-      size: "Medium",
-    },
-    {
-      id: 2,
-      name: "Traditional Woven Backpack",
-      price: 129.99,
-      image: "/hemp-bag-2.jpg",
-      quantity: 2,
-      color: "Forest Green",
-      size: "Large",
-    },
-    {
-      id: 3,
-      name: "Mountain Artisan Sling Bag",
-      price: 69.99,
-      image: "/hemp-bag-3.jpg",
-      quantity: 1,
-      color: "Stone Gray",
-      size: "Small",
-    },
-  ]);
+interface CartApiResponse {
+  cart: {
+    items: CartApiItem[];
+  };
+}
 
+const ITEMS_PER_PAGE = 2;
+
+// ---------------------- FETCHER ----------------------
+const fetcher = async (url: string): Promise<{ items: CartItem[] }> => {
+  const res = await fetch(url);
+  const json: CartApiResponse = await res.json();
+
+  const items: CartItem[] =
+    json.cart?.items.map((ci) => ({
+      id: ci.id,
+      name: ci.productVariant.product.name,
+      price: ci.price,
+      quantity: ci.quantity,
+      color: ci.productVariant.color,
+      size: ci.productVariant.size,
+      image: ci.productVariant.product.images[0]?.url || "",
+    })) || [];
+
+  return { items };
+};
+
+// ---------------------- CART COMPONENT ----------------------
+type LoadingButton = "minus" | "plus" | "remove";
+
+const Cart = ({ userId }: { userId: string }) => {
+  const { data, mutate, error } = useSWR<{ items: CartItem[] }>(
+    `/api/cart?userId=${userId}`,
+    fetcher
+  );
+
+  const items = data?.items || [];
   const [currentPage, setCurrentPage] = useState(1);
+  const [loadingMap, setLoadingMap] = useState<
+    Record<string, LoadingButton | null>
+  >({});
 
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
 
-  // Slice visible items per page
   const visibleItems = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     return items.slice(start, start + ITEMS_PER_PAGE);
   }, [items, currentPage]);
 
-  const updateQuantity = (id: number, change: number) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + change) }
-          : item
-      )
+  // ---------------------- SHOW SPINNER WHILE LOADING ----------------------
+  if (!data && !error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner className="h-12 w-12 text-primary" />
+      </div>
     );
+  }
+
+  // ---------------------- UPDATE QUANTITY ----------------------
+  const updateQuantity = async (
+    id: string,
+    change: number,
+    button: LoadingButton
+  ) => {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+
+    const newQuantity = item.quantity + change;
+    if (newQuantity < 1) return;
+
+    try {
+      setLoadingMap((prev) => ({ ...prev, [id]: button }));
+      await fetch("/api/cart", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cartItemId: id, quantity: newQuantity }),
+      });
+      mutate();
+      toast.success("Cart updated successfully!");
+    } catch {
+      toast.error("Failed to update cart.");
+    } finally {
+      setLoadingMap((prev) => ({ ...prev, [id]: null }));
+    }
   };
 
-  const removeItem = (id: number) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
-    if (visibleItems.length === 1 && currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
+  // ---------------------- REMOVE ITEM ----------------------
+  const removeItem = async (id: string) => {
+    try {
+      setLoadingMap((prev) => ({ ...prev, [id]: "remove" }));
+      await fetch("/api/cart", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cartItemId: id }),
+      });
+
+      if (visibleItems.length === 1 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      }
+
+      mutate();
+      toast.success("Item removed successfully!");
+    } catch {
+      toast.error("Failed to remove item.");
+    } finally {
+      setLoadingMap((prev) => ({ ...prev, [id]: null }));
     }
   };
 
@@ -85,10 +152,11 @@ const Cart = () => {
   const shipping = subtotal > 0 ? 10 : 0;
   const total = subtotal + shipping;
 
+  // ---------------------- RENDER ----------------------
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Theme Toggle */}
       <ThemeToggle variant="fixed" position="right-4 top-24" />
+
       <main className="flex-1 pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="mb-8">
@@ -117,95 +185,121 @@ const Cart = () => {
             </div>
           ) : (
             <div className="grid lg:grid-cols-3 gap-8">
-              {/* Cart Items */}
+              {/* CART ITEMS */}
               <div className="lg:col-span-2 space-y-4">
-                {visibleItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow"
-                  >
-                    <div className="flex gap-6">
-                      <div className="relative flex-shrink-0 w-32 h-32">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-32 h-32 object-cover rounded-lg border border-border"
-                        />
-                      </div>
+                {visibleItems.map((item) => {
+                  const loadingButton = loadingMap[item.id];
 
-                      <div className="flex-1 space-y-4">
-                        <div className="flex justify-between items-start">
-                          <div className="space-y-2">
-                            <h3 className="font-serif text-xl font-semibold">
-                              {item.name}
-                            </h3>
-                            <div className="flex flex-wrap gap-3 text-sm">
-                              <div className="flex items-center gap-2">
-                                <span className="text-muted-foreground">
-                                  Color:
-                                </span>
-                                <span className="font-medium">
-                                  {item.color}
-                                </span>
-                              </div>
-                              <span className="text-border">|</span>
-                              <div className="flex items-center gap-2">
-                                <span className="text-muted-foreground">
-                                  Size:
-                                </span>
-                                <span className="font-medium">{item.size}</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeItem(item.id)}
-                            className="hover:bg-destructive/10 hover:text-destructive"
-                          >
-                            <Trash2 className="h-5 w-5" />
-                          </Button>
+                  return (
+                    <div
+                      key={item.id}
+                      className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow"
+                    >
+                      <div className="flex gap-6">
+                        <div className="relative flex-shrink-0 w-32 h-32">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-32 h-32 object-cover rounded-lg border border-border"
+                          />
                         </div>
 
-                        <div className="flex items-center justify-between pt-2">
-                          <div className="flex items-center gap-3 border border-border rounded-lg">
+                        <div className="flex-1 space-y-4">
+                          <div className="flex justify-between items-start">
+                            <div className="space-y-2">
+                              <h3 className="font-serif text-xl font-semibold">
+                                {item.name}
+                              </h3>
+                              <div className="flex flex-wrap gap-3 text-sm">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-muted-foreground">
+                                    Color:
+                                  </span>
+                                  <span className="font-medium">
+                                    {item.color}
+                                  </span>
+                                </div>
+                                <span className="text-border">|</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-muted-foreground">
+                                    Size:
+                                  </span>
+                                  <span className="font-medium">
+                                    {item.size}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
                             <Button
                               variant="ghost"
-                              size="sm"
-                              onClick={() => updateQuantity(item.id, -1)}
-                              className="h-10 w-10"
+                              size="icon"
+                              onClick={() => removeItem(item.id)}
+                              disabled={!!loadingButton}
+                              className="hover:bg-destructive/10 hover:text-destructive"
                             >
-                              <Minus className="h-4 w-4" />
-                            </Button>
-                            <span className="text-lg font-semibold w-12 text-center">
-                              {item.quantity}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => updateQuantity(item.id, 1)}
-                              className="h-10 w-10"
-                            >
-                              <Plus className="h-4 w-4" />
+                              {loadingButton === "remove" ? (
+                                <Spinner className="h-5 w-5" />
+                              ) : (
+                                <Trash2 className="h-5 w-5" />
+                              )}
                             </Button>
                           </div>
 
-                          <div className="text-right">
-                            <p className="text-2xl font-bold text-primary">
-                              ${(item.price * item.quantity).toFixed(2)}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              ${item.price} each
-                            </p>
+                          <div className="flex items-center justify-between pt-2">
+                            <div className="flex items-center gap-3 border border-border rounded-lg">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  updateQuantity(item.id, -1, "minus")
+                                }
+                                disabled={!!loadingButton}
+                                className="h-10 w-10"
+                              >
+                                {loadingButton === "minus" ? (
+                                  <Spinner className="h-4 w-4" />
+                                ) : (
+                                  <Minus className="h-4 w-4" />
+                                )}
+                              </Button>
+
+                              <span className="text-lg font-semibold w-12 text-center">
+                                {item.quantity}
+                              </span>
+
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  updateQuantity(item.id, 1, "plus")
+                                }
+                                disabled={!!loadingButton}
+                                className="h-10 w-10"
+                              >
+                                {loadingButton === "plus" ? (
+                                  <Spinner className="h-4 w-4" />
+                                ) : (
+                                  <Plus className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </div>
+
+                            <div className="text-right">
+                              <p className="text-2xl font-bold text-primary">
+                                ${(item.price * item.quantity).toFixed(2)}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                ${item.price} each
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
-                {/* Pagination for cart items */}
                 {totalPages > 1 && (
                   <Pagination
                     currentPage={currentPage}
@@ -215,7 +309,7 @@ const Cart = () => {
                 )}
               </div>
 
-              {/* Order Summary */}
+              {/* ORDER SUMMARY */}
               <div className="lg:col-span-1">
                 <div className="bg-card border border-border rounded-lg p-6 sticky top-24 space-y-6">
                   <h2 className="font-serif text-2xl font-bold">
@@ -264,8 +358,8 @@ const Cart = () => {
                       className="w-full bg-green-600 text-white hover:bg-green-700 cursor-pointer"
                       size="lg"
                     >
-                      <ShoppingBag className="h-5 w-5 mr-2" />
-                      Proceed to Checkout
+                      <ShoppingBag className="h-5 w-5 mr-2" /> Proceed to
+                      Checkout
                     </Button>
                     <Button variant="outline" className="w-full" asChild>
                       <Link href="/products">Continue Shopping</Link>
