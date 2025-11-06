@@ -63,13 +63,13 @@ export function HeroSettingsCard({ hero, onChange }: Props) {
 
       toast.success("Hero section saved successfully!", {
         duration: 3000,
-        position: "top-right",
+        position: "bottom-right",
       });
     } catch (error) {
       console.error("Error saving hero settings:", error);
       toast.error("Failed to save hero settings", {
         duration: 3000,
-        position: "top-right",
+        position: "bottom-right",
       });
     } finally {
       setSaving(false);

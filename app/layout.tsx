@@ -8,7 +8,7 @@ import { SettingsProvider } from "@/contexts/settings-context";
 import Script from "next/script";
 import { ClientRoot } from "../components/client-root";
 import { auth } from "@/lib/auth";
-import NextTopLoader from "nextjs-toploader";
+import { ThemeAwareTopLoader } from "@/components/theme-aware-toploader";
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
@@ -58,17 +58,7 @@ export default async function RootLayout({
         <SessionProvider session={session}>
           <ThemeProvider>
             <SettingsProvider>
-              <NextTopLoader
-                color="#8B5C2E"
-                initialPosition={0.08}
-                crawlSpeed={200}
-                height={3}
-                crawl={true}
-                showSpinner={false}
-                easing="ease"
-                speed={200}
-                shadow="0 0 10px #8B5C2E,0 0 5px #8B5C2E"
-              />
+              <ThemeAwareTopLoader />
               <ClientRoot>{children}</ClientRoot>
               <Toaster 
                 position="bottom-right"

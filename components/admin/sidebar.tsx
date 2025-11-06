@@ -13,6 +13,16 @@ import {
   Sun,
   Moon,
   LogOut,
+  ChevronDown,
+  Globe,
+  Type,
+  Tag,
+  FileText,
+  Building2,
+  Phone,
+  Share2,
+  Bell,
+  List,
 } from "lucide-react";
 import { Sidebar, SidebarBody } from "@/components/ui/sidebar";
 import { motion } from "framer-motion";
@@ -24,6 +34,7 @@ import Image from "next/image";
 import logoImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-3.png";
 import logoTextImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-2.png";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import toast from "react-hot-toast";
 
 /**
  * Admin Sidebar Component
@@ -37,7 +48,21 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
  * - Responsive theme switching
  */
 
-const LINKS = [
+type SubLink = {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  subLinks?: SubLink[];
+};
+
+type NavLink = {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  subLinks?: SubLink[];
+};
+
+const LINKS: NavLink[] = [
   {
     href: "/admin",
     label: "Dashboard",
@@ -62,6 +87,55 @@ const LINKS = [
     href: "/admin/settings",
     label: "Site Settings",
     icon: <Settings className="text-white h-5 w-5 flex-shrink-0" />,
+    subLinks: [
+      {
+        href: "/admin/settings/general",
+        label: "General",
+        icon: <Globe className="text-white h-4 w-4 flex-shrink-0" />,
+      },
+      {
+        href: "/admin/settings/hero",
+        label: "Hero Section",
+        icon: <Type className="text-white h-4 w-4 flex-shrink-0" />,
+      },
+      {
+        href: "/admin/settings/banner",
+        label: "Banner",
+        icon: <Tag className="text-white h-4 w-4 flex-shrink-0" />,
+      },
+      {
+        href: "/admin/settings/footer",
+        label: "Footer",
+        icon: <FileText className="text-white h-4 w-4 flex-shrink-0" />,
+        subLinks: [
+          {
+            href: "/admin/settings/footer/brand",
+            label: "Brand Info",
+            icon: <Building2 className="text-white h-3 w-3 flex-shrink-0" />,
+          },
+          {
+            href: "/admin/settings/footer/contact",
+            label: "Contact",
+            icon: <Phone className="text-white h-3 w-3 flex-shrink-0" />,
+          },
+          {
+            href: "/admin/settings/footer/social",
+            label: "Social Media",
+            icon: <Share2 className="text-white h-3 w-3 flex-shrink-0" />,
+          },
+          {
+            href: "/admin/settings/footer/newsletter",
+            label: "Newsletter",
+            icon: <Bell className="text-white h-3 w-3 flex-shrink-0" />,
+          },
+          {
+            href: "/admin/settings/footer/navigation",
+            label: "Navigation",
+            icon: <List className="text-white h-3 w-3 flex-shrink-0" />,
+          },
+        ],
+      },
+    ],
   },
 ];
 
@@ -115,8 +189,31 @@ export function AdminSidebar({
   const pathname = usePathname();
   const [open, setOpen] = useState(!collapsed);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [expandedLinks, setExpandedLinks] = useState<string[]>([]);
   const { theme, toggleTheme, isReady } = useTheme();
   const { data: session } = useSession();
+
+  // Auto-expand settings if on a settings subpage
+  useEffect(() => {
+    if (pathname.startsWith("/admin/settings")) {
+      const toExpand = ["/admin/settings"];
+      
+      // Also expand footer if on a footer subpage
+      if (pathname.startsWith("/admin/settings/footer/")) {
+        toExpand.push("/admin/settings/footer");
+      }
+      
+      setExpandedLinks((prev) => {
+        const newLinks = [...prev];
+        toExpand.forEach(link => {
+          if (!newLinks.includes(link)) {
+            newLinks.push(link);
+          }
+        });
+        return newLinks;
+      });
+    }
+  }, [pathname]);
 
   // Keep open state in sync with collapsed prop (Ctrl/Cmd+B)
   useEffect(() => {
@@ -182,14 +279,138 @@ export function AdminSidebar({
             {/* Navigation Links */}
             <div className="mt-8 flex flex-col gap-2">
               {LINKS.map((link, idx) => (
-                <CustomSidebarLink
-                  key={idx}
-                  href={link.href}
-                  label={link.label}
-                  icon={link.icon}
-                  isActive={pathname === link.href}
-                  open={open}
-                />
+                <div key={idx}>
+                  {link.subLinks ? (
+                    <>
+                      <button
+                        onClick={() => {
+                          setExpandedLinks((prev) =>
+                            prev.includes(link.href)
+                              ? prev.filter((l) => l !== link.href)
+                              : [...prev, link.href]
+                          );
+                        }}
+                        className={cn(
+                          "flex items-center gap-2 group/sidebar py-2 rounded-md transition-all duration-300 ease-in-out text-white w-full",
+                          open ? "justify-between px-3" : "justify-center px-2",
+                          pathname.startsWith(link.href)
+                            ? "bg-gray-700 dark:bg-gray-800"
+                            : "hover:bg-gray-700/50 dark:hover:bg-gray-800/50"
+                        )}
+                      >
+                        <div className="flex items-center gap-2">
+                          {link.icon}
+                          <motion.span
+                            animate={{
+                              display: open ? "inline-block" : "none",
+                              opacity: open ? 1 : 0,
+                            }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="text-white text-sm whitespace-pre inline-block !p-0 !m-0"
+                          >
+                            {link.label}
+                          </motion.span>
+                        </div>
+                        {open && (
+                          <motion.div
+                            animate={{
+                              rotate: expandedLinks.includes(link.href) ? 180 : 0,
+                            }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <ChevronDown className="h-4 w-4 text-white" />
+                          </motion.div>
+                        )}
+                      </button>
+                      <motion.div
+                        initial={false}
+                        animate={{
+                          height: expandedLinks.includes(link.href) && open ? "auto" : 0,
+                          opacity: expandedLinks.includes(link.href) && open ? 1 : 0,
+                        }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="ml-4 mt-1 space-y-1">
+                          {link.subLinks.map((subLink, subIdx) => (
+                            <div key={subIdx}>
+                              {subLink.subLinks ? (
+                                <>
+                                  <button
+                                    onClick={() => {
+                                      setExpandedLinks((prev) =>
+                                        prev.includes(subLink.href)
+                                          ? prev.filter((l) => l !== subLink.href)
+                                          : [...prev, subLink.href]
+                                      );
+                                    }}
+                                    className={cn(
+                                      "flex items-center gap-2 py-2 px-3 rounded-md transition-all duration-200 text-white text-sm w-full justify-between",
+                                      pathname.startsWith(subLink.href)
+                                        ? "bg-gray-600 dark:bg-gray-700"
+                                        : "hover:bg-gray-700/30 dark:hover:bg-gray-800/30"
+                                    )}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      {subLink.icon}
+                                      <span>{subLink.label}</span>
+                                    </div>
+                                    <ChevronDown 
+                                      className={cn(
+                                        "h-3 w-3 transition-transform duration-200",
+                                        expandedLinks.includes(subLink.href) ? "rotate-180" : ""
+                                      )}
+                                    />
+                                  </button>
+                                  {expandedLinks.includes(subLink.href) && (
+                                    <div className="ml-4 mt-1 space-y-1">
+                                      {subLink.subLinks.map((nestedLink, nestedIdx) => (
+                                        <Link
+                                          key={nestedIdx}
+                                          href={nestedLink.href}
+                                          className={cn(
+                                            "flex items-center gap-2 py-1.5 px-3 rounded-md transition-all duration-200 text-white text-xs",
+                                            pathname === nestedLink.href
+                                              ? "bg-gray-500 dark:bg-gray-600"
+                                              : "hover:bg-gray-700/20 dark:hover:bg-gray-800/20"
+                                          )}
+                                        >
+                                          {nestedLink.icon}
+                                          <span>{nestedLink.label}</span>
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  )}
+                                </>
+                              ) : (
+                                <Link
+                                  href={subLink.href}
+                                  className={cn(
+                                    "flex items-center gap-2 py-2 px-3 rounded-md transition-all duration-200 text-white text-sm",
+                                    pathname === subLink.href
+                                      ? "bg-gray-600 dark:bg-gray-700"
+                                      : "hover:bg-gray-700/30 dark:hover:bg-gray-800/30"
+                                  )}
+                                >
+                                  {subLink.icon}
+                                  <span>{subLink.label}</span>
+                                </Link>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    </>
+                  ) : (
+                    <CustomSidebarLink
+                      href={link.href}
+                      label={link.label}
+                      icon={link.icon}
+                      isActive={pathname === link.href}
+                      open={open}
+                    />
+                  )}
+                </div>
               ))}
             </div>
           </div>
@@ -242,7 +463,15 @@ export function AdminSidebar({
       <ConfirmationDialog
         open={showLogoutDialog}
         onOpenChange={setShowLogoutDialog}
-        onConfirm={() => signOut({ callbackUrl: "/admin/login" })}
+        onConfirm={() => {
+          toast.success("Logging out...", {
+            duration: 2000,
+            position: "bottom-right",
+          });
+          setTimeout(() => {
+            signOut({ callbackUrl: "/admin/login" });
+          }, 500);
+        }}
         title="Logout Confirmation"
         description="Are you sure you want to logout from the admin panel?"
         confirmText="Logout"
