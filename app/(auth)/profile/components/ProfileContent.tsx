@@ -291,40 +291,7 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                         </div>
                       </div>
 
-                      {/* Order Items */}
-                      <div className="space-y-3">
-                        {order.items.map((item) => (
-                          <div
-                            key={item.id}
-                            className="flex gap-4 p-4 rounded-lg bg-accent/50 hover:bg-accent transition-colors"
-                          >
-                            <Image
-                              src={
-                                item.productVariant.product.images?.[0]?.url ||
-                                ""
-                              }
-                              alt={item.productName}
-                              width={80}
-                              height={80}
-                              className="w-20 h-20 object-cover rounded-lg border border-border/50"
-                              style={{ objectFit: "cover" }}
-                            />
-                            <div className="flex-1">
-                              <h4 className="font-semibold mb-1">
-                                {item.productName}
-                              </h4>
-                              <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                                <span>Color: {item.variantName}</span>
-                                <span>•</span>
-                                <span>Qty: {item.quantity}</span>
-                              </div>
-                              <p className="text-sm font-semibold mt-2">
-                                NPR {item.price.toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+ 
 
                       <Separator />
                     </div>
