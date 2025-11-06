@@ -3,7 +3,13 @@
 import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, User, Shield } from "lucide-react";
 import { PageHeader } from "@/components/admin/page-header";
@@ -69,7 +75,9 @@ export default function AdminProfilePage() {
           <Card className="border-border/50 shadow-lg dark:!bg-slate-800 dark:!border-slate-600">
             <CardHeader>
               <CardTitle>Account Details</CardTitle>
-              <CardDescription>Your account information and settings</CardDescription>
+              <CardDescription>
+                Your account information and settings
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

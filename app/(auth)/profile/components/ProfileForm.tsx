@@ -118,7 +118,7 @@ export default function ProfileForm({ user, onCancel }: ProfileFormProps) {
               <CardContent>
                 <div className="flex items-center gap-6">
                   <Avatar className="w-24 h-24 border-4 border-border shadow-soft">
-                    <AvatarImage src={previewUrl} alt="Profile" />
+                    <AvatarImage src={previewUrl || ""} alt="Profile" />
                     <AvatarFallback className="text-2xl font-bold bg-primary text-primary-foreground">
                       {formData.firstName?.[0]}
                       {formData.lastName?.[0]}

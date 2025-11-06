@@ -3,6 +3,9 @@
 import { motion } from "framer-motion";
 import SigninForm from "@/components/form/signin-form";
 import SideContent from "@/components/from-side-content";
+import { useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
+import { useEffect } from "react";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -17,6 +20,16 @@ const backgroundFade = {
 };
 
 const LoginPage = () => {
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error"); // ✅ correct way
+
+  useEffect(() => {
+    if (error === "OAuthAccountNotLinked") {
+      toast.error(
+        "This email is already registered. Please sign in using your password instead of Google."
+      );
+    }
+  }, [error]);
   return (
     <div className="overflow-hidden">
       <div className="relative flex flex-col md:flex-row w-full h-screen">
