@@ -52,18 +52,18 @@ export function ConfirmationDialog({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => onOpenChange(false)}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm h-screen w-screen"
+            className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm h-screen w-screen"
             style={{ minHeight: '100vh', minWidth: '100vw' }}
           />
 
           {/* Dialog */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", duration: 0.3 }}
-              className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-2xl"
+              className="relative w-full max-w-md bg-card border border-border rounded-lg shadow-2xl"
             >
               {/* Header */}
               <div className="p-6 pb-4">
@@ -93,7 +93,7 @@ export function ConfirmationDialog({
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 rounded-b-lg">
+              <div className="flex items-center justify-end gap-3 px-6 py-4 bg-muted/30 border-t border-border rounded-b-lg">
                 <Button
                   variant="outline"
                   onClick={() => onOpenChange(false)}

@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import logoImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-3.png";
 import logoTextImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-2.png";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 /**
  * Admin Sidebar Component
@@ -113,6 +114,7 @@ export function AdminSidebar({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(!collapsed);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const { theme, toggleTheme, isReady } = useTheme();
   const { data: session } = useSession();
 
@@ -214,7 +216,7 @@ export function AdminSidebar({
             />
             {/* logout button */}
             <button
-              onClick={() => signOut({ callbackUrl: "/admin/login" })}
+              onClick={() => setShowLogoutDialog(true)}
               className={cn(
                 "flex items-center gap-2 group/sidebar py-2 rounded-md transition-all duration-300 ease-in-out text-white w-full",
                 open ? "justify-start px-3" : "justify-center px-2",
@@ -236,6 +238,17 @@ export function AdminSidebar({
           </div>
         </SidebarBody>
       </Sidebar>
+      
+      <ConfirmationDialog
+        open={showLogoutDialog}
+        onOpenChange={setShowLogoutDialog}
+        onConfirm={() => signOut({ callbackUrl: "/admin/login" })}
+        title="Logout Confirmation"
+        description="Are you sure you want to logout from the admin panel?"
+        confirmText="Logout"
+        cancelText="Cancel"
+        variant="destructive"
+      />
     </div>
   );
 }
