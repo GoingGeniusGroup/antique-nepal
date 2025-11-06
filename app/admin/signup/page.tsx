@@ -257,7 +257,7 @@ export default function AdminSignupPage() {
 
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600 dark:text-slate-400">
-                Already have an account?{" "}
+                Already an admin?{" "}
                 <Link
                   href="/admin/login"
                   className="font-semibold text-gray-700 hover:text-gray-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors"
