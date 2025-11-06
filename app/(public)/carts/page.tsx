@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Pagination } from "@/components/products/pagination"; // adjust import path if needed
 
 interface CartItem {
@@ -86,6 +87,8 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      {/* Theme Toggle */}
+      <ThemeToggle variant="fixed" position="right-4 top-24" />
       <main className="flex-1 pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="mb-8">

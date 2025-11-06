@@ -32,6 +32,7 @@ import { useTheme } from "@/contexts/theme-context";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { Spinner } from "@/components/ui/spinner";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 interface ProductImage {
   id: string;
@@ -99,6 +100,8 @@ const ProductDetailClient = ({
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
   const [reviewLoading, setReviewLoading] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     rating: 5,
     title: "",
@@ -253,14 +256,14 @@ const ProductDetailClient = ({
     }
   };
 
-  const handleDeleteReview = async (reviewId: string) => {
-    if (!confirm("Are you sure you want to delete this review?")) return;
+  const handleDeleteReview = async () => {
+    if (!reviewToDelete) return;
 
     try {
       const res = await fetch("/api/reviews", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reviewId }),
+        body: JSON.stringify({ reviewId: reviewToDelete }),
       });
 
       if (!res.ok) {
@@ -271,9 +274,10 @@ const ProductDetailClient = ({
 
       setProduct((prev) => ({
         ...prev,
-        reviews: prev.reviews.filter((r) => r.id !== reviewId),
+        reviews: prev.reviews.filter((r) => r.id !== reviewToDelete),
       }));
       toast.success("Review deleted successfully!");
+      setReviewToDelete(null);
     } catch (err) {
       console.error(err);
       toast.error("Failed to delete review.");
@@ -710,9 +714,10 @@ const ProductDetailClient = ({
                                       <Edit2 className="h-4 w-4" />
                                     </button>
                                     <button
-                                      onClick={() =>
-                                        handleDeleteReview(review.id)
-                                      }
+                                      onClick={() => {
+                                        setReviewToDelete(review.id);
+                                        setShowDeleteDialog(true);
+                                      }}
                                       className="p-1 cursor-pointer text-muted-foreground hover:text-destructive transition-colors"
                                       title="Delete review"
                                     >
@@ -746,6 +751,17 @@ const ProductDetailClient = ({
           </div>
         </div>
       </section>
+      
+      <ConfirmationDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={handleDeleteReview}
+        title="Delete Review?"
+        description="Are you sure you want to delete this review? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+      />
     </div>
   );
 };

@@ -48,7 +48,7 @@ export const Sustainability = () => {
   return (
     <section
       id="sustainability"
-      className={`py-20 relative overflow-hidden ${getThemeClass(theme, isReady, "bg-gradient-paper", "bg-[#0a0a0a]")}`}
+      className={`py-20 relative overflow-hidden ${getThemeClass(theme, isReady, "bg-gradient-paper", "bg-[#0f0f0f]")}`}
     >
       {/* Decorative Elements */}
       <div className="absolute top-24 left-10 opacity-5 pointer-events-none">

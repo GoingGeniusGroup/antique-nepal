@@ -6,6 +6,7 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Heart, ShoppingCart } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Pagination } from "@/components/products/pagination";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/theme-context";
@@ -124,6 +125,8 @@ const Wishlist = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Theme Toggle */}
+      <ThemeToggle variant="fixed" position="right-4 top-24" />
       <main className="flex-1 pt-24 pb-16">
         <div className="container mx-auto px-4">
           <div className="mb-8">

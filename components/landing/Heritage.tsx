@@ -21,7 +21,7 @@ export default function Heritage() {
   return (
     <section
       id="heritage"
-      className={`py-20 relative overflow-hidden ${getThemeClass(theme, isReady, "bg-background", "bg-[#0a0a0a]")}`}
+      className={`py-20 relative overflow-hidden ${getThemeClass(theme, isReady, "bg-background", "bg-[#141414]")}`}
     >
       {/* Decorative Background */}
       <div className="absolute inset-0 opacity-5">
