@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { FileText, Mail, Phone, MapPin, Bell, Plus, Trash2, Link as LinkIcon, List, Save, Building2, Share2 } from "lucide-react";
+import { FileText, Mail, Phone, MapPin, Bell, Plus, Trash2, Link as LinkIcon, List, Save, Building2, Share2, ChevronDown } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
@@ -62,6 +62,19 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
     linkIndex?: number;
   } | null>(null);
   const [originalData, setOriginalData] = useState<FooterData | null>(null);
+  const [collapsedSections, setCollapsedSections] = useState<{
+    brand: boolean;
+    contact: boolean;
+    socials: boolean;
+    newsletter: boolean;
+    sections: boolean;
+  }>({
+    brand: false,
+    contact: false,
+    socials: false,
+    newsletter: false,
+    sections: false,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -312,7 +325,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
         
         toast.success(message, {
           duration: 4000,
-          position: "top-right",
+          position: "bottom-right",
           style: {
             fontSize: '14px',
             fontWeight: '500',
@@ -327,7 +340,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       } else {
         toast.error("⚠️ No changes detected. Please update at least one field before saving.", {
           duration: 3000,
-          position: "top-right",
+          position: "bottom-right",
           style: {
             fontSize: '14px',
           },
@@ -338,7 +351,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
       toast.error(`❌ Save failed: ${errorMessage}. Please try again.`, {
         duration: 5000,
-        position: "top-right",
+        position: "bottom-right",
         style: {
           fontSize: '14px',
         },
@@ -382,10 +395,19 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
       
       {/* Brand Section */}
       <div className="mb-6">
-        <h4 className="text-md font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Building2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-          Brand Information
-        </h4>
+        <button
+          onClick={() => setCollapsedSections(prev => ({ ...prev, brand: !prev.brand }))}
+          className="w-full text-md font-semibold text-foreground mb-4 flex items-center justify-between gap-2 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Building2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+            Brand Information
+          </div>
+          <ChevronDown 
+            className={`h-4 w-4 transition-transform duration-200 ${collapsedSections.brand ? 'rotate-180' : ''}`} 
+          />
+        </button>
+        {!collapsedSections.brand && (
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <Label htmlFor="footerBrandName" className="text-sm font-medium text-muted-foreground">Brand Name</Label>
@@ -428,14 +450,24 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
             />
           </div>
         </div>
+      )}
       </div>
 
       {/* Contact Section */}
       <div className="mb-6 pt-6 border-t border-border">
-        <h4 className="text-md font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Phone className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-          Contact Information
-        </h4>
+        <button
+          onClick={() => setCollapsedSections(prev => ({ ...prev, contact: !prev.contact }))}
+          className="w-full text-md font-semibold text-foreground mb-4 flex items-center justify-between gap-2 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Phone className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+            Contact Information
+          </div>
+          <ChevronDown 
+            className={`h-4 w-4 transition-transform duration-200 ${collapsedSections.contact ? 'rotate-180' : ''}`} 
+          />
+        </button>
+        {!collapsedSections.contact && (
         <div className="grid gap-4 md:grid-cols-3">
           <div>
             <Label htmlFor="footerEmail" className="text-sm font-medium text-muted-foreground flex items-center gap-1">
@@ -478,25 +510,35 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
             />
           </div>
         </div>
+      )}
       </div>
 
       {/* Social Media Links */}
       <div className="mb-6 pt-6 border-t border-border">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="text-md font-semibold text-foreground flex items-center gap-2">
-            <Share2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-            Social Media Links
-          </h4>
+          <button
+            onClick={() => setCollapsedSections(prev => ({ ...prev, socials: !prev.socials }))}
+            className="flex-1 text-md font-semibold text-foreground flex items-center justify-between gap-2 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <Share2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+              Social Media Links
+            </div>
+            <ChevronDown 
+              className={`h-4 w-4 transition-transform duration-200 ${collapsedSections.socials ? 'rotate-180' : ''}`} 
+            />
+          </button>
           <Button
             onClick={addSocial}
             size="sm"
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 ml-4"
           >
             <Plus className="h-4 w-4" />
             Add Social
           </Button>
         </div>
+        {!collapsedSections.socials && (
         <div className="space-y-4">
           {footer.socials?.map((social, index) => (
             <div key={index} className="grid gap-4 md:grid-cols-4 items-end p-4 border border-border rounded-lg">
@@ -554,14 +596,24 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
             </p>
           )}
         </div>
+      )}
       </div>
 
       {/* Newsletter Section */}
       <div className="pt-6">
-        <h4 className="text-md font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Bell className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-          Newsletter Section
-        </h4>
+        <button
+          onClick={() => setCollapsedSections(prev => ({ ...prev, newsletter: !prev.newsletter }))}
+          className="w-full text-md font-semibold text-foreground mb-4 flex items-center justify-between gap-2 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Bell className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+            Newsletter Section
+          </div>
+          <ChevronDown 
+            className={`h-4 w-4 transition-transform duration-200 ${collapsedSections.newsletter ? 'rotate-180' : ''}`} 
+          />
+        </button>
+        {!collapsedSections.newsletter && (
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <Label htmlFor="newsletterTitle" className="text-sm font-medium text-muted-foreground">Newsletter Title</Label>
@@ -584,15 +636,24 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
             />
           </div>
         </div>
+      )}
       </div>
 
       {/* Footer Sections & Links */}
       <div className="pt-6 mt-6 border-t border-border">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="text-md font-semibold text-foreground flex items-center gap-2">
-            <List className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-            Navigation Sections & Links
-          </h4>
+          <button
+            onClick={() => setCollapsedSections(prev => ({ ...prev, sections: !prev.sections }))}
+            className="flex-1 text-md font-semibold text-foreground flex items-center justify-between gap-2 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <List className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+              Navigation Sections & Links
+            </div>
+            <ChevronDown 
+              className={`h-4 w-4 transition-transform duration-200 ${collapsedSections.sections ? 'rotate-180' : ''}`} 
+            />
+          </button>
           <Button
             onClick={addSection}
             size="sm"
@@ -604,6 +665,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
           </Button>
         </div>
         
+        {!collapsedSections.sections && (
         <div className="space-y-6">
           {footer.sections?.map((section, sectionIndex) => (
             <div key={sectionIndex} className="p-4 border-2 border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800/50">
@@ -714,6 +776,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
             </p>
           )}
         </div>
+      )}
       </div>
     </Card>
 

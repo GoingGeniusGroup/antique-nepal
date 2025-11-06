@@ -8,8 +8,10 @@ import { SettingsProvider } from "@/contexts/settings-context";
 import Script from "next/script";
 import { ClientRoot } from "../components/client-root";
 import { auth } from "@/lib/auth";
+import { ThemeAwareTopLoader } from "@/components/theme-aware-toploader";
 import { AuthSuccessHandler } from "@/components/auth-success-handler";
 import NextTopLoader from "nextjs-toploader";
+
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
@@ -59,6 +61,7 @@ export default async function RootLayout({
         <SessionProvider session={session}>
           <ThemeProvider>
             <SettingsProvider>
+              <ThemeAwareTopLoader />
               <NextTopLoader
                 color="#8B5C2E"
                 initialPosition={0.08}

@@ -1,14 +1,31 @@
 "use client";
 
 import Image from "next/image";
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin } from "lucide-react";
 import paperTexture from "@/public/paper-texture.jpg";
+import toast from "react-hot-toast";
 
 export default function ContactPage() {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSubmitting(true);
+    
+    // Simulate form submission
+    setTimeout(() => {
+      toast.success("Message sent successfully! We'll get back to you soon.", {
+        duration: 4000,
+        position: "bottom-right",
+      });
+      setSubmitting(false);
+      (e.target as HTMLFormElement).reset();
+    }, 1000);
+  };
   // 🗂️ Dictionary-style data
   const contactData = {
     hero: {
@@ -95,7 +112,7 @@ export default function ContactPage() {
                 <h2 className="font-serif text-3xl font-bold mb-6 text-foreground">
                   {contactData.form.title}
                 </h2>
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSubmit}>
                   {contactData.form.fields.map((field, index) => (
                     <div key={index}>
                       <label className="block text-sm font-medium mb-2 text-foreground">
@@ -104,6 +121,7 @@ export default function ContactPage() {
                       <Input
                         type={field.type}
                         placeholder={field.placeholder}
+                        required
                       />
                     </div>
                   ))}
@@ -114,10 +132,11 @@ export default function ContactPage() {
                     <Textarea
                       placeholder={contactData.form.messagePlaceholder}
                       rows={6}
+                      required
                     />
                   </div>
-                  <Button size="lg" className="w-full">
-                    {contactData.form.buttonText}
+                  <Button size="lg" className="w-full" type="submit" disabled={submitting}>
+                    {submitting ? "Sending..." : contactData.form.buttonText}
                   </Button>
                 </form>
               </div>

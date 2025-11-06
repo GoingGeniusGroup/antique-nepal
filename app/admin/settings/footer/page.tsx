@@ -4,17 +4,17 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 /**
- * Site Settings Root Page
+ * Footer Settings Root Page
  * 
- * Redirects to the general settings page by default.
- * All settings are now organized into subsections accessible via the sidebar.
+ * Redirects to the brand settings page by default.
+ * All footer settings are now organized into subsections accessible via the sidebar.
  */
 
-export default function SettingsPage() {
+export default function FooterSettingsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/admin/settings/general");
+    router.replace("/admin/settings/footer/brand");
   }, [router]);
 
   return (
@@ -22,7 +22,7 @@ export default function SettingsPage() {
       <div className="text-center space-y-2">
         <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"/> 
-          Redirecting to settings...
+          Redirecting to footer settings...
         </div>
       </div>
     </div>

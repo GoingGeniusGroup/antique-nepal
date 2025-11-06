@@ -51,13 +51,13 @@ export function BannerSettingsCard({ banner, onChange }: Props) {
 
       toast.success("Banner settings saved successfully!", {
         duration: 3000,
-        position: "top-right",
+        position: "bottom-right",
       });
     } catch (error) {
       console.error("Error saving banner settings:", error);
       toast.error("Failed to save banner settings", {
         duration: 3000,
-        position: "top-right",
+        position: "bottom-right",
       });
     } finally {
       setSaving(false);

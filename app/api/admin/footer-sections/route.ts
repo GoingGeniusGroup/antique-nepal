@@ -45,6 +45,21 @@ export async function PATCH(req: Request) {
     
     // Batch update sections with their links
     if (Array.isArray(body)) {
+      // Get all existing sections
+      const existingSections = await prisma.footerSection.findMany();
+      const existingIds = existingSections.map(s => s.id);
+      const incomingIds = body.filter(s => s.id).map(s => s.id);
+      
+      // Find IDs to delete (exist in DB but not in incoming data)
+      const idsToDelete = existingIds.filter(id => !incomingIds.includes(id));
+      
+      // Delete removed sections (will cascade delete links)
+      if (idsToDelete.length > 0) {
+        await prisma.footerSection.deleteMany({
+          where: { id: { in: idsToDelete } }
+        });
+      }
+      
       const results = [];
       
       for (const section of body) {
