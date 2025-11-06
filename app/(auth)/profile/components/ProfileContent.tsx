@@ -3,6 +3,7 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
 import { Mail, Phone } from "lucide-react";
+import Link from "next/link";
 import type {
   Order,
   User as PrismaUser,
@@ -275,9 +276,15 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                           <p className="text-2xl font-bold text-primary">
                             NPR {order.total.toLocaleString()}
                           </p>
-                          <Button variant="outline" size="sm" className="mt-2">
-                            View Details
-                          </Button>
+                          <Link href={`/profile/${order.id}`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="mt-2"
+                            >
+                              View Details
+                            </Button>
+                          </Link>
                         </div>
                       </div>
 
