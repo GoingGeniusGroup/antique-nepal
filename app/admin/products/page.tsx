@@ -6,19 +6,9 @@ import { PageHeader } from "@/components/admin/page-header";
 import { PageTransition } from "@/components/admin/page-transition";
 import { Button } from "@/components/ui/button";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-
 import { formatCurrency, formatDate } from "@/lib/admin-utils";
 import { ProductWithImagesForm } from "@/components/admin/product/product-and-image-edit-form";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 type Row = {
   id: string;
@@ -170,27 +160,17 @@ export default function ProductsPage() {
           onDelete={(product) => setDeleteProduct(product)}
         />
 
-        {/* ShadCN AlertDialog for Delete */}
-        <AlertDialog
+        <ConfirmationDialog
           open={!!deleteProduct}
           onOpenChange={() => setDeleteProduct(null)}
-        >
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Product?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete this image? This action cannot
-                be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={confirmDeleteProduct}>
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+          onConfirm={confirmDeleteProduct}
+          title="Delete Product?"
+          description="Are you sure you want to delete this image? This action cannot
+                be undone."
+          confirmText="Delete"
+          cancelText="Cancel"
+          variant="destructive"
+        />
       </div>
     </PageTransition>
   );

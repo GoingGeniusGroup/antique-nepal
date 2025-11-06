@@ -25,10 +25,22 @@ const LoginPage = () => {
   const error = searchParams.get("error"); // ✅ correct way
 
   useEffect(() => {
-    if (error === "OAuthAccountNotLinked") {
-      toast.error(
-        "This email is already registered. Please sign in using your password instead of Google."
-      );
+    if (error) {
+      let errorMessage = "An unknown login error occurred. Please try again.";
+      switch (error) {
+        case "OAuthAccountNotLinked":
+          errorMessage =
+            "This email is already linked to an account. Please sign in with the original method.";
+          break;
+        case "CredentialsSignin":
+          errorMessage =
+            "Invalid email or password. Please check your credentials and try again.";
+          break;
+        case "AccessDenied":
+          errorMessage = "Access Denied. You do not have permission to sign in.";
+          break;
+      }
+      toast.error(errorMessage);
     }
   }, [error]);
   return (
