@@ -20,6 +20,15 @@ export interface ProductData {
   image: string;
   inStock: boolean;
   badge: string;
+  variants: {
+    id: string;
+    sku: string;
+    name: string;
+    price?: number;
+    color?: string;
+    size?: string;
+    inStock: boolean;
+  }[];
 }
 
 export async function getProducts(params: GetProductsParams) {
@@ -110,24 +119,25 @@ export async function getProducts(params: GetProductsParams) {
       (product) => {
         const category =
           product.categories[0]?.category?.name || "Uncategorized";
-        // Ensure image is a valid URL for Next.js Image
-        let image = "/product_placeholder.jpeg"; // default
-
+        let image = "/product_placeholder.jpeg";
         const chosenImage = product.images[0];
         if (chosenImage?.url) {
           const url = chosenImage.url.trim().replace(/^\/+|["']/g, "");
           image = url.startsWith("http") ? url : `/${url}`;
         }
 
-        // Check if product has stock
-        // If no variants exist, assume product is in stock (simple product)
-        // If variants exist, check if any variant has inventory
+        const variants = product.variants.map((v) => ({
+          id: v.id,
+          sku: v.sku,
+          name: v.name,
+          price: v.price ? Number(v.price) : undefined,
+          color: v.color || undefined,
+          size: v.size || undefined,
+          inStock: v.inventory ? v.inventory.quantity > 0 : true,
+        }));
+
         const hasStock =
-          product.variants.length === 0
-            ? true
-            : product.variants.some(
-                (v) => v.inventory && v.inventory.quantity > 0
-              );
+          variants.length === 0 ? true : variants.some((v) => v.inStock);
 
         return {
           id: product.id,
@@ -137,6 +147,7 @@ export async function getProducts(params: GetProductsParams) {
           image,
           inStock: hasStock,
           badge: product.isFeatured ? "Featured" : category,
+          variants,
         };
       }
     );

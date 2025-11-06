@@ -58,10 +58,8 @@ const SigninForm = () => {
       toast.error(message);
     } else {
       setErrors({});
-      toast.success("Signed in successfully");
-      setTimeout(() => {
-        router.push("/");
-      }, 500);
+      // AuthSuccessHandler will show the success toast
+      router.push("/");
     }
   };
 

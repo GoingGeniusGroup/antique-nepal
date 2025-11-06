@@ -30,6 +30,7 @@ import navigationData from "@/data/navigation.json";
 import { signOut, useSession } from "next-auth/react";
 import logoImgDark from "@/public/logo/Antique-Nepal-Logo-2.png";
 import logoTextImgDark from "@/public/logo/Antique-Nepal-Logo-3.png";
+import toast from "react-hot-toast";
 import logoTextImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-2.png";
 import logoImgWhite from "@/public/logo/Antique-Nepal-Logo-White-Png-3.png";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
@@ -391,7 +392,14 @@ export const Navbar = () => {
       <ConfirmationDialog
         open={showLogoutDialog}
         onOpenChange={setShowLogoutDialog}
-        onConfirm={() => signOut({ callbackUrl: "/" })}
+        onConfirm={async () => {
+          await signOut({ redirect: false });
+          sessionStorage.removeItem("loginSuccessToastShown");
+          toast.success("Logged out successfully!", {
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }}
         title="Logout Confirmation"
         description="Are you sure you want to logout?"
         confirmText="Logout"
