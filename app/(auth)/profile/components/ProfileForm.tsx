@@ -26,8 +26,7 @@ export default function ProfileForm({ user, onCancel }: ProfileFormProps) {
   const [isPending, startTransition] = useTransition();
 
   const [formData, setFormData] = useState({
-    firstName: user.firstName || "",
-    lastName: user.lastName || "",
+    name: user.name || "",
     email: user.email || "",
     phone: user.phone || "",
     street: primaryAddress?.addressLine1 || "",
@@ -56,8 +55,7 @@ export default function ProfileForm({ user, onCancel }: ProfileFormProps) {
     e.preventDefault();
 
     const data = new FormData();
-    data.append("firstName", formData.firstName);
-    data.append("lastName", formData.lastName);
+    data.append("name", formData.name);
     data.append("phone", formData.phone);
     data.append("street", formData.street);
     data.append("city", formData.city);
@@ -74,7 +72,7 @@ export default function ProfileForm({ user, onCancel }: ProfileFormProps) {
         onCancel();
       } else {
         toast.error("Failed to update profile.");
-        console.error(result.message);
+        // console.error(result.message);
       }
     });
   };
@@ -120,8 +118,7 @@ export default function ProfileForm({ user, onCancel }: ProfileFormProps) {
                   <Avatar className="w-24 h-24 border-4 border-border shadow-soft">
                     <AvatarImage src={previewUrl || ""} alt="Profile" />
                     <AvatarFallback className="text-2xl font-bold bg-primary text-primary-foreground">
-                      {formData.firstName?.[0]}
-                      {formData.lastName?.[0]}
+                      {formData.name?.[0]}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
@@ -168,18 +165,18 @@ export default function ProfileForm({ user, onCancel }: ProfileFormProps) {
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="name">Name</Label>
                     <Input
-                      id="firstName"
-                      name="firstName"
-                      value={formData.firstName}
+                      id="name"
+                      name="name"
+                      value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Enter first name"
+                      placeholder="Enter your name"
                       className="transition-all focus:shadow-soft"
                       required
                     />
                   </div>
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input
                       id="lastName"
@@ -190,7 +187,7 @@ export default function ProfileForm({ user, onCancel }: ProfileFormProps) {
                       className="transition-all focus:shadow-soft"
                       required
                     />
-                  </div>
+                  </div> */}
                 </div>
 
                 <Separator />

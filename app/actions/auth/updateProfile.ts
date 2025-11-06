@@ -8,8 +8,7 @@ import { writeFile } from "fs/promises";
 import path from "path";
 
 const UpdateProfileSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  name: z.string().min(2, "Full name must be at least 2 characters"),
   phone: z.string().optional(),
   street: z.string().min(3, "Street must be at least 3 characters"),
   city: z.string().min(2, "City must be at least 2 characters"),
@@ -24,8 +23,7 @@ export async function updateProfile(formData: FormData) {
   }
 
   const rawData = {
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
+    name: formData.get("name"),
     phone: formData.get("phone"),
     street: formData.get("street"),
     city: formData.get("city"),
@@ -38,7 +36,7 @@ export async function updateProfile(formData: FormData) {
     return { success: false, message: result.error.flatten().fieldErrors };
   }
 
-  const { firstName, lastName, phone, ...addressData } = result.data;
+  const { name, phone, ...addressData } = result.data;
   const avatarFile = formData.get("avatar") as File | null;
   let userImagePath: string | undefined = undefined;
 
@@ -65,8 +63,7 @@ export async function updateProfile(formData: FormData) {
       await tx.user.update({
         where: { id: session.user?.id },
         data: {
-          firstName,
-          lastName,
+          name,
           phone,
           image: userImagePath, // Update image path if a new one was uploaded
         },
@@ -81,7 +78,7 @@ export async function updateProfile(formData: FormData) {
             city: addressData.city,
             postalCode: addressData.postal,
             country: addressData.country,
-            fullName: `${firstName} ${lastName}`,
+            fullName: name,
             phone: phone || "",
             state: addressData.city, // Assuming city and state are the same for now
           },
@@ -95,7 +92,7 @@ export async function updateProfile(formData: FormData) {
             postalCode: addressData.postal,
             country: addressData.country,
             isDefault: true,
-            fullName: `${firstName} ${lastName}`,
+            fullName: name,
             phone: phone || "",
             state: addressData.city, // Assuming city and state are the same for now
           },
