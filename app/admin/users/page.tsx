@@ -19,8 +19,7 @@ export default function UsersPage() {
   type Row = {
     id: string;
     email: string;
-    firstName: string | null;
-    lastName: string | null;
+    name: string | null;
     role: string;
     isActive: boolean;
     createdAt: string;
@@ -43,8 +42,7 @@ export default function UsersPage() {
 
   const columns: HeroColumn<Row>[] = [
     { key: "email", label: "Email", sortable: true },
-    { key: "firstName", label: "First Name", sortable: true, render: (r: Row) => r.firstName || "—" },
-    { key: "lastName", label: "Last Name", sortable: true, render: (r: Row) => r.lastName || "—" },
+    { key: "name", label: "Name", sortable: true, render: (r: Row) => r.name || "—" },
     { key: "role", label: "Role", sortable: true, render: (r: Row) => (
       <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getStatusColor('role', r.role)}`}>
         {r.role}
