@@ -133,7 +133,7 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                 <div className="flex-1">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                      <h1 className="text-3xl font-bold mb-2">{user.name}</h1>
+                      <h1 className="text-3xl font-bold mb-2 text-foreground">{user.name}</h1>
                       <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                         <span className="flex items-center gap-2">
                           <Mail className="w-4 h-4" />
