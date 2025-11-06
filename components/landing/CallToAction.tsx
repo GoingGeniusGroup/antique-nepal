@@ -12,7 +12,7 @@ import {
 
 export const CallToAction = () => {
   return (
-    <section className="py-20 bg-primary text-primary-foreground">
+    <section className="py-20 bg-primary dark:bg-[#0f0f0f] text-primary-foreground dark:text-white">
       <div className="container px-4 mx-auto">
         <div className="max-w-4xl mx-auto">
           {/* Main CTA */}
@@ -27,7 +27,7 @@ export const CallToAction = () => {
             >
               Begin Your Journey
             </h2>
-            <p className="text-xl font-inter mb-8 text-primary-foreground/90">
+            <p className="text-xl font-inter mb-8 text-primary-foreground/90 dark:text-slate-300">
               Explore our collection of handcrafted hemp bags and bring a piece
               of Himalayan heritage into your life.
             </p>
@@ -49,7 +49,7 @@ export const CallToAction = () => {
 
           {/* Newsletter */}
           <motion.div
-            className="bg-primary-foreground/10 backdrop-blur-sm p-8 md:p-10 rounded-2xl border border-primary-foreground/20"
+            className="bg-primary-foreground/10 dark:bg-slate-700/50 backdrop-blur-sm p-8 md:p-10 rounded-2xl border border-primary-foreground/20 dark:border-slate-600"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewportConfig}
@@ -67,7 +67,7 @@ export const CallToAction = () => {
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
               >
-                <Mail className="w-12 h-12 mx-auto mb-4 text-primary-foreground" />
+                <Mail className="w-12 h-12 mx-auto mb-4 text-primary-foreground dark:text-slate-300" />
               </motion.div>
               <h3
                 className="text-2xl font-semibold mb-2"
@@ -75,7 +75,7 @@ export const CallToAction = () => {
               >
                 Stay Connected
               </h3>
-              <p className="text-primary-foreground/80 font-inter">
+              <p className="text-primary-foreground/80 dark:text-slate-400 font-inter">
                 Subscribe to receive updates on new collections and artisan
                 stories
               </p>
@@ -85,7 +85,7 @@ export const CallToAction = () => {
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="bg-primary-foreground font-inter text-primary border-none flex-1"
+                className="bg-primary-foreground dark:bg-slate-900 font-inter text-primary dark:text-white border-none dark:border-slate-600 flex-1"
               />
               <motion.div
                 whileHover={{ scale: 1.05 }}

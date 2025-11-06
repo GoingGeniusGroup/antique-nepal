@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 import hempField from "@/public/hemp-field.jpg";
 import workshop from "@/public/workshop.jpg";
@@ -12,6 +13,8 @@ import paperTexture from "@/public/paper-texture.jpg";
 export default function Heritage() {
   return (
     <div className="min-h-screen bg-background">
+      {/* Theme Toggle */}
+      <ThemeToggle variant="fixed" position="right-4 top-24" />
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 opacity-5">

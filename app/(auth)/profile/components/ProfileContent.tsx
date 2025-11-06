@@ -3,6 +3,7 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
 import { Mail, Phone } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import type {
   Order,
   User as PrismaUser,
@@ -115,6 +116,8 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      {/* Theme Toggle */}
+      <ThemeToggle variant="fixed" position="right-4 top-24" />
       {/* Hero Section */}
       <section className="pt-32 pb-12 px-4">
         <div className="container">
