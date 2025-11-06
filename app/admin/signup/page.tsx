@@ -15,8 +15,7 @@ export default function AdminSignupPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name : "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -56,8 +55,7 @@ export default function AdminSignupPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          name : formData.name,
           email: formData.email,
           password: formData.password,
           role: "ADMIN",
@@ -144,14 +142,14 @@ export default function AdminSignupPage() {
             <form onSubmit={handleSubmit} className="space-y-3">
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-gray-700 dark:text-slate-300">
-                  First Name
+                   Name
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-slate-500" />
                   <Input
                     type="text"
-                    name="firstName"
-                    value={formData.firstName}
+                    name="name"
+                    value={formData.name}
                     onChange={handleChange}
                     placeholder="John"
                     required
@@ -160,24 +158,7 @@ export default function AdminSignupPage() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700 dark:text-slate-300">
-                  Last Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-slate-500" />
-                  <Input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Doe"
-                    required
-                    className="pl-10 h-9 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 focus:border-gray-500 dark:focus:border-slate-400"
-                  />
-                </div>
-              </div>
-
+            
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-gray-700 dark:text-slate-300">
                   Email Address
