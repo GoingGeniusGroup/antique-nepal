@@ -8,8 +8,8 @@ import { SettingsProvider } from "@/contexts/settings-context";
 import Script from "next/script";
 import { ClientRoot } from "../components/client-root";
 import { auth } from "@/lib/auth";
-import { AuthSuccessHandler } from "@/components/auth-success-handler";
 import { ThemeAwareTopLoader } from "@/components/theme-aware-toploader";
+import { AuthSuccessHandler } from "@/components/auth-success-handler";
 import NextTopLoader from "nextjs-toploader";
 
 const cinzel = Cinzel({
@@ -71,6 +71,7 @@ export default async function RootLayout({
                 speed={200}
                 shadow="0 0 10px #8B5C2E,0 0 5px #8B5C2E"
               />
+              <AuthSuccessHandler />
               <ClientRoot>{children}</ClientRoot>
               <Toaster
                 position="bottom-right"
