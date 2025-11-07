@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Pagination } from "@/components/products/pagination";
 import { Spinner } from "@/components/ui/spinner";
 import toast from "react-hot-toast";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 // ---------------------- TYPES ----------------------
 interface CartItem {
@@ -77,6 +78,8 @@ const Cart = ({ userId }: { userId: string }) => {
   const [loadingMap, setLoadingMap] = useState<
     Record<string, LoadingButton | null>
   >({});
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
 
@@ -123,7 +126,15 @@ const Cart = ({ userId }: { userId: string }) => {
   };
 
   // ---------------------- REMOVE ITEM ----------------------
-  const removeItem = async (id: string) => {
+  const confirmRemoveItem = (id: string) => {
+    setItemToDelete(id);
+    setShowDeleteDialog(true);
+  };
+
+  const removeItem = async () => {
+    if (!itemToDelete) return;
+    
+    const id = itemToDelete;
     try {
       setLoadingMap((prev) => ({ ...prev, [id]: "remove" }));
       await fetch("/api/cart", {
@@ -136,12 +147,16 @@ const Cart = ({ userId }: { userId: string }) => {
         setCurrentPage((prev) => prev - 1);
       }
 
+      localStorage.removeItem('cartVisited'); // Reset badge
+      window.dispatchEvent(new Event('storage')); // Trigger navbar update
       mutate();
       toast.success("Item removed successfully!");
     } catch {
       toast.error("Failed to remove item.");
     } finally {
       setLoadingMap((prev) => ({ ...prev, [id]: null }));
+      setShowDeleteDialog(false);
+      setItemToDelete(null);
     }
   };
 
@@ -154,8 +169,9 @@ const Cart = ({ userId }: { userId: string }) => {
 
   // ---------------------- RENDER ----------------------
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <ThemeToggle variant="fixed" position="right-4 top-24" />
+    <>
+      <div className="min-h-screen flex flex-col bg-background">
+        <ThemeToggle variant="fixed" position="right-4 top-24" />
 
       <main className="flex-1 pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-7xl">
@@ -234,7 +250,7 @@ const Cart = ({ userId }: { userId: string }) => {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => removeItem(item.id)}
+                              onClick={() => confirmRemoveItem(item.id)}
                               disabled={!!loadingButton}
                               className="hover:bg-destructive/10 hover:text-destructive"
                             >
@@ -394,7 +410,19 @@ const Cart = ({ userId }: { userId: string }) => {
           )}
         </div>
       </main>
-    </div>
+      </div>
+
+      <ConfirmationDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={removeItem}
+        title="Remove Item"
+        description="Are you sure you want to remove this item from your cart?"
+        confirmText="Remove"
+        cancelText="Cancel"
+        variant="destructive"
+      />
+    </>
   );
 };
 

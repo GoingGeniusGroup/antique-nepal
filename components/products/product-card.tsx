@@ -116,6 +116,8 @@ export function ProductCard({
         throw new Error("Failed to add to cart");
       }
 
+      localStorage.removeItem('cartVisited'); // Reset badge
+      window.dispatchEvent(new Event('storage')); // Trigger navbar update
       toast.success("Added to cart!");
     } catch (error) {
       console.error("[v0] Error adding to cart:", error);

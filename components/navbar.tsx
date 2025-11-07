@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
@@ -61,8 +62,14 @@ export const Navbar = () => {
   const { stories } = navigationData;
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
+  const pathname = usePathname();
+  const userId = session?.user?.id;
 
   const [categories, setCategories] = useState<Category[]>([]);
+  const [cartCount, setCartCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const [showCartBadge, setShowCartBadge] = useState(false);
+  const [showWishlistBadge, setShowWishlistBadge] = useState(false);
 
   useEffect(() => {
     fetch("/api/categories")
@@ -70,6 +77,92 @@ export const Navbar = () => {
       .then(setCategories)
       .catch(console.error);
   }, []);
+
+  // Fetch cart and wishlist counts
+  useEffect(() => {
+    const fetchCounts = async () => {
+      if (!userId || isAdmin) return;
+
+      try {
+        // Fetch cart count
+        const cartRes = await fetch(`/api/cart`);
+        if (cartRes.ok) {
+          const cartData = await cartRes.json();
+          const count = cartData?.cart?.items?.length || 0;
+          setCartCount(count);
+          
+          // Show badge if there are items and user hasn't visited
+          const cartVisited = localStorage.getItem('cartVisited');
+          setShowCartBadge(count > 0 && cartVisited !== 'true');
+        }
+
+        // Fetch wishlist count
+        const wishlistRes = await fetch(`/api/wishlist?userId=${userId}`);
+        if (wishlistRes.ok) {
+          const wishlistData = await wishlistRes.json();
+          const count = wishlistData?.items?.length || 0;
+          setWishlistCount(count);
+          
+          // Show badge if there are items and user hasn't visited
+          const wishlistVisited = localStorage.getItem('wishlistVisited');
+          setShowWishlistBadge(count > 0 && wishlistVisited !== 'true');
+        }
+      } catch (err) {
+        console.error('Failed to fetch counts:', err);
+      }
+    };
+
+    fetchCounts();
+    
+    // Refresh counts every 30 seconds
+    const interval = setInterval(fetchCounts, 30000);
+    return () => clearInterval(interval);
+  }, [userId, isAdmin]);
+
+  // Clear badges when visiting cart or wishlist pages
+  useEffect(() => {
+    if (pathname === '/carts') {
+      localStorage.setItem('cartVisited', 'true');
+      setShowCartBadge(false);
+    } else if (pathname === '/wishlist') {
+      localStorage.setItem('wishlistVisited', 'true');
+      setShowWishlistBadge(false);
+    }
+  }, [pathname]);
+
+  // Listen for storage events from other tabs/windows and refetch counts
+  useEffect(() => {
+    const handleStorageChange = async () => {
+      if (userId && !isAdmin) {
+        const cartVisited = localStorage.getItem('cartVisited');
+        const wishlistVisited = localStorage.getItem('wishlistVisited');
+        
+        // Refetch counts
+        try {
+          const cartRes = await fetch(`/api/cart`);
+          if (cartRes.ok) {
+            const cartData = await cartRes.json();
+            const count = cartData?.cart?.items?.length || 0;
+            setCartCount(count);
+            setShowCartBadge(count > 0 && cartVisited !== 'true');
+          }
+
+          const wishlistRes = await fetch(`/api/wishlist?userId=${userId}`);
+          if (wishlistRes.ok) {
+            const wishlistData = await wishlistRes.json();
+            const count = wishlistData?.items?.length || 0;
+            setWishlistCount(count);
+            setShowWishlistBadge(count > 0 && wishlistVisited !== 'true');
+          }
+        } catch (err) {
+          console.error('Failed to refetch counts:', err);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [userId, isAdmin]);
 
   return (
     <>
@@ -239,9 +332,14 @@ export const Navbar = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="hover:scale-110 hover:text-primary transition-transform"
+                      className="relative hover:scale-110 hover:text-primary transition-transform"
                     >
                       <Heart className="w-5 h-5" />
+                      {showWishlistBadge && wishlistCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-semibold shadow-lg">
+                          {wishlistCount > 9 ? '9+' : wishlistCount}
+                        </span>
+                      )}
                     </Button>
                   </Link>
                   <Link href="/carts">
@@ -251,9 +349,11 @@ export const Navbar = () => {
                       className="relative hover:scale-110 hover:text-primary transition-transform group"
                     >
                       <ShoppingBag className="w-5 h-5" />
-                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-glow">
-                        0
-                      </span>
+                      {showCartBadge && cartCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-semibold shadow-lg group-hover:scale-110 transition-transform">
+                          {cartCount > 9 ? '9+' : cartCount}
+                        </span>
+                      )}
                     </Button>
                   </Link>
                 </>
@@ -399,13 +499,25 @@ export const Navbar = () => {
                   {!isAdmin && (
                     <>
                       <Link href="/wishlist">
-                        <Button variant="outline" className="w-full justify-start">
+                        <Button variant="outline" className="w-full justify-start relative">
                           <Heart className="w-4 h-4 mr-2" /> Wishlist
+                          {showWishlistBadge && wishlistCount > 0 && (
+                            <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">
+                              {wishlistCount > 9 ? '9+' : wishlistCount}
+                            </span>
+                          )}
                         </Button>
                       </Link>
-                      <Button variant="outline" className="w-full justify-start">
-                        <ShoppingBag className="w-4 h-4 mr-2" /> Cart (0)
-                      </Button>
+                      <Link href="/carts">
+                        <Button variant="outline" className="w-full justify-start relative">
+                          <ShoppingBag className="w-4 h-4 mr-2" /> Cart
+                          {showCartBadge && cartCount > 0 && (
+                            <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">
+                              {cartCount > 9 ? '9+' : cartCount}
+                            </span>
+                          )}
+                        </Button>
+                      </Link>
                     </>
                   )}
                   <Button variant="default" className="w-full mt-2">
