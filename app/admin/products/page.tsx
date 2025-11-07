@@ -5,6 +5,12 @@ import { HeroTable, HeroColumn } from "@/components/admin/hero-table";
 import { PageHeader } from "@/components/admin/page-header";
 import { PageTransition } from "@/components/admin/page-transition";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import { formatCurrency, formatDate } from "@/lib/admin-utils";
 import { ProductWithImagesForm } from "@/components/admin/product/product-and-image-edit-form";
@@ -131,21 +137,26 @@ export default function ProductsPage() {
       <div className="space-y-6">
         <PageHeader title="Products" />
 
-        {/* Form */}
-        {editingProduct && (
-          <div className="p-6 rounded-md shadow-md">
+        {/* Product Form Modal */}
+        <Dialog open={!!editingProduct} onOpenChange={(open) => !open && handleCancel()}>
+          <DialogContent className="max-w-[95vw] lg:max-w-7xl max-h-[90vh] overflow-y-auto p-8">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold">
+                {editingProduct?.id ? "Edit Product" : "Add New Product"}
+              </DialogTitle>
+            </DialogHeader>
             <ProductWithImagesForm
-              product={editingProduct.id ? editingProduct : undefined}
-              images={editingProduct.images || []}
+              product={editingProduct?.id ? editingProduct : undefined}
+              images={editingProduct?.images || []}
               onSave={handleSave}
             />
-            <div className="mt-4 flex justify-end">
+            <div className="flex justify-end gap-3 pt-4 border-t">
               <Button variant="outline" onClick={handleCancel}>
                 Cancel
               </Button>
             </div>
-          </div>
-        )}
+          </DialogContent>
+        </Dialog>
 
         <HeroTable<Row>
           key={tableKey}

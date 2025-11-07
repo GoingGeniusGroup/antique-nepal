@@ -190,22 +190,22 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
   };
 
   return (
-    <div className="w-full max-w-[900px] mx-auto space-y-6 px-4 py-6 dark:bg-gray-900 dark:text-gray-100">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <h3 className="text-lg font-semibold">
-          {product ? "Edit Product" : "Add Product"}
-        </h3>
-        <Button onClick={saveAll} disabled={saving}>
-          <Save className="h-4 w-4 mr-1" />
+    <div className="w-full space-y-8 dark:text-gray-100">
+      <div className="flex items-center justify-end">
+        <Button onClick={saveAll} disabled={saving} size="lg" className="min-w-[140px]">
+          <Save className="h-4 w-4 mr-2" />
           {saving ? "Saving..." : "Save All"}
         </Button>
       </div>
 
-      <div className="space-y-6">
-        <ProductForm product={productData} onChange={updateProductField} />
+      <div className="space-y-8">
+        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6">
+          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Product Information</h4>
+          <ProductForm product={productData} onChange={updateProductField} />
+        </div>
 
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-          <h4 className="text-md font-medium mb-2">Product Images</h4>
+        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6">
+          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Product Images</h4>
           <ProductImagesForm
             images={productImages}
             onChange={updateImageField}

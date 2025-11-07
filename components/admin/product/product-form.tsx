@@ -13,7 +13,7 @@ type Props = {
 
 export function ProductForm({ product, onChange }: Props) {
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       <div>
         <Label className="text-gray-700 dark:text-gray-300">Name</Label>
         <Input
@@ -49,8 +49,8 @@ export function ProductForm({ product, onChange }: Props) {
         <Input
           type="number"
           step="0.01"
-          value={product.price}
-          onChange={(e) => onChange("price", parseFloat(e.target.value))}
+          value={isNaN(product.price) ? '' : product.price}
+          onChange={(e) => onChange("price", parseFloat(e.target.value) || 0)}
           placeholder="Enter price"
           className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
         />
@@ -82,7 +82,7 @@ export function ProductForm({ product, onChange }: Props) {
         </div>
       </div>
 
-      <div className="md:col-span-2">
+      <div className="md:col-span-2 lg:col-span-3">
         <Label className="text-gray-700 dark:text-gray-300">
           Short Description
         </Label>
@@ -94,17 +94,18 @@ export function ProductForm({ product, onChange }: Props) {
         />
       </div>
 
-      <div className="md:col-span-2">
+      <div className="md:col-span-2 lg:col-span-3">
         <Label className="text-gray-700 dark:text-gray-300">Description</Label>
         <Textarea
           value={product.description ?? ""}
           onChange={(e) => onChange("description", e.target.value)}
           placeholder="Full product details..."
           className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          rows={4}
         />
       </div>
 
-      <div>
+      <div className="md:col-span-2 lg:col-span-2">
         <Label className="text-gray-700 dark:text-gray-300">Meta Title</Label>
         <Input
           value={product.metaTitle ?? ""}
@@ -114,7 +115,7 @@ export function ProductForm({ product, onChange }: Props) {
         />
       </div>
 
-      <div>
+      <div className="md:col-span-2 lg:col-span-1">
         <Label className="text-gray-700 dark:text-gray-300">
           Meta Description
         </Label>
@@ -123,6 +124,7 @@ export function ProductForm({ product, onChange }: Props) {
           onChange={(e) => onChange("metaDescription", e.target.value)}
           placeholder="SEO meta description..."
           className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          rows={3}
         />
       </div>
     </div>
