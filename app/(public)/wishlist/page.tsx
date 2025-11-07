@@ -94,6 +94,8 @@ const Wishlist = () => {
         setCurrentPage(currentPage - 1);
       }
 
+      localStorage.removeItem('wishlistVisited'); // Reset badge
+      window.dispatchEvent(new Event('storage')); // Trigger navbar update
       toast.success("Item removed from wishlist!");
     } catch (error) {
       console.error(error);

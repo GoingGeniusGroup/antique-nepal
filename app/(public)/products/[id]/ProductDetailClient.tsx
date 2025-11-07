@@ -162,6 +162,8 @@ const ProductDetailClient = ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId, productId: product.id }),
         });
+        localStorage.removeItem('wishlistVisited'); // Reset badge
+        window.dispatchEvent(new Event('storage')); // Trigger navbar update
         toast.success("Added to wishlist!");
         setIsWishlisted(true);
       } else {
@@ -176,6 +178,8 @@ const ProductDetailClient = ({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ wishlistItemId: item.id }),
           });
+          localStorage.removeItem('wishlistVisited'); // Reset badge
+          window.dispatchEvent(new Event('storage')); // Trigger navbar update
           toast.success("Removed from wishlist!");
           setIsWishlisted(false);
         }
@@ -450,6 +454,8 @@ const ProductDetailClient = ({
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
+                          localStorage.removeItem('cartVisited'); // Reset badge
+                          window.dispatchEvent(new Event('storage')); // Trigger navbar update
                           toast.success("Item added to cart!");
                         }}
                         className="flex-1 text-white bg-green-600 hover:bg-green-700 duration-100 gap-2"
