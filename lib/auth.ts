@@ -106,33 +106,47 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return true;
     },
-    async jwt({ token, user }) {
-      // If the token has an ID, verify the user still exists in the database.
+    async jwt({ token, user, trigger }) {
+      const now = Math.floor(Date.now() / 1000);
+      const maxAge = 60 * 60; // 1 hour
+
+      // Initial sign-in
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.role = (user as any).role;
+        token.image = user.image;
+        token.exp = now + maxAge;
+        token.isActive = (user as any).isActive;
+        return token;
+      }
+
+      // If the token is expired, invalidate it.
+      if (token.exp && now > (token.exp as number)) {
+        return null;
+      }
+
+      // On subsequent requests, fetch user data to keep the token fresh
+      // This also handles the case where user data might have changed in the DB
       if (token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
         });
-        // If user is not found, invalidate the token to force logout.
-        if (!dbUser) {
-          return {};
+
+        // If user not found or is inactive, invalidate the session.
+        if (!dbUser || !dbUser.isActive) {
+          return null;
         }
-      }
 
-      const now = Math.floor(Date.now() / 1000);
-      const maxAge = 60 * 60;
-      // If token is older than 1 hour, force re-login
-      if (token.exp && now > token.exp) {
-        return {}; // Expired, will trigger logout
-      }
-
-      // This block only runs on initial sign-in
-      if (user) {
-        token.id = user.id;
-        token.name = (user as any).name;
-        token.role = (user as any).role;
-        token.image = user.image;
+        // Update token with fresh data from the database
+        token.name = dbUser.name;
+        token.role = dbUser.role;
+        token.image = dbUser.image;
+        token.isActive = dbUser.isActive;
+        // Extend the session expiration on activity
         token.exp = now + maxAge;
       }
+
       return token;
     },
     async session({ session, token }) {

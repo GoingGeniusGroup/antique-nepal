@@ -25,13 +25,13 @@ export function ThemeAwareTopLoader() {
   return (
     <NextTopLoader
       color={color}
-      initialPosition={0.08}
-      crawlSpeed={200}
+      initialPosition={0.3}
+      crawlSpeed={50}
       height={3}
       crawl={true}
       showSpinner={false}
       easing="ease"
-      speed={200}
+      speed={500}
       shadow={shadow}
       key={theme} // Force re-render when theme changes
     />
