@@ -47,7 +47,7 @@ export async function registerUser(formData: FormData) {
         email: data.email,
         password: hashedPassword,
         phone: fullPhone,
-        isActive: true,
+        isActive: false,
         verificationToken: verificationToken,
         verificationExpiry: verificationExpiry,
       },

@@ -18,6 +18,7 @@ export async function verifyEmail(token: string) {
       verificationToken: null,
       verificationExpiry: null,
       emailVerified: new Date(),
+      isActive: true,
     },
   });
 

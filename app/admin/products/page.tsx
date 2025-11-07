@@ -5,6 +5,7 @@ import { HeroTable, HeroColumn } from "@/components/admin/hero-table";
 import { PageHeader } from "@/components/admin/page-header";
 import { PageTransition } from "@/components/admin/page-transition";
 import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 
 import { formatCurrency, formatDate } from "@/lib/admin-utils";
 import { ProductWithImagesForm } from "@/components/admin/product/product-and-image-edit-form";
@@ -54,10 +55,16 @@ export default function ProductsPage() {
       const res = await fetch(`/api/admin/products/${deleteProduct.id}`, {
         method: "DELETE",
       });
-      if (res.ok) setTableKey((prev) => prev + 1);
+      if (res.ok) {
+        toast.success("Product deleted successfully");
+        setTableKey((prev) => prev + 1);
+      } else {
+        toast.error("Failed to delete product");
+      }
       setDeleteProduct(null);
     } catch (error) {
       console.error(error);
+      toast.error("An error occurred while deleting product");
       setDeleteProduct(null);
     }
   };

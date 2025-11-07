@@ -45,8 +45,6 @@ const SigninForm = () => {
     setLoading(false);
     if (res?.error) {
       let message = String(res.error);
-      console.log("Error message:", message);
-
       if (message === "Configuration") {
         message = "Email not verified. Please check your inbox.";
       } else if (message === "CredentialsSignin" || /invalid/i.test(message)) {
@@ -54,7 +52,6 @@ const SigninForm = () => {
       } else if (/both fields/i.test(message)) {
         message = "Both email and password are required";
       }
-
       toast.error(message);
     } else {
       setErrors({});

@@ -57,20 +57,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new Error("Both email and password are required");
         }
 
-        // ✅ Use `findUnique` safely
+        //  Use `findUnique` safely
         const user = await prisma.user.findUnique({
           where: { email: email },
         });
 
-        if (!user) {
+        if (!user || !user.password) {
           return null;
         }
 
-        if (!user.password) {
-          return null;
+        if (!user.isActive) {
+          throw new Error(
+            "Your account has been deactivated. Please contact support for assistance.",
+          );
         }
 
-        // ✅ Check for email verification - ONLY for CUSTOMER role, not ADMIN
+        //  Check for email verification - ONLY for CUSTOMER role, not ADMIN
         if (user.role === "CUSTOMER" && !user.emailVerified) {
           throw new Error("EmailNotVerified"); // custom error
         }
@@ -92,6 +94,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ user }) {
+      if (!user.email) return true; // Should not happen, but as a safeguard.
+      const dbUser = await prisma.user.findUnique({
+        where: { email: user.email },
+      });
+
+      if (dbUser && !dbUser.isActive) {
+        return false;
+      }
+
+      return true;
+    },
     async jwt({ token, user }) {
       // If the token has an ID, verify the user still exists in the database.
       if (token.id) {
