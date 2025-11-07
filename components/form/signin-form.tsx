@@ -107,7 +107,7 @@ const SigninForm = () => {
                 Password <span className="text-destructive">*</span>
               </Label>
               <Link
-                href="#"
+                href="/forgot-password"
                 className="text-sm text-blue-700 hover:text-primary-glow transition-smooth "
               >
                 Forgot password?
