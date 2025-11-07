@@ -81,8 +81,13 @@ export function ProductGrid({
         }
         
         setWishlistItems((prev) => [...prev, productId]);
+        
+        // Instantly update count in localStorage
+        const currentCount = parseInt(localStorage.getItem('wishlistCount') || '0');
+        localStorage.setItem('wishlistCount', (currentCount + 1).toString());
         localStorage.removeItem('wishlistVisited'); // Reset badge
         window.dispatchEvent(new Event('storage')); // Trigger navbar update
+        
         toast.success("Added to wishlist!");
       } else {
         const res = await fetch(`/api/wishlist?userId=${userId}`);
@@ -112,8 +117,13 @@ export function ProductGrid({
         }
         
         setWishlistItems((prev) => prev.filter((id) => id !== productId));
+        
+        // Instantly update count in localStorage
+        const currentCount = parseInt(localStorage.getItem('wishlistCount') || '0');
+        localStorage.setItem('wishlistCount', Math.max(0, currentCount - 1).toString());
         localStorage.removeItem('wishlistVisited'); // Reset badge
         window.dispatchEvent(new Event('storage')); // Trigger navbar update
+        
         toast.success("Removed from wishlist!");
       }
     } catch (err) {

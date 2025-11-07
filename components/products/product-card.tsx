@@ -116,8 +116,12 @@ export function ProductCard({
         throw new Error("Failed to add to cart");
       }
 
+      // Instantly update count in localStorage
+      const currentCount = parseInt(localStorage.getItem('cartCount') || '0');
+      localStorage.setItem('cartCount', (currentCount + 1).toString());
       localStorage.removeItem('cartVisited'); // Reset badge
       window.dispatchEvent(new Event('storage')); // Trigger navbar update
+      
       toast.success("Added to cart!");
     } catch (error) {
       console.error("[v0] Error adding to cart:", error);

@@ -147,8 +147,12 @@ const Cart = ({ userId }: { userId: string }) => {
         setCurrentPage((prev) => prev - 1);
       }
 
+      // Instantly update count in localStorage
+      const currentCount = parseInt(localStorage.getItem('cartCount') || '0');
+      localStorage.setItem('cartCount', Math.max(0, currentCount - 1).toString());
       localStorage.removeItem('cartVisited'); // Reset badge
       window.dispatchEvent(new Event('storage')); // Trigger navbar update
+      
       mutate();
       toast.success("Item removed successfully!");
     } catch {

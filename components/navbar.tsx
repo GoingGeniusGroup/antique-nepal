@@ -90,6 +90,7 @@ export const Navbar = () => {
           const cartData = await cartRes.json();
           const count = cartData?.cart?.items?.length || 0;
           setCartCount(count);
+          localStorage.setItem('cartCount', count.toString());
           
           // Show badge if there are items and user hasn't visited
           const cartVisited = localStorage.getItem('cartVisited');
@@ -102,6 +103,7 @@ export const Navbar = () => {
           const wishlistData = await wishlistRes.json();
           const count = wishlistData?.items?.length || 0;
           setWishlistCount(count);
+          localStorage.setItem('wishlistCount', count.toString());
           
           // Show badge if there are items and user hasn't visited
           const wishlistVisited = localStorage.getItem('wishlistVisited');
@@ -111,6 +113,17 @@ export const Navbar = () => {
         console.error('Failed to fetch counts:', err);
       }
     };
+
+    // Load counts from localStorage immediately for instant display
+    const cachedCartCount = parseInt(localStorage.getItem('cartCount') || '0');
+    const cachedWishlistCount = parseInt(localStorage.getItem('wishlistCount') || '0');
+    const cartVisited = localStorage.getItem('cartVisited');
+    const wishlistVisited = localStorage.getItem('wishlistVisited');
+    
+    setCartCount(cachedCartCount);
+    setWishlistCount(cachedWishlistCount);
+    setShowCartBadge(cachedCartCount > 0 && cartVisited !== 'true');
+    setShowWishlistBadge(cachedWishlistCount > 0 && wishlistVisited !== 'true');
 
     fetchCounts();
     
@@ -130,33 +143,20 @@ export const Navbar = () => {
     }
   }, [pathname]);
 
-  // Listen for storage events from other tabs/windows and refetch counts
+  // Listen for storage events for instant updates
   useEffect(() => {
-    const handleStorageChange = async () => {
+    const handleStorageChange = () => {
       if (userId && !isAdmin) {
+        // Instantly read updated counts from localStorage
+        const cartCount = parseInt(localStorage.getItem('cartCount') || '0');
+        const wishlistCount = parseInt(localStorage.getItem('wishlistCount') || '0');
         const cartVisited = localStorage.getItem('cartVisited');
         const wishlistVisited = localStorage.getItem('wishlistVisited');
         
-        // Refetch counts
-        try {
-          const cartRes = await fetch(`/api/cart`);
-          if (cartRes.ok) {
-            const cartData = await cartRes.json();
-            const count = cartData?.cart?.items?.length || 0;
-            setCartCount(count);
-            setShowCartBadge(count > 0 && cartVisited !== 'true');
-          }
-
-          const wishlistRes = await fetch(`/api/wishlist?userId=${userId}`);
-          if (wishlistRes.ok) {
-            const wishlistData = await wishlistRes.json();
-            const count = wishlistData?.items?.length || 0;
-            setWishlistCount(count);
-            setShowWishlistBadge(count > 0 && wishlistVisited !== 'true');
-          }
-        } catch (err) {
-          console.error('Failed to refetch counts:', err);
-        }
+        setCartCount(cartCount);
+        setWishlistCount(wishlistCount);
+        setShowCartBadge(cartCount > 0 && cartVisited !== 'true');
+        setShowWishlistBadge(wishlistCount > 0 && wishlistVisited !== 'true');
       }
     };
 

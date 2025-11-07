@@ -94,8 +94,12 @@ const Wishlist = () => {
         setCurrentPage(currentPage - 1);
       }
 
+      // Instantly update count in localStorage
+      const currentCount = parseInt(localStorage.getItem('wishlistCount') || '0');
+      localStorage.setItem('wishlistCount', Math.max(0, currentCount - 1).toString());
       localStorage.removeItem('wishlistVisited'); // Reset badge
       window.dispatchEvent(new Event('storage')); // Trigger navbar update
+      
       toast.success("Item removed from wishlist!");
     } catch (error) {
       console.error(error);
