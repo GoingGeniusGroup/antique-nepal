@@ -16,6 +16,14 @@ import {
 } from "@/components/ui/navigation-menu";
 
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   ShoppingBag,
   Menu,
   X,
@@ -270,18 +278,9 @@ export const Navbar = () => {
                   </Link>
                 </>
               ) : (
-                <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="ml-2 hover:shadow-soft transition-all"
-                    onClick={() => setShowLogoutDialog(true)}
-                  >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
-                  </Button>
-                  <Link href="/profile">
-                    <Avatar className="w-8 h-8 cursor-pointer">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="w-9 h-9 cursor-pointer">
                       <AvatarImage
                         src={session.user?.image || ""}
                         alt={session.user?.name || ""}
@@ -293,9 +292,29 @@ export const Navbar = () => {
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
-                  </Link>
-                </>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-48" align="end">
+                    <DropdownMenuLabel>
+                      <p className="font-bold">{session.user?.name}</p>
+                      <p className="text-xs text-muted-foreground font-normal">
+                        {session.user?.email}
+                      </p>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile">
+                        <User className="w-4 h-4 mr-2" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setShowLogoutDialog(true)}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
+
             </div>
 
             {/* ✅ Mobile Menu Button */}
@@ -393,7 +412,7 @@ export const Navbar = () => {
         open={showLogoutDialog}
         onOpenChange={setShowLogoutDialog}
         onConfirm={async () => {
-          await signOut({ redirect: false });
+          await signOut({ callbackUrl: "/" });
           sessionStorage.removeItem("loginSuccessToastShown");
           toast.success("Logged out successfully!", {
             duration: 2000,
