@@ -51,16 +51,25 @@ export async function getProducts(params: GetProductsParams) {
       where.OR = [
         { name: { contains: searchQuery, mode: "insensitive" } },
         { description: { contains: searchQuery, mode: "insensitive" } },
+        {
+          categories: {
+            some: {
+              category: {
+                name: { contains: searchQuery, mode: "insensitive" },
+              },
+            },
+          },
+        },
       ];
     }
-
     // Filter by category
-    if (selectedCategory) {
+    if (selectedCategory && selectedCategory !== "all") {
       where.categories = {
         some: {
-          category: {
-            id: selectedCategory,
-          },
+          OR: [
+            { category: { id: selectedCategory } },
+            { category: { slug: selectedCategory } },
+          ],
         },
       };
     }

@@ -38,7 +38,6 @@ const ProductsPage = () => {
 
       setProducts(result.products);
       setTotalPages(result.totalPages);
-      console.log(result.products);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load products");
       console.error("[v0] Error loading products:", err);
