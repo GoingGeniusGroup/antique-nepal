@@ -54,6 +54,8 @@ interface Category {
 
 export const Navbar = () => {
   const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role;
+  const isAdmin = userRole === "ADMIN";
   const [isOpen, setIsOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const { stories } = navigationData;
@@ -231,27 +233,31 @@ export const Navbar = () => {
               >
                 <Search className="w-5 h-5" />
               </Button>
-              <Link href="/wishlist">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hover:scale-110 hover:text-primary transition-transform"
-                >
-                  <Heart className="w-5 h-5" />
-                </Button>
-              </Link>
-              <Link href="/carts">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative hover:scale-110 hover:text-primary transition-transform group"
-                >
-                  <ShoppingBag className="w-5 h-5" />
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-glow">
-                    0
-                  </span>
-                </Button>
-              </Link>
+              {!isAdmin && (
+                <>
+                  <Link href="/wishlist">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:scale-110 hover:text-primary transition-transform"
+                    >
+                      <Heart className="w-5 h-5" />
+                    </Button>
+                  </Link>
+                  <Link href="/carts">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="relative hover:scale-110 hover:text-primary transition-transform group"
+                    >
+                      <ShoppingBag className="w-5 h-5" />
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-glow">
+                        0
+                      </span>
+                    </Button>
+                  </Link>
+                </>
+              )}
 
               {/*  Auth Buttons*/}
               {!session || (session.user as any)?.role === "ADMIN" ? (
@@ -390,14 +396,18 @@ export const Navbar = () => {
                   <Button variant="outline" className="w-full justify-start">
                     <Search className="w-4 h-4 mr-2" /> Search
                   </Button>
-                  <Link href="/wishlist">
-                    <Button variant="outline" className="w-full justify-start">
-                      <Heart className="w-4 h-4 mr-2" /> Wishlist
-                    </Button>
-                  </Link>
-                  <Button variant="outline" className="w-full justify-start">
-                    <ShoppingBag className="w-4 h-4 mr-2" /> Cart (0)
-                  </Button>
+                  {!isAdmin && (
+                    <>
+                      <Link href="/wishlist">
+                        <Button variant="outline" className="w-full justify-start">
+                          <Heart className="w-4 h-4 mr-2" /> Wishlist
+                        </Button>
+                      </Link>
+                      <Button variant="outline" className="w-full justify-start">
+                        <ShoppingBag className="w-4 h-4 mr-2" /> Cart (0)
+                      </Button>
+                    </>
+                  )}
                   <Button variant="default" className="w-full mt-2">
                     <User className="w-4 h-4 mr-2" /> Login
                   </Button>

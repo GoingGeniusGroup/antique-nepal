@@ -68,15 +68,28 @@ export function ProductGrid({
     const isInWishlist = wishlistItems.includes(productId);
     try {
       if (!isInWishlist) {
-        await fetch("/api/wishlist", {
+        const res = await fetch("/api/wishlist", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId, productId }),
         });
+        
+        if (!res.ok) {
+          const error = await res.json();
+          toast.error(error.error || "Failed to add to wishlist");
+          return;
+        }
+        
         setWishlistItems((prev) => [...prev, productId]);
         toast.success("Added to wishlist!");
       } else {
         const res = await fetch(`/api/wishlist?userId=${userId}`);
+        
+        if (!res.ok) {
+          toast.error("Failed to fetch wishlist");
+          return;
+        }
+        
         const data: { items?: WishlistItem[] } = await res.json();
         const item = data?.items?.find((i) => i.product.id === productId);
 
@@ -85,17 +98,24 @@ export function ProductGrid({
           return;
         }
 
-        await fetch("/api/wishlist", {
+        const deleteRes = await fetch("/api/wishlist", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ wishlistItemId: item.id }),
         });
+        
+        if (!deleteRes.ok) {
+          toast.error("Failed to remove from wishlist");
+          return;
+        }
+        
         setWishlistItems((prev) => prev.filter((id) => id !== productId));
         toast.success("Removed from wishlist!");
       }
     } catch (err) {
       console.error(err);
       toast.error("Failed to update wishlist");
+      throw err;
     }
   };
 

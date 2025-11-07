@@ -8,11 +8,20 @@ export async function GET(req: NextRequest) {
     const session = await auth();
 
     const userId = session?.user?.id;
+    const userRole = (session?.user as any)?.role;
 
     if (!userId) {
       return NextResponse.json(
         { error: "userId is required" },
         { status: 400 }
+      );
+    }
+
+    // Prevent admins from accessing cart
+    if (userRole === "ADMIN") {
+      return NextResponse.json(
+        { error: "Admin users cannot access cart" },
+        { status: 403 }
       );
     }
 
@@ -57,6 +66,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "userId, productVariantId, and quantity are required" },
         { status: 400 }
+      );
+    }
+
+    // Get user role to check if admin
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
+
+    // Prevent admins from adding to cart
+    if (user?.role === "ADMIN") {
+      return NextResponse.json(
+        { error: "Admin users cannot add items to cart" },
+        { status: 403 }
       );
     }
 
@@ -127,6 +150,17 @@ export async function POST(req: NextRequest) {
 // PUT - Update cart item quantity
 export async function PUT(req: NextRequest) {
   try {
+    const session = await auth();
+    const userRole = (session?.user as any)?.role;
+
+    // Prevent admins from updating cart
+    if (userRole === "ADMIN") {
+      return NextResponse.json(
+        { error: "Admin users cannot update cart" },
+        { status: 403 }
+      );
+    }
+
     const { cartItemId, quantity } = await req.json();
 
     if (!cartItemId || !quantity) {
@@ -161,6 +195,17 @@ export async function PUT(req: NextRequest) {
 // DELETE - Remove item from cart
 export async function DELETE(req: NextRequest) {
   try {
+    const session = await auth();
+    const userRole = (session?.user as any)?.role;
+
+    // Prevent admins from deleting from cart
+    if (userRole === "ADMIN") {
+      return NextResponse.json(
+        { error: "Admin users cannot delete cart items" },
+        { status: 403 }
+      );
+    }
+
     const { cartItemId } = await req.json();
 
     if (!cartItemId) {

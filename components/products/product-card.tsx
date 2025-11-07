@@ -41,13 +41,21 @@ export function ProductCard({
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
   const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role;
+  const isAdmin = userRole === "ADMIN";
   const [loading, setLoading] = useState(false);
   const [showVariantModal, setShowVariantModal] = useState(false);
 
   const handleWishlistToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
     if (loading) return;
+
+    if (isAdmin) {
+      toast.error("Admin users cannot use wishlist");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -62,11 +70,18 @@ export function ProductCard({
   const handleCartClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
 
     if (!session?.user?.id) {
       toast.error("Please sign in to add items to cart");
       return;
     }
+
+    if (isAdmin) {
+      toast.error("Admin users cannot add to cart");
+      return;
+    }
+
     if (!product.inStock) {
       toast.error("Product is out of stock");
       return;
@@ -131,33 +146,35 @@ export function ProductCard({
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
 
-            <button
-              onClick={handleWishlistToggle}
-              className={cn(
-                "absolute top-2 right-2 cursor-pointer md:top-4 md:right-4 p-1.5 md:p-2 rounded-full transition-colors z-10 flex items-center justify-center",
-                isDark
-                  ? "bg-white/90 hover:bg-white"
-                  : "bg-white/95 hover:bg-white shadow-md"
-              )}
-              aria-label="Add to wishlist"
-              disabled={loading}
-            >
-              {loading ? (
-                <Spinner className="w-4 h-4 text-red-500" />
-              ) : (
-                <Heart
-                  size={16}
-                  className={cn(
-                    "md:w-5 md:h-5 transition-colors",
-                    !wishlistLoaded
-                      ? "stroke-gray-400 opacity-50"
-                      : isWishlisted
-                      ? "fill-red-500 stroke-red-500"
-                      : "stroke-black"
-                  )}
-                />
-              )}
-            </button>
+            {!isAdmin && (
+              <button
+                onClick={handleWishlistToggle}
+                className={cn(
+                  "absolute top-2 right-2 cursor-pointer md:top-4 md:right-4 p-1.5 md:p-2 rounded-full transition-colors z-10 flex items-center justify-center",
+                  isDark
+                    ? "bg-white/90 hover:bg-white"
+                    : "bg-white/95 hover:bg-white shadow-md"
+                )}
+                aria-label="Add to wishlist"
+                disabled={loading}
+              >
+                {loading ? (
+                  <Spinner className="w-4 h-4 text-red-500" />
+                ) : (
+                  <Heart
+                    size={16}
+                    className={cn(
+                      "md:w-5 md:h-5 transition-colors",
+                      !wishlistLoaded
+                        ? "stroke-gray-400 opacity-50"
+                        : isWishlisted
+                        ? "fill-red-500 stroke-red-500"
+                        : "stroke-black"
+                    )}
+                  />
+                )}
+              </button>
+            )}
 
             {!product.inStock && (
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
@@ -214,23 +231,25 @@ export function ProductCard({
                 ${product.price.toFixed(2)}
               </span>
 
-              <button
-                className={cn(
-                  "p-1.5 md:p-2 cursor-pointer rounded-lg transition-colors",
-                  isDark ? "hover:bg-white/10" : "hover:bg-[#e8e0d8]/50"
-                )}
-                aria-label="Add to cart"
-                onClick={handleCartClick}
-                disabled={!product.inStock}
-              >
-                <ShoppingCart
-                  size={16}
+              {!isAdmin && (
+                <button
                   className={cn(
-                    "md:w-5 md:h-5",
-                    isDark ? "text-white" : "text-[#2d2520]"
+                    "p-1.5 md:p-2 cursor-pointer rounded-lg transition-colors",
+                    isDark ? "hover:bg-white/10" : "hover:bg-[#e8e0d8]/50"
                   )}
-                />
-              </button>
+                  aria-label="Add to cart"
+                  onClick={handleCartClick}
+                  disabled={!product.inStock}
+                >
+                  <ShoppingCart
+                    size={16}
+                    className={cn(
+                      "md:w-5 md:h-5",
+                      isDark ? "text-white" : "text-[#2d2520]"
+                    )}
+                  />
+                </button>
+              )}
             </div>
           </div>
         </Link>
