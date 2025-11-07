@@ -84,7 +84,7 @@ export function ProductControls({
         </div>
         <Input
           type="text"
-          placeholder="Search products by name, category, or badge..."
+          placeholder="Search products by name and category..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className={cn(
