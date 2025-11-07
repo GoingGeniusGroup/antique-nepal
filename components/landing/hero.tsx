@@ -296,18 +296,17 @@ export function Hero() {
               </NavigationLink>
             </motion.div>
             <motion.div {...ANIMATION_CONFIG.hoverScale}>
-              <Button
-                variant="outline"
-                className="relative overflow-hidden rounded-md h-11 px-7 text-lg font-medium border-white/50 bg-white/5 text-white hover:bg-white/15 hover:text-white backdrop-blur-sm"
-              >
-                <motion.div
-                  className="absolute inset-0 bg-white/10"
-                  initial={{ scale: 0, opacity: 0 }}
-                  whileHover={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-                <span className="relative font-inter">Discover Our Story</span>
-              </Button>
+              <NavigationLink href="/stories">
+                <Button variant="outline" className="relative overflow-hidden rounded-md h-11 px-7 text-lg font-medium border-white/50 bg-white/5 text-white hover:bg-white/15 hover:text-white backdrop-blur-sm">
+                  <motion.div
+                    className="absolute inset-0 bg-white/10"
+                    initial={{ scale: 0, opacity: 0 }}
+                    whileHover={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                  <span className="relative font-inter">Discover Our Story</span>
+                </Button>
+              </NavigationLink>
             </motion.div>
           </div>
 
