@@ -113,6 +113,8 @@ const ProductDetailClient = ({
 
   const { data: session } = useSession();
   const userId = session?.user?.id;
+  const userRole = (session?.user as any)?.role;
+  const isAdmin = userRole === "ADMIN";
   const averageRating = calculateAverageRating(product.reviews);
   const primaryCategory = product.categories[0]?.category?.name || "Product";
   const badge = product.isFeatured ? "Featured" : primaryCategory;
@@ -120,7 +122,7 @@ const ProductDetailClient = ({
   // Fetch wishlist status on mount
   useEffect(() => {
     const fetchWishlist = async () => {
-      if (!userId) return;
+      if (!userId || isAdmin) return;
       try {
         const res = await fetch(`/api/wishlist?userId=${userId}`);
         const data: Wishlist = await res.json();
@@ -135,9 +137,19 @@ const ProductDetailClient = ({
   }, [product.id, userId]);
 
   // Toggle wishlist
-  const handleWishlistToggle = async () => {
+  const handleWishlistToggle = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     if (!userId) {
       toast.error("You must be signed in to manage your wishlist.");
+      return;
+    }
+
+    if (isAdmin) {
+      toast.error("Admin users cannot use wishlist.");
       return;
     }
 
@@ -176,7 +188,12 @@ const ProductDetailClient = ({
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     const shareData = {
       title: product.name,
       text: "Check out this amazing product!",
@@ -426,30 +443,38 @@ const ProductDetailClient = ({
                 </div>
 
                 <div className="flex gap-3">
-                  <Button
-                    size="lg"
-                    onClick={() => toast.success("Item added to cart!")}
-                    className="flex-1 text-white bg-green-600 hover:bg-green-700 duration-100 gap-2"
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                    Add to Cart
-                  </Button>
+                  {!isAdmin && (
+                    <>
+                      <Button
+                        size="lg"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toast.success("Item added to cart!");
+                        }}
+                        className="flex-1 text-white bg-green-600 hover:bg-green-700 duration-100 gap-2"
+                      >
+                        <ShoppingCart className="h-5 w-5" />
+                        Add to Cart
+                      </Button>
 
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    onClick={handleWishlistToggle}
-                  >
-                    {wishlistLoading ? (
-                      <Spinner className="h-5 w-5" />
-                    ) : (
-                      <Heart
-                        className={`h-5 w-5 ${
-                          isWishlisted ? "fill-red-500 text-red-500" : ""
-                        }`}
-                      />
-                    )}
-                  </Button>
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        onClick={handleWishlistToggle}
+                      >
+                        {wishlistLoading ? (
+                          <Spinner className="h-5 w-5" />
+                        ) : (
+                          <Heart
+                            className={`h-5 w-5 ${
+                              isWishlisted ? "fill-red-500 text-red-500" : ""
+                            }`}
+                          />
+                        )}
+                      </Button>
+                    </>
+                  )}
 
                   <Button size="lg" onClick={handleShare} variant="outline">
                     <Share2 className="h-5 w-5" />
