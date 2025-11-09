@@ -17,6 +17,7 @@ export function Pagination({
   return (
     <div className="flex items-center justify-center gap-2 mt-8">
       <Button
+        className="cursor-pointer"
         variant="outline"
         size="sm"
         onClick={() => onPageChange(currentPage - 1)}
@@ -29,6 +30,7 @@ export function Pagination({
       <div className="flex items-center gap-1">
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
           <Button
+            className="cursor-pointer"
             key={page}
             variant={currentPage === page ? "default" : "outline"}
             size="sm"
@@ -40,6 +42,7 @@ export function Pagination({
       </div>
 
       <Button
+        className="cursor-pointer"
         variant="outline"
         size="sm"
         onClick={() => onPageChange(currentPage + 1)}

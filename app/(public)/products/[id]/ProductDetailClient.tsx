@@ -33,6 +33,7 @@ import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { Spinner } from "@/components/ui/spinner";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { Pagination } from "@/components/products/pagination";
 
 interface ProductImage {
   id: string;
@@ -119,6 +120,16 @@ const ProductDetailClient = ({
   const primaryCategory = product.categories[0]?.category?.name || "Product";
   const badge = product.isFeatured ? "Featured" : primaryCategory;
 
+  //reviews pagination
+  const [currentReviewPage, setCurrentReviewPage] = useState(1);
+  const pageSize = 5;
+  const totalReviewPages = Math.ceil(product.reviews.length / pageSize);
+
+  const paginatedReviews = product.reviews.slice(
+    (currentReviewPage - 1) * pageSize,
+    currentReviewPage * pageSize
+  );
+
   // Fetch wishlist status on mount
   useEffect(() => {
     const fetchWishlist = async () => {
@@ -142,7 +153,7 @@ const ProductDetailClient = ({
       e.preventDefault();
       e.stopPropagation();
     }
-    
+
     if (!userId) {
       toast.error("You must be signed in to manage your wishlist.");
       return;
@@ -163,11 +174,13 @@ const ProductDetailClient = ({
           body: JSON.stringify({ userId, productId: product.id }),
         });
         // Instantly update count in localStorage
-        const currentCount = parseInt(localStorage.getItem('wishlistCount') || '0');
-        localStorage.setItem('wishlistCount', (currentCount + 1).toString());
-        localStorage.removeItem('wishlistVisited'); // Reset badge
-        window.dispatchEvent(new Event('storage')); // Trigger navbar update
-        
+        const currentCount = parseInt(
+          localStorage.getItem("wishlistCount") || "0"
+        );
+        localStorage.setItem("wishlistCount", (currentCount + 1).toString());
+        localStorage.removeItem("wishlistVisited"); // Reset badge
+        window.dispatchEvent(new Event("storage")); // Trigger navbar update
+
         toast.success("Added to wishlist!");
         setIsWishlisted(true);
       } else {
@@ -183,11 +196,16 @@ const ProductDetailClient = ({
             body: JSON.stringify({ wishlistItemId: item.id }),
           });
           // Instantly update count in localStorage
-          const currentCount = parseInt(localStorage.getItem('wishlistCount') || '0');
-          localStorage.setItem('wishlistCount', Math.max(0, currentCount - 1).toString());
-          localStorage.removeItem('wishlistVisited'); // Reset badge
-          window.dispatchEvent(new Event('storage')); // Trigger navbar update
-          
+          const currentCount = parseInt(
+            localStorage.getItem("wishlistCount") || "0"
+          );
+          localStorage.setItem(
+            "wishlistCount",
+            Math.max(0, currentCount - 1).toString()
+          );
+          localStorage.removeItem("wishlistVisited"); // Reset badge
+          window.dispatchEvent(new Event("storage")); // Trigger navbar update
+
           toast.success("Removed from wishlist!");
           setIsWishlisted(false);
         }
@@ -205,7 +223,7 @@ const ProductDetailClient = ({
       e.preventDefault();
       e.stopPropagation();
     }
-    
+
     const shareData = {
       title: product.name,
       text: "Check out this amazing product!",
@@ -462,13 +480,18 @@ const ProductDetailClient = ({
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          
+
                           // Instantly update count in localStorage
-                          const currentCount = parseInt(localStorage.getItem('cartCount') || '0');
-                          localStorage.setItem('cartCount', (currentCount + 1).toString());
-                          localStorage.removeItem('cartVisited'); // Reset badge
-                          window.dispatchEvent(new Event('storage')); // Trigger navbar update
-                          
+                          const currentCount = parseInt(
+                            localStorage.getItem("cartCount") || "0"
+                          );
+                          localStorage.setItem(
+                            "cartCount",
+                            (currentCount + 1).toString()
+                          );
+                          localStorage.removeItem("cartVisited"); // Reset badge
+                          window.dispatchEvent(new Event("storage")); // Trigger navbar update
+
                           toast.success("Item added to cart!");
                         }}
                         className="flex-1 text-white bg-green-600 hover:bg-green-700 duration-100 gap-2"
@@ -716,13 +739,13 @@ const ProductDetailClient = ({
                     </Dialog>
 
                     {/* Reviews List */}
-                    {product.reviews.length === 0 ? (
+                    {paginatedReviews.length === 0 ? (
                       <p className="text-muted-foreground text-center py-8">
                         No reviews yet. Be the first to write a review!
                       </p>
                     ) : (
                       <div className="space-y-6">
-                        {product.reviews.map((review) => (
+                        {paginatedReviews.map((review) => (
                           <div
                             key={review.id}
                             className="border-b pb-6 last:border-b-0"
@@ -747,6 +770,7 @@ const ProductDetailClient = ({
                                     "Anonymous"}
                                 </span>
                               </div>
+
                               <div className="flex items-center gap-2">
                                 {userId === review.userId && (
                                   <>
@@ -757,6 +781,7 @@ const ProductDetailClient = ({
                                     >
                                       <Edit2 className="h-4 w-4" />
                                     </button>
+
                                     <button
                                       onClick={() => {
                                         setReviewToDelete(review.id);
@@ -769,6 +794,7 @@ const ProductDetailClient = ({
                                     </button>
                                   </>
                                 )}
+
                                 <span className="text-sm text-muted-foreground ml-2">
                                   {new Date(
                                     review.createdAt
@@ -776,16 +802,25 @@ const ProductDetailClient = ({
                                 </span>
                               </div>
                             </div>
+
                             {review.title && (
                               <h4 className="font-semibold mb-1">
                                 {review.title}
                               </h4>
                             )}
+
                             <p className="text-muted-foreground">
                               {review.comment}
                             </p>
                           </div>
                         ))}
+
+                        {/* Review Pagination */}
+                        <Pagination
+                          currentPage={currentReviewPage}
+                          totalPages={totalReviewPages}
+                          onPageChange={setCurrentReviewPage}
+                        />
                       </div>
                     )}
                   </CardContent>
@@ -795,7 +830,7 @@ const ProductDetailClient = ({
           </div>
         </div>
       </section>
-      
+
       <ConfirmationDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
