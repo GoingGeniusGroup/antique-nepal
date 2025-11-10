@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Star,
   Heart,
@@ -34,6 +36,8 @@ interface ProductInfoProps {
   wishlistLoading: boolean;
   handleWishlistToggle: () => void;
   isAdmin: boolean;
+  onAddToCartClick: () => void;
+  isAddingToCart: boolean;
 }
 
 const calculateAverageRating = (reviews: ProductReview[]) => {
@@ -50,6 +54,8 @@ export const ProductInfo = ({
   wishlistLoading,
   handleWishlistToggle,
   isAdmin,
+  onAddToCartClick,
+  isAddingToCart,
 }: ProductInfoProps) => {
   const averageRating = calculateAverageRating(product.reviews);
 
@@ -71,14 +77,6 @@ export const ProductInfo = ({
       console.error("Error sharing:", error);
       toast.error("Failed to share product.");
     }
-  };
-
-  const handleAddToCart = () => {
-    const currentCount = parseInt(localStorage.getItem("cartCount") || "0");
-    localStorage.setItem("cartCount", (currentCount + 1).toString());
-    localStorage.removeItem("cartVisited");
-    window.dispatchEvent(new Event("storage"));
-    toast.success("Item added to cart!");
   };
 
   return (
@@ -118,6 +116,7 @@ export const ProductInfo = ({
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
               className="px-4 py-2 hover:bg-accent transition-colors"
+              disabled={isAddingToCart}
             >
               -
             </button>
@@ -125,6 +124,7 @@ export const ProductInfo = ({
             <button
               onClick={() => setQuantity(quantity + 1)}
               className="px-4 py-2 hover:bg-accent transition-colors"
+              disabled={isAddingToCart}
             >
               +
             </button>
@@ -139,17 +139,29 @@ export const ProductInfo = ({
             <>
               <Button
                 size="lg"
-                onClick={handleAddToCart}
+                onClick={onAddToCartClick}
+                disabled={isAddingToCart}
                 className="flex-1 text-white bg-green-600 hover:bg-green-700 duration-100 gap-2"
               >
-                <ShoppingCart className="h-5 w-5" />
-                Add to Cart
+                {isAddingToCart ? (
+                  <>
+                    <Spinner className="h-5 w-5" />
+                    Adding...
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="h-5 w-5" />
+                    Add to Cart
+                  </>
+                )}
               </Button>
 
               <Button
                 size="lg"
                 variant="outline"
+                className="cursor-pointer bg-transparent"
                 onClick={handleWishlistToggle}
+                disabled={wishlistLoading}
               >
                 {wishlistLoading ? (
                   <Spinner className="h-5 w-5" />
@@ -164,7 +176,12 @@ export const ProductInfo = ({
             </>
           )}
 
-          <Button size="lg" onClick={handleShare} variant="outline">
+          <Button
+            className="cursor-pointer bg-transparent"
+            size="lg"
+            onClick={handleShare}
+            variant="outline"
+          >
             <Share2 className="h-5 w-5" />
           </Button>
         </div>

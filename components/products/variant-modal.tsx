@@ -115,7 +115,7 @@ export function VariantModal({
                         </div>
                         {variant.price && variant.price !== basePrice && (
                           <span className="font-semibold">
-                            ${variant.price.toFixed(2)}
+                            ${Number(variant.price).toFixed(2)}
                           </span>
                         )}
                       </div>
@@ -166,7 +166,9 @@ export function VariantModal({
           <div className="border-t pt-4 space-y-2">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Unit Price:</span>
-              <span className="font-medium">${displayPrice.toFixed(2)}</span>
+              <span className="font-medium">
+                ${Number(displayPrice).toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between text-lg font-bold">
               <span>Total:</span>
