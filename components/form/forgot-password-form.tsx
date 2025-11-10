@@ -44,73 +44,62 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen px-4 py-6 sm:py-8 text-foreground dark:text-foreground">
-      <div className="w-full max-w-md p-6 sm:p-8 space-y-6">
-        <div className="text-2xl sm:text-3xl text-primary font-bold mb-6">
-          <h1 className="text-4xl font-cinzel font-bold text-primary mb-2">
-            Forgot Password
-          </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            Enter your email to receive a password reset link.
-          </p>
+    <>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label className="text-sm font-semibold mb-1">
+            Email <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setErrors((prev) => {
+                const next = { ...prev };
+                delete next.email;
+                return next;
+              });
+            }}
+            className={`bg-card text-foreground placeholder:text-muted-foreground transition-all ${
+              errors.email
+                ? "border-destructive border-2 focus:border-destructive"
+                : "border-border focus:border-primary"
+            }`}
+          />
+          <p className="text-xs text-destructive mt-1 h-4">{errors.email}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label className="text-sm font-semibold mb-1">
-              Email <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setErrors((prev) => {
-                  const next = { ...prev };
-                  delete next.email;
-                  return next;
-                });
-              }}
-              className={`bg-card text-foreground placeholder:text-muted-foreground transition-all ${
-                errors.email
-                  ? "border-destructive border-2 focus:border-destructive"
-                  : "border-border focus:border-primary"
-              }`}
-            />
-            <p className="text-xs text-destructive mt-1 h-4">{errors.email}</p>
-          </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full bg-primary hover:bg-primary/90 text-primary-foreground font-sans font-semibold py-3 px-4 rounded transition-all duration-200 mt-6 flex items-center justify-center gap-2 ${
+            loading ? "opacity-70 cursor-not-allowed" : ""
+          }`}
+        >
+          {loading ? (
+            "Sending..."
+          ) : (
+            <>
+              Send Reset Link <span>→</span>
+            </>
+          )}
+        </button>
+      </form>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full bg-primary hover:bg-primary/90 text-primary-foreground font-sans font-semibold py-3 px-4 rounded transition-all duration-200 mt-6 flex items-center justify-center gap-2 ${
-              loading ? "opacity-70 cursor-not-allowed" : ""
-            }`}
-          >
-            {loading ? (
-              "Sending..."
-            ) : (
-              <>
-                Send Reset Link <span>→</span>
-              </>
-            )}
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-primary cursor-default">
-          Remember your password?{" "}
-          <Link
-            type="button"
-            href={"/login"}
-            className="text-blue-700 hover:text-primary-glow transition-smooth underline cursor-pointer"
-          >
-            Login
-          </Link>
-        </p>
-      </div>
-    </div>
+      <p className="text-center text-sm text-primary cursor-default">
+        Remember your password?{" "}
+        <Link
+          type="button"
+          href={"/login"}
+          className="text-blue-700 hover:text-primary-glow transition-smooth underline cursor-pointer"
+        >
+          Login
+        </Link>
+      </p>
+    </>
   );
 };
 
