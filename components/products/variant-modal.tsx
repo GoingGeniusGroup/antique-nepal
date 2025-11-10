@@ -180,13 +180,18 @@ export function VariantModal({
 
           {/* Action Buttons */}
           <div className="flex gap-3">
-            <Button variant="outline" onClick={onClose} disabled={isLoading}>
+            <Button
+              variant="outline"
+              className="cursor-pointer"
+              onClick={onClose}
+              disabled={isLoading}
+            >
               Cancel
             </Button>
             <Button
               onClick={handleAddToCart}
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 cursor-pointer"
             >
               {isLoading ? (
                 <>

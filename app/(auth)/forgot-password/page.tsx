@@ -12,7 +12,7 @@ export default function ForgotPasswordPage() {
             Enter your email to receive a password reset link.
           </p>
         </div>
-        <ForgotPassword />;
+        <ForgotPassword />
       </div>
     </div>
   );
