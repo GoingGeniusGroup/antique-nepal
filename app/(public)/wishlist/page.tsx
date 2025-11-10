@@ -95,11 +95,16 @@ const Wishlist = () => {
       }
 
       // Instantly update count in localStorage
-      const currentCount = parseInt(localStorage.getItem('wishlistCount') || '0');
-      localStorage.setItem('wishlistCount', Math.max(0, currentCount - 1).toString());
-      localStorage.removeItem('wishlistVisited'); // Reset badge
-      window.dispatchEvent(new Event('storage')); // Trigger navbar update
-      
+      const currentCount = parseInt(
+        localStorage.getItem("wishlistCount") || "0"
+      );
+      localStorage.setItem(
+        "wishlistCount",
+        Math.max(0, currentCount - 1).toString()
+      );
+      localStorage.removeItem("wishlistVisited"); // Reset badge
+      window.dispatchEvent(new Event("storage")); // Trigger navbar update
+
       toast.success("Item removed from wishlist!");
     } catch (error) {
       console.error(error);
@@ -184,7 +189,7 @@ const Wishlist = () => {
                         onClick={() => toggleWishlist(item)}
                         disabled={isRemoving}
                         className={cn(
-                          "absolute top-3 right-3 p-2 rounded-full transition-colors z-10",
+                          "absolute top-3 cursor-pointer right-3 p-2 rounded-full transition-colors z-10",
                           isDark
                             ? "bg-white/90 hover:bg-white"
                             : "bg-white/95 hover:bg-white shadow-md",
@@ -236,9 +241,10 @@ const Wishlist = () => {
                           ${Number(product.price).toFixed(2)}
                         </p>
                         <div className="flex gap-2">
-                          <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white cursor-pointer">
-                            <ShoppingCart className="h-4 w-4 mr-2" />
-                            Add to Cart
+                          <Button asChild className="w-full">
+                            <Link href={`/products/${product.id}`}>
+                              View Details
+                            </Link>
                           </Button>
                         </div>
                       </div>
