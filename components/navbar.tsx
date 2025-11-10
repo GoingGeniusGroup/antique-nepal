@@ -81,7 +81,14 @@ export const Navbar = () => {
   // Fetch cart and wishlist counts
   useEffect(() => {
     const fetchCounts = async () => {
-      if (!userId || isAdmin) return;
+      if (!userId || isAdmin) {
+        // Clear counts if no user or admin
+        setCartCount(0);
+        setWishlistCount(0);
+        setShowCartBadge(false);
+        setShowWishlistBadge(false);
+        return;
+      }
 
       try {
         // Fetch cart count
@@ -114,18 +121,21 @@ export const Navbar = () => {
       }
     };
 
-    // Load counts from localStorage immediately for instant display
-    const cachedCartCount = parseInt(localStorage.getItem("cartCount") || "0");
-    const cachedWishlistCount = parseInt(
-      localStorage.getItem("wishlistCount") || "0"
-    );
-    const cartVisited = localStorage.getItem("cartVisited");
-    const wishlistVisited = localStorage.getItem("wishlistVisited");
+    // Only load from cache if user is logged in
+    if (userId && !isAdmin) {
+      // Load counts from localStorage immediately for instant display
+      const cachedCartCount = parseInt(localStorage.getItem("cartCount") || "0");
+      const cachedWishlistCount = parseInt(
+        localStorage.getItem("wishlistCount") || "0"
+      );
+      const cartVisited = localStorage.getItem("cartVisited");
+      const wishlistVisited = localStorage.getItem("wishlistVisited");
 
-    setCartCount(cachedCartCount);
-    setWishlistCount(cachedWishlistCount);
-    setShowCartBadge(cachedCartCount > 0 && cartVisited !== "true");
-    setShowWishlistBadge(cachedWishlistCount > 0 && wishlistVisited !== "true");
+      setCartCount(cachedCartCount);
+      setWishlistCount(cachedWishlistCount);
+      setShowCartBadge(cachedCartCount > 0 && cartVisited !== "true");
+      setShowWishlistBadge(cachedWishlistCount > 0 && wishlistVisited !== "true");
+    }
 
     fetchCounts();
 
@@ -545,6 +555,18 @@ export const Navbar = () => {
         open={showLogoutDialog}
         onOpenChange={setShowLogoutDialog}
         onConfirm={async () => {
+          // Clear cart and wishlist data from localStorage
+          localStorage.removeItem("cartCount");
+          localStorage.removeItem("wishlistCount");
+          localStorage.removeItem("cartVisited");
+          localStorage.removeItem("wishlistVisited");
+          
+          // Reset badge states
+          setCartCount(0);
+          setWishlistCount(0);
+          setShowCartBadge(false);
+          setShowWishlistBadge(false);
+          
           await signOut({ callbackUrl: "/" });
           sessionStorage.removeItem("loginSuccessToastShown");
           toast.success("Logged out successfully!", {

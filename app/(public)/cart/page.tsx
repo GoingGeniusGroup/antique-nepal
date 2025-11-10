@@ -219,8 +219,9 @@ export default function CartPage() {
                     <Button
                       size="lg"
                       className="w-full bg-green-600 hover:bg-green-700 text-white mt-4"
+                      asChild
                     >
-                      Proceed to Checkout
+                      <Link href="/checkout">Proceed to Checkout</Link>
                     </Button>
 
                     <Button
