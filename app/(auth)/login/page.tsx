@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import SigninForm from "@/components/form/signin-form";
-import SideContent from "@/components/from-side-content";
+import SideContent from "@/components/form-side-content";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
@@ -11,7 +11,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] as any }, // cubic-bezier easeOut
+  transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] as any },
 };
 
 const backgroundFade = {
@@ -46,8 +46,7 @@ const LoginPage = () => {
   }, [error]);
 
   return (
-    <div className="overflow-hidden">
-      {/* Theme Toggle */}
+    <div className="overflow-hidden bg-background dark:bg-gray-950 transition-colors duration-300">
       <ThemeToggle variant="fixed" position="right-4 top-4" zIndex={50} />
       <div className="relative flex flex-col md:flex-row w-full h-screen">
         {/* Background Image */}
@@ -70,7 +69,9 @@ const LoginPage = () => {
 
           {/* Right Section */}
           <motion.div
-            className="flex-1 flex items-center justify-center p-8 md:p-16 shadow-xl backdrop-blur-sm bg-linear-to-l from-[#D4BE96]/95 to-[#D4BE96]/30 min-h-full"
+            className="flex-1 flex items-center justify-center p-8 md:p-16 shadow-xl backdrop-blur-sm 
+             bg-linear-to-l from-[#AD8259]/80 to-[#AD8259]/30 
+             dark:from-gray-800/80 dark:to-gray-900/50 min-h-full rounded-2xl transition-colors duration-300"
             {...fadeInUp}
             transition={{ ...fadeInUp.transition, delay: 0.4 }}
           >

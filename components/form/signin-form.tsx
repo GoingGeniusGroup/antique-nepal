@@ -28,7 +28,7 @@ const SigninForm = () => {
 
     if (!email || !password) {
       const newErrors: Record<string, string> = {};
-      if (!email) newErrors.identifier = "Email is required";
+      if (!email) newErrors.email = "Email is required";
       if (!password) newErrors.password = "Password is required";
       setErrors(newErrors);
       return;
@@ -64,7 +64,7 @@ const SigninForm = () => {
     <div className="flex justify-center items-center min-h-screen px-4 py-6 sm:py-8 text-foreground  dark:text-foreground">
       {/* <div> */}
       <div className="w-full max-w-md p-6 sm:p-8 space-y-6">
-        <div className="text-2xl sm:text-3xl text-primary font-bold mb-6">
+        <div className="flex flex-col justify-center items-center text-2xl sm:text-3xl text-primary font-bold mb-6">
           <h1 className="text-4xl font-cinzel font-bold text-primary mb-2">
             welcome back
           </h1>
@@ -87,7 +87,7 @@ const SigninForm = () => {
                 setEmail(e.target.value);
                 setErrors((prev) => {
                   const next = { ...prev };
-                  delete next.identifier;
+                  delete next.email;
                   return next;
                 });
               }}
@@ -119,7 +119,14 @@ const SigninForm = () => {
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErrors((prev) => {
+                  const next = { ...prev };
+                  delete next.password;
+                  return next;
+                });
+              }}
               className={`w-full pr-10 bg-card text-foreground placeholder:text-muted-foreground transition-all ${
                 errors.password
                   ? "border-destructive border-2 focus:border-destructive"
@@ -133,6 +140,9 @@ const SigninForm = () => {
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
+            <p className="text-xs text-destructive mt-1 h-4">
+              {errors.password}{" "}
+            </p>
           </div>
 
           <button

@@ -109,7 +109,7 @@ const SignupForm = () => {
                       : "border-border focus:border-primary"
                   }`}
                 />
-                <p className="text-xs text-destructive mt-1 h-4">
+                <p className="text-xs mt-1 h-4 text-red-700 dark:text-destructive">
                   {errors[field]}
                 </p>
               </div>
@@ -150,7 +150,9 @@ const SignupForm = () => {
                 className="flex-1 bg-card text-foreground placeholder:text-muted-foreground border-border focus:border-primary transition-colors"
               />
             </div>
-            <p className="text-xs text-destructive mt-1 h-4">{errors.phone}</p>
+            <p className="text-xs mt-1 h-4 text-red-700 dark:text-destructive">
+              {errors.phone}
+            </p>
           </div>
 
           {/* Email */}
@@ -170,7 +172,9 @@ const SignupForm = () => {
                   : "border-border focus:border-primary"
               }`}
             />
-            <p className="text-xs text-destructive mt-1 h-4">{errors.email}</p>
+            <p className="text-xs mt-1 h-4 text-red-700 dark:text-destructive">
+              {errors.email}
+            </p>
           </div>
 
           {/* Password */}
@@ -199,7 +203,7 @@ const SignupForm = () => {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            <p className="text-xs text-destructive mt-1 h-4">
+            <p className="text-xs mt-1 h-4 text-red-700 dark:text-destructive">
               {errors.password}
             </p>
           </div>

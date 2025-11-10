@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import SideContent from "@/components/from-side-content";
+import SideContent from "@/components/form-side-content";
 import SignupForm from "@/components/form/signup-form";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -19,10 +19,11 @@ const backgroundFade = {
 
 const RegisterPage = () => {
   return (
-    <div className="overflow-hidden">
+    <div className="relative w-full min-h-screen">
       {/* Theme Toggle */}
       <ThemeToggle variant="fixed" position="right-4 top-4" zIndex={50} />
-      <div className="relative flex flex-col md:flex-row w-full h-screen">
+
+      <div className="relative flex flex-col md:flex-row w-full h-full">
         {/* Background Image */}
         <motion.div
           className="absolute inset-0 bg-cover bg-center"
@@ -30,28 +31,30 @@ const RegisterPage = () => {
           {...backgroundFade}
         />
 
-        {/* Content Container */}
-        <div className="relative z-10 flex flex-1 w-full h-full items-center justify-center">
-          {/* Left Section */}
-          <motion.div
-            className="flex-1 hidden md:flex items-center justify-center p-8 md:p-16 text-white"
-            {...fadeInUp}
-            transition={{ ...fadeInUp.transition, delay: 0.2 }}
-          >
-            <SideContent />
-          </motion.div>
+        {/* Left Section */}
+        <motion.div
+          className="flex-1 hidden md:flex items-center justify-center p-8 md:p-16 text-white"
+          {...fadeInUp}
+          transition={{ ...fadeInUp.transition, delay: 0.2 }}
+        >
+          <SideContent />
+        </motion.div>
 
-          {/* Right Section */}
-          <motion.div
-            className="flex-1 flex items-center justify-center p-8 md:p-16 shadow-xl backdrop-blur-sm bg-linear-to-l from-[#D4BE96]/95 to-[#D4BE96]/30 min-h-full"
-            {...fadeInUp}
-            transition={{ ...fadeInUp.transition, delay: 0.4 }}
-          >
-            <div className="w-full max-w-md md:max-w-lg mt-20">
-              <SignupForm />
-            </div>
-          </motion.div>
-        </div>
+        {/* Right Section */}
+        <motion.div
+          className="flex-1 flex flex-col justify-start items-center p-6 md:p-12 shadow-xl
+                     backdrop-blur-sm
+                     bg-gradient-to-l from-[#AD8259]/80 to-[#AD8259]/30
+                     dark:from-gray-800/80 dark:to-gray-900/50
+                     min-h-full rounded-2xl transition-colors duration-300"
+          {...fadeInUp}
+          transition={{ ...fadeInUp.transition, delay: 0.4 }}
+        >
+          {/* Form Container */}
+          <div className="w-full max-w-md md:max-w-lg">
+            <SignupForm />
+          </div>
+        </motion.div>
       </div>
     </div>
   );
