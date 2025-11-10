@@ -28,6 +28,17 @@ interface Product {
   reviews: ProductReview[];
 }
 
+export interface ProductVariant {
+  id: string;
+  sku: string;
+  name: string;
+  price?: number;
+  color?: string;
+  size?: string;
+  images?: { url: string; altText?: string }[];
+  inventory?: { quantity: number };
+}
+
 interface ProductInfoProps {
   product: Product;
   quantity: number;
@@ -38,6 +49,7 @@ interface ProductInfoProps {
   isAdmin: boolean;
   onAddToCartClick: () => void;
   isAddingToCart: boolean;
+  variants: ProductVariant[];
 }
 
 const calculateAverageRating = (reviews: ProductReview[]) => {
@@ -48,14 +60,13 @@ const calculateAverageRating = (reviews: ProductReview[]) => {
 
 export const ProductInfo = ({
   product,
-  quantity,
-  setQuantity,
   isWishlisted,
   wishlistLoading,
   handleWishlistToggle,
   isAdmin,
   onAddToCartClick,
   isAddingToCart,
+  variants,
 }: ProductInfoProps) => {
   const averageRating = calculateAverageRating(product.reviews);
 
@@ -99,6 +110,9 @@ export const ProductInfo = ({
           <span className="text-4xl font-bold text-primary">
             ₹{Number(product.price).toLocaleString("en-IN")}
           </span>
+          <Badge variant="default" className="px-3 py-1">
+            In Stock
+          </Badge>
         </div>
 
         {product.description && (
@@ -108,32 +122,60 @@ export const ProductInfo = ({
         )}
       </div>
 
+      {variants.length > 0 && (
+        <div>
+          <Separator />
+          <div className="space-y-4 mt-6">
+            <h3 className="text-lg font-semibold tracking-tight">
+              Available Variants ({variants.length})
+            </h3>
+
+            <details className="group">
+              <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground transition">
+                Show all variants
+              </summary>
+
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {variants.map((v) => (
+                  <div
+                    key={v.id}
+                    className="
+              border rounded-xl p-4 
+              hover:shadow-md transition-all duration-200 
+              flex items-center justify-between bg-card
+            "
+                  >
+                    <div className="space-y-1">
+                      <p className="font-medium text-foreground">
+                        {v.name || `${v.color ?? ""} ${v.size ?? ""}`}
+                      </p>
+
+                      {(v.color || v.size) && (
+                        <p className="text-sm text-muted-foreground">
+                          {v.color && <span>Color: {v.color}</span>}
+                          {v.color && v.size && <span> • </span>}
+                          {v.size && <span>Size: {v.size}</span>}
+                        </p>
+                      )}
+                    </div>
+
+                    {v.color && (
+                      <div
+                        className="w-6 h-6 rounded-full border shadow-sm"
+                        style={{ backgroundColor: v.color }}
+                      ></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </details>
+          </div>
+        </div>
+      )}
+
       <Separator />
 
       <div className="space-y-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center border border-border rounded-md">
-            <button
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="px-4 py-2 hover:bg-accent transition-colors"
-              disabled={isAddingToCart}
-            >
-              -
-            </button>
-            <span className="px-6 py-2 border-x border-border">{quantity}</span>
-            <button
-              onClick={() => setQuantity(quantity + 1)}
-              className="px-4 py-2 hover:bg-accent transition-colors"
-              disabled={isAddingToCart}
-            >
-              +
-            </button>
-          </div>
-          <Badge variant="default" className="px-3 py-1">
-            In Stock
-          </Badge>
-        </div>
-
         <div className="flex gap-3">
           {!isAdmin && (
             <>
@@ -141,7 +183,7 @@ export const ProductInfo = ({
                 size="lg"
                 onClick={onAddToCartClick}
                 disabled={isAddingToCart}
-                className="flex-1 text-white bg-green-600 hover:bg-green-700 duration-100 gap-2"
+                className="flex-1 text-white cursor-pointer bg-green-600 hover:bg-green-700 duration-100 gap-2"
               >
                 {isAddingToCart ? (
                   <>

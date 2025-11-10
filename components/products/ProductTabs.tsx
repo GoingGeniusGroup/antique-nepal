@@ -375,11 +375,13 @@ export const ProductTabs = ({
                     </div>
                   ))}
 
-                  <Pagination
-                    currentPage={currentReviewPage}
-                    totalPages={totalReviewPages}
-                    onPageChange={setCurrentReviewPage}
-                  />
+                  {product.reviews.length > pageSize && (
+                    <Pagination
+                      currentPage={currentReviewPage}
+                      totalPages={totalReviewPages}
+                      onPageChange={setCurrentReviewPage}
+                    />
+                  )}
                 </div>
               )}
             </CardContent>
