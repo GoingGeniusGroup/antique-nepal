@@ -70,9 +70,7 @@ const ProductDetailClient = ({
   useEffect(() => {
     const fetchVariants = async () => {
       try {
-        console.log(product.id);
         const res = await fetch(`/api/products/${product.id}/variants`);
-        console.log(res);
 
         if (res.ok) {
           const data = await res.json();
@@ -265,6 +263,7 @@ const ProductDetailClient = ({
               isAdmin={isAdmin}
               onAddToCartClick={handleAddToCartClick}
               isAddingToCart={isAddingToCart}
+              variants={productVariants}
             />
           </div>
 
