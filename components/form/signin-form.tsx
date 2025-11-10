@@ -55,7 +55,7 @@ const SigninForm = () => {
       toast.error(message);
     } else {
       setErrors({});
-      toast.success(res.message ?? "Account created successfully");
+      toast.success(res.message ?? "Logged in successfully");
       router.push("/");
     }
   };
