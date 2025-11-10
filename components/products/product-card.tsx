@@ -10,7 +10,7 @@ import { useTheme } from "@/contexts/theme-context";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
-import type { ProductData } from "@/app/(public)/products/actions/products";
+import type { ProductData } from "@/actions/products";
 import { VariantModal } from "./variant-modal";
 import { useSession } from "next-auth/react";
 

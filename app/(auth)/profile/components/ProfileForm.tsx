@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Camera, Save, X } from "lucide-react";
 import { UserWithRelations } from "./ProfileContent";
-import { updateProfile } from "@/app/actions/auth/updateProfile";
+import { updateProfile } from "@/actions/updateProfile";
 import { toast } from "react-hot-toast";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
