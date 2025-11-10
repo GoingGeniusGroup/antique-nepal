@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getProducts, type ProductData } from "@/actions/products";
+
 import { Spinner } from "@/components/ui/spinner";
 
 const PRODUCTS_PER_PAGE = 8;

@@ -7,7 +7,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { ProductControls } from "@/components/products/product-controls";
 import { ProductGrid } from "@/components/products/product-grid";
 import { Pagination } from "@/components/products/pagination";
-import { getProducts, type ProductData } from "../products/actions/products";
+import { getProducts, type ProductData } from "@/actions/products";
 
 const PRODUCTS_PER_PAGE = 8;
 const MIN_SEARCH_LENGTH = 4;
