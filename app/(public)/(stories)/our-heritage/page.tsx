@@ -72,15 +72,7 @@ export default function Heritage() {
 
             {/* 1950s */}
             <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="relative aspect-video rounded-lg overflow-hidden shadow-elegant md:order-1">
-                <Image
-                  src={workshop}
-                  alt="Traditional workshop"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="space-y-6 md:order-0">
+              <div className="space-y-6 md:order-2">
                 <Badge variant="outline">1950s</Badge>
                 <h2 className="font-serif text-4xl font-bold text-foreground">
                   Family Tradition
@@ -92,6 +84,16 @@ export default function Heritage() {
                   patterns.
                 </p>
               </div>
+
+              <div className="relative aspect-video rounded-lg overflow-hidden shadow-elegant md:order-1">
+                <Image
+                  src={workshop}
+                  alt="Traditional workshop"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              
             </div>
 
             {/* Today */}
