@@ -254,11 +254,13 @@ const Wishlist = () => {
               </div>
 
               {/* Pagination */}
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={(page) => setCurrentPage(page)}
-              />
+              {items.length > ITEMS_PER_PAGE && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page) => setCurrentPage(page)}
+                />
+              )}
             </>
           )}
         </div>
