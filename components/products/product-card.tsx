@@ -41,7 +41,7 @@ export function ProductCard({
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
   const { data: session } = useSession();
-  const userRole = (session?.user as any)?.role;
+  const userRole = (session?.user as { role?: string })?.role;
   const isAdmin = userRole === "ADMIN";
   const [loading, setLoading] = useState(false);
   const [showVariantModal, setShowVariantModal] = useState(false);
@@ -117,11 +117,11 @@ export function ProductCard({
       }
 
       // Instantly update count in localStorage
-      const currentCount = parseInt(localStorage.getItem('cartCount') || '0');
-      localStorage.setItem('cartCount', (currentCount + 1).toString());
-      localStorage.removeItem('cartVisited'); // Reset badge
-      window.dispatchEvent(new Event('storage')); // Trigger navbar update
-      
+      const currentCount = parseInt(localStorage.getItem("cartCount") || "0");
+      localStorage.setItem("cartCount", (currentCount + 1).toString());
+      localStorage.removeItem("cartVisited"); // Reset badge
+      window.dispatchEvent(new Event("storage")); // Trigger navbar update
+
       toast.success("Added to cart!");
     } catch (error) {
       console.error("[v0] Error adding to cart:", error);

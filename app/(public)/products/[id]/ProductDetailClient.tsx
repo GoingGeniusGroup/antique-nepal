@@ -9,12 +9,22 @@ import { ProductImageGallery } from "@/components/products/ProductImageGallery";
 import { ProductInfo } from "@/components/products/ProductInfo";
 import { ProductTabs } from "@/components/products/ProductTabs";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { VariantModal } from "@/components/products/variant-modal";
 import toast from "react-hot-toast";
 import type { Product } from "@/lib/product";
 
 interface Wishlist {
   id: string;
   items: { id: string; product: { id: string } }[];
+}
+
+interface ProductVariant {
+  id: string;
+  name: string;
+  sku: string;
+  price?: number;
+  color?: string;
+  size?: string;
 }
 
 const ProductDetailClient = ({
@@ -29,6 +39,9 @@ const ProductDetailClient = ({
   const [product, setProduct] = useState(initialProduct);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
+  const [showVariantModal, setShowVariantModal] = useState(false);
+  const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
@@ -54,6 +67,24 @@ const ProductDetailClient = ({
     fetchWishlist();
   }, [product.id, userId, isAdmin]);
 
+  useEffect(() => {
+    const fetchVariants = async () => {
+      try {
+        console.log(product.id);
+        const res = await fetch(`/api/products/${product.id}/variants`);
+        console.log(res);
+
+        if (res.ok) {
+          const data = await res.json();
+          setProductVariants(data.variants || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch variants", err);
+      }
+    };
+    fetchVariants();
+  }, [product.id]);
+
   // Wishlist toggle
   const handleWishlistToggle = async () => {
     if (!userId) {
@@ -73,7 +104,7 @@ const ProductDetailClient = ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId, productId: product.id }),
         });
-        const currentCount = parseInt(
+        const currentCount = Number.parseInt(
           localStorage.getItem("wishlistCount") || "0"
         );
         localStorage.setItem("wishlistCount", (currentCount + 1).toString());
@@ -93,7 +124,7 @@ const ProductDetailClient = ({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ wishlistItemId: item.id }),
           });
-          const currentCount = parseInt(
+          const currentCount = Number.parseInt(
             localStorage.getItem("wishlistCount") || "0"
           );
           localStorage.setItem(
@@ -139,6 +170,65 @@ const ProductDetailClient = ({
     }
   };
 
+  const handleAddToCartClick = () => {
+    if (!userId) {
+      toast.error("You must be signed in to add items to cart.");
+      return;
+    }
+
+    if (isAdmin) {
+      toast.error("Admin users cannot add to cart.");
+      return;
+    }
+
+    if (productVariants.length > 0) {
+      setShowVariantModal(true);
+    } else {
+      toast.error("No variants available for this product.");
+    }
+  };
+
+  const handleAddToCart = async (variantId: string, qty: number) => {
+    if (!userId) {
+      toast.error("Please sign in to add items to cart");
+      return;
+    }
+
+    try {
+      setIsAddingToCart(true);
+      const res = await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          productVariantId: variantId,
+          quantity: qty,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to add to cart");
+      }
+
+      // Update cart count in localStorage
+      const currentCount = Number.parseInt(
+        localStorage.getItem("cartCount") || "0"
+      );
+      localStorage.setItem("cartCount", (currentCount + 1).toString());
+      localStorage.removeItem("cartVisited");
+      window.dispatchEvent(new Event("storage"));
+
+      toast.success("Added to cart!");
+      setQuantity(1);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Failed to add to cart");
+      throw error;
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background pt-16">
       <section className="py-12">
@@ -173,6 +263,8 @@ const ProductDetailClient = ({
               wishlistLoading={wishlistLoading}
               handleWishlistToggle={handleWishlistToggle}
               isAdmin={isAdmin}
+              onAddToCartClick={handleAddToCartClick}
+              isAddingToCart={isAddingToCart}
             />
           </div>
 
@@ -196,6 +288,15 @@ const ProductDetailClient = ({
         confirmText="Delete"
         cancelText="Cancel"
         variant="destructive"
+      />
+
+      <VariantModal
+        isOpen={showVariantModal}
+        onClose={() => setShowVariantModal(false)}
+        productName={product.name}
+        variants={productVariants}
+        basePrice={product.price}
+        onAddToCart={handleAddToCart}
       />
     </div>
   );
