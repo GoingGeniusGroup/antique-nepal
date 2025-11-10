@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ProductCard } from "./product-card";
-import type { ProductData } from "@/app/(public)/products/actions/products";
+import type { ProductData } from "@/actions/products";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 

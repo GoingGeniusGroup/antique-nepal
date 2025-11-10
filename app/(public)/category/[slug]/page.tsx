@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 
-import { ProductData } from "@/app/(public)/products/actions/products";
+import { ProductData } from "@/actions/products";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProductControls } from "@/components/products/product-controls";
 import { ProductGrid } from "@/components/products/product-grid";

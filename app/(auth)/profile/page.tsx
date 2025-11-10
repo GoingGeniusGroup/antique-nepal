@@ -28,6 +28,13 @@ export default async function ProfilePage() {
               },
             },
           },
+          payments: {
+            select: {
+              paymentMethod: true,
+              status: true,
+            },
+            take: 1,
+          },
         },
         orderBy: { createdAt: "desc" },
       },

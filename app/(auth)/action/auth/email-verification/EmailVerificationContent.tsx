@@ -1,6 +1,6 @@
 'use client';
 
-import { verifyEmail } from '@/app/actions/auth/email-verification';
+import { verifyEmail } from '@/actions/email-verification';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
