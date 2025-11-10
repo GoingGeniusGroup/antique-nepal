@@ -9,6 +9,7 @@ import {
   viewportConfig,
   fadeInUp,
 } from "./landing-utils";
+import Link from "next/link";
 
 export const CallToAction = () => {
   return (
@@ -36,14 +37,16 @@ export const CallToAction = () => {
               whileTap={{ scale: 0.95 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              <Button
-                size="lg"
-                variant="secondary"
-                className="text-lg px-10 py-6 font-inter shadow-medium hover:shadow-soft transition-all"
-              >
-                <ShoppingBag className="mr-2 h-5 w-5" />
-                Shop Now
-              </Button>
+              <Link href="/products">
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="text-lg px-10 py-6 font-inter shadow-medium hover:shadow-soft transition-all"
+                >
+                  <ShoppingBag className="mr-2 h-5 w-5" />
+                  Shop Now
+                </Button>
+              </Link>
             </motion.div>
           </motion.div>
 

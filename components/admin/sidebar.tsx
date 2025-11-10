@@ -23,6 +23,7 @@ import {
   Share2,
   Bell,
   List,
+  ShoppingBag,
 } from "lucide-react";
 import { Sidebar, SidebarBody } from "@/components/ui/sidebar";
 import { motion } from "framer-motion";
@@ -72,6 +73,11 @@ const LINKS: NavLink[] = [
     href: "/admin/orders",
     label: "Orders",
     icon: <ShoppingCart className="text-white h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    href: "/admin/categories",
+    label: "Category",
+    icon: <ShoppingBag className="text-white h-5 w-5 flex-shrink-0" />,
   },
   {
     href: "/admin/products",
@@ -197,15 +203,15 @@ export function AdminSidebar({
   useEffect(() => {
     if (pathname.startsWith("/admin/settings")) {
       const toExpand = ["/admin/settings"];
-      
+
       // Also expand footer if on a footer subpage
       if (pathname.startsWith("/admin/settings/footer/")) {
         toExpand.push("/admin/settings/footer");
       }
-      
+
       setExpandedLinks((prev) => {
         const newLinks = [...prev];
-        toExpand.forEach(link => {
+        toExpand.forEach((link) => {
           if (!newLinks.includes(link)) {
             newLinks.push(link);
           }
@@ -257,7 +263,7 @@ export function AdminSidebar({
                   className="object-contain"
                 />
               </div>
-              
+
               {/* Brand Name */}
               <motion.div
                 animate={{
@@ -314,7 +320,9 @@ export function AdminSidebar({
                         {open && (
                           <motion.div
                             animate={{
-                              rotate: expandedLinks.includes(link.href) ? 180 : 0,
+                              rotate: expandedLinks.includes(link.href)
+                                ? 180
+                                : 0,
                             }}
                             transition={{ duration: 0.3 }}
                           >
@@ -325,8 +333,12 @@ export function AdminSidebar({
                       <motion.div
                         initial={false}
                         animate={{
-                          height: expandedLinks.includes(link.href) && open ? "auto" : 0,
-                          opacity: expandedLinks.includes(link.href) && open ? 1 : 0,
+                          height:
+                            expandedLinks.includes(link.href) && open
+                              ? "auto"
+                              : 0,
+                          opacity:
+                            expandedLinks.includes(link.href) && open ? 1 : 0,
                         }}
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         className="overflow-hidden"
@@ -340,7 +352,9 @@ export function AdminSidebar({
                                     onClick={() => {
                                       setExpandedLinks((prev) =>
                                         prev.includes(subLink.href)
-                                          ? prev.filter((l) => l !== subLink.href)
+                                          ? prev.filter(
+                                              (l) => l !== subLink.href
+                                            )
                                           : [...prev, subLink.href]
                                       );
                                     }}
@@ -355,30 +369,34 @@ export function AdminSidebar({
                                       {subLink.icon}
                                       <span>{subLink.label}</span>
                                     </div>
-                                    <ChevronDown 
+                                    <ChevronDown
                                       className={cn(
                                         "h-3 w-3 transition-transform duration-200",
-                                        expandedLinks.includes(subLink.href) ? "rotate-180" : ""
+                                        expandedLinks.includes(subLink.href)
+                                          ? "rotate-180"
+                                          : ""
                                       )}
                                     />
                                   </button>
                                   {expandedLinks.includes(subLink.href) && (
                                     <div className="ml-4 mt-1 space-y-1">
-                                      {subLink.subLinks.map((nestedLink, nestedIdx) => (
-                                        <Link
-                                          key={nestedIdx}
-                                          href={nestedLink.href}
-                                          className={cn(
-                                            "flex items-center gap-2 py-1.5 px-3 rounded-md transition-all duration-200 text-white text-xs",
-                                            pathname === nestedLink.href
-                                              ? "bg-gray-500 dark:bg-gray-600"
-                                              : "hover:bg-gray-700/20 dark:hover:bg-gray-800/20"
-                                          )}
-                                        >
-                                          {nestedLink.icon}
-                                          <span>{nestedLink.label}</span>
-                                        </Link>
-                                      ))}
+                                      {subLink.subLinks.map(
+                                        (nestedLink, nestedIdx) => (
+                                          <Link
+                                            key={nestedIdx}
+                                            href={nestedLink.href}
+                                            className={cn(
+                                              "flex items-center gap-2 py-1.5 px-3 rounded-md transition-all duration-200 text-white text-xs",
+                                              pathname === nestedLink.href
+                                                ? "bg-gray-500 dark:bg-gray-600"
+                                                : "hover:bg-gray-700/20 dark:hover:bg-gray-800/20"
+                                            )}
+                                          >
+                                            {nestedLink.icon}
+                                            <span>{nestedLink.label}</span>
+                                          </Link>
+                                        )
+                                      )}
                                     </div>
                                   )}
                                 </>
@@ -459,7 +477,7 @@ export function AdminSidebar({
           </div>
         </SidebarBody>
       </Sidebar>
-      
+
       <ConfirmationDialog
         open={showLogoutDialog}
         onOpenChange={setShowLogoutDialog}
