@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,10 +8,11 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ShoppingBag, MapPin, CreditCard, Truck } from "lucide-react";
+import { ShoppingBag, MapPin, CreditCard, Truck, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { createOrder } from "@/actions/checkout";
+import { createOrder, getCart, getUserAddresses } from "@/actions/checkout";
+import { useSession } from "next-auth/react";
 
 interface CartItem {
   id: string;
@@ -36,19 +37,53 @@ interface Address {
   isDefault: boolean;
 }
 
-interface CheckoutClientProps {
-  cartItems: CartItem[];
-  addresses: Address[];
-}
-
-export default function CheckoutClient({ cartItems, addresses }: CheckoutClientProps) {
+export default function CheckoutClient() {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [addresses, setAddresses] = useState<Address[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const [selectedAddressId, setSelectedAddressId] = useState<string>(
-    addresses.find((a) => a.isDefault)?.id || addresses[0]?.id || ""
-  );
+  const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
   const [orderNote, setOrderNote] = useState("");
+
+  // Fetch data on client side for instant page load
+  useEffect(() => {
+    const fetchData = async () => {
+      if (status === "loading") return;
+      
+      if (!session?.user?.id) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        const [cartResult, addressesResult] = await Promise.all([
+          getCart(),
+          getUserAddresses(),
+        ]);
+
+        if (cartResult.success && cartResult.items) {
+          setCartItems(cartResult.items);
+        }
+
+        if (addressesResult.success && addressesResult.addresses) {
+          setAddresses(addressesResult.addresses);
+          const defaultAddr = addressesResult.addresses.find((a) => a.isDefault);
+          const firstAddr = addressesResult.addresses[0];
+          setSelectedAddressId(defaultAddr?.id || firstAddr?.id || "");
+        }
+      } catch (error) {
+        console.error("Failed to fetch checkout data:", error);
+        toast.error("Failed to load checkout data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [session, status, router]);
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal > 100 ? 0 : 10;
@@ -96,6 +131,20 @@ export default function CheckoutClient({ cartItems, addresses }: CheckoutClientP
       setSubmitting(false);
     }
   };
+
+  // Show loading state
+  if (loading || status === "loading") {
+    return (
+      <div className="min-h-screen pt-24 pb-16 bg-background">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground">Loading checkout...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (

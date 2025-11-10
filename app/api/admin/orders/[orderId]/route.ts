@@ -175,9 +175,22 @@ export async function DELETE(
       );
     }
 
-    // Delete order (will cascade delete order items and payments)
-    await prisma.order.delete({
-      where: { id: orderId },
+    // Delete in transaction to ensure all related records are removed
+    await prisma.$transaction(async (tx) => {
+      // 1. Delete all payments associated with this order
+      await tx.payment.deleteMany({
+        where: { orderId: orderId },
+      });
+
+      // 2. Delete all order items (should cascade but explicit for safety)
+      await tx.orderItem.deleteMany({
+        where: { orderId: orderId },
+      });
+
+      // 3. Finally delete the order itself
+      await tx.order.delete({
+        where: { id: orderId },
+      });
     });
 
     console.log("Order deleted successfully:", orderId);
