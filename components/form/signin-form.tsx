@@ -55,7 +55,7 @@ const SigninForm = () => {
       toast.error(message);
     } else {
       setErrors({});
-      // AuthSuccessHandler will show the success toast
+      toast.success(res.message ?? "Account created successfully");
       router.push("/");
     }
   };

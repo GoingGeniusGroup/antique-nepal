@@ -46,7 +46,6 @@ const SignupForm = () => {
 
     try {
       const form = new FormData(e.currentTarget);
-      // Ensure countryCode is sent as prefix
       form.set("countryCode", formData.countryCode);
 
       const result = await registerUser(form);
@@ -54,7 +53,6 @@ const SignupForm = () => {
       setLoading(false);
 
       if (!result.success) {
-        // If server returns field-specific validation errors from Zod
         if (result.errors) {
           setErrors(result.errors);
         } else {
