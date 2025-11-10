@@ -377,9 +377,12 @@ const Cart = ({ userId }: { userId: string }) => {
                     <Button
                       className="w-full bg-green-600 text-white hover:bg-green-700 cursor-pointer"
                       size="lg"
+                      asChild
                     >
-                      <ShoppingBag className="h-5 w-5 mr-2" /> Proceed to
-                      Checkout
+                      <Link href="/checkout">
+                        <ShoppingBag className="h-5 w-5 mr-2" /> Proceed to
+                        Checkout
+                      </Link>
                     </Button>
                     <Button variant="outline" className="w-full" asChild>
                       <Link href="/products">Continue Shopping</Link>

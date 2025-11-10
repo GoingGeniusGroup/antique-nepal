@@ -32,6 +32,12 @@ export async function GET(req: Request) {
         paymentStatus: true,
         createdAt: true,
         user: { select: { email: true } },
+        payments: { 
+          select: { 
+            paymentMethod: true 
+          },
+          take: 1 
+        },
       },
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -42,6 +48,7 @@ export async function GET(req: Request) {
     ...o,
     total: (o.total as unknown as Prisma.Decimal).toString(),
     createdAt: o.createdAt,
+    paymentMethod: o.payments[0]?.paymentMethod || "N/A",
   }));
 
   return NextResponse.json({ page, pageSize, total, data: safe });

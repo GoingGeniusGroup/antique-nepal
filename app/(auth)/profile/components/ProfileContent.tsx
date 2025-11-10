@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
 import { Mail, Phone } from "lucide-react";
@@ -30,7 +31,6 @@ import {
   MapPin,
   Calendar,
   ShoppingBag,
-  TrendingUp,
   CheckCircle2,
   Truck,
   Clock,
@@ -39,6 +39,8 @@ import {
   LogOut,
   Shield,
   CreditCard,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 // Define the type for the user with relations
@@ -49,6 +51,7 @@ export type UserWithRelations = PrismaUser & {
         product: Product & { images: ProductImage[] };
       };
     })[];
+    payments?: { paymentMethod: string; status: string }[];
   })[];
   addresses?: Address[];
 };
@@ -70,11 +73,21 @@ const getStatusBadge = (status: string) => {
           {status}
         </Badge>
       );
-    case "CONFIRMED":
+    case "PROCESSING":
       return (
         <Badge
           variant="outline"
           className="flex items-center gap-2 border-blue-400 text-blue-400"
+        >
+          <Package className="w-3 h-3" />
+          {status}
+        </Badge>
+      );
+    case "CONFIRMED":
+      return (
+        <Badge
+          variant="outline"
+          className="flex items-center gap-2 border-blue-500 text-blue-500"
         >
           <CheckCircle2 className="w-3 h-3" />
           {status}
@@ -96,7 +109,27 @@ const getStatusBadge = (status: string) => {
           variant="outline"
           className="flex items-center gap-2 border-green-400 text-green-400"
         >
-          <Package className="w-3 h-3" />
+          <CheckCircle2 className="w-3 h-3" />
+          {status}
+        </Badge>
+      );
+    case "CANCELLED":
+      return (
+        <Badge
+          variant="outline"
+          className="flex items-center gap-2 border-red-400 text-red-400"
+        >
+          <span className="w-3 h-3">✕</span>
+          {status}
+        </Badge>
+      );
+    case "REFUNDED":
+      return (
+        <Badge
+          variant="outline"
+          className="flex items-center gap-2 border-orange-400 text-orange-400"
+        >
+          <span className="w-3 h-3">↺</span>
           {status}
         </Badge>
       );
@@ -106,14 +139,17 @@ const getStatusBadge = (status: string) => {
 };
 
 export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
-  console.log("User data:", user);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ORDERS_PER_PAGE = 5;
+  
   const recentOrders = user.orders || [];
   const savedAddresses = user.addresses || [];
-  const totalSpent =
-    recentOrders.reduce(
-      (acc, order) => acc + parseFloat(order.total.toString()),
-      0
-    ) || 0;
+  
+  const totalPages = Math.ceil(recentOrders.length / ORDERS_PER_PAGE);
+  const paginatedOrders = recentOrders.slice(
+    (currentPage - 1) * ORDERS_PER_PAGE,
+    currentPage * ORDERS_PER_PAGE
+  );
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -188,49 +224,26 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
       {/* Stats Overview */}
       <section className="pb-8 px-4">
         <div className="container">
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="border-border/50 hover:shadow-elegant transition-all">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">
-                      Total Orders
-                    </p>
-                    <h3 className="text-3xl font-bold">
-                      {recentOrders.length}
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Lifetime purchases
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <ShoppingBag className="w-6 h-6 text-primary" />
-                  </div>
+          <Card className="border-border/50 hover:shadow-elegant transition-all max-w-md">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">
+                    Total Orders
+                  </p>
+                  <h3 className="text-3xl font-bold">
+                    {recentOrders.length}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Lifetime purchases
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border/50 hover:shadow-elegant transition-all">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">
-                      Total Spent
-                    </p>
-                    <h3 className="text-3xl font-bold">
-                      NPR {totalSpent.toLocaleString()}
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      All-time value
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-primary" />
-                  </div>
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <ShoppingBag className="w-6 h-6 text-primary" />
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
@@ -253,7 +266,7 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                   <CardDescription>View and track your orders</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {recentOrders.map((order) => (
+                  {paginatedOrders.map((order) => (
                     <div key={order.id} className="space-y-4">
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4">
                         <div className="space-y-2">
@@ -275,10 +288,19 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                             )}
                           </p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right space-y-2">
                           <p className="text-2xl font-bold text-primary">
-                            NPR {order.total.toLocaleString()}
+                            ${parseFloat(order.total.toString()).toFixed(2)}
                           </p>
+                          {order.payments && order.payments.length > 0 && (
+                            <div className="text-xs text-muted-foreground">
+                              <Badge variant="outline" className="text-xs">
+                                {order.payments[0].paymentMethod === "COD" 
+                                  ? "Cash on Delivery" 
+                                  : order.payments[0].paymentMethod}
+                              </Badge>
+                            </div>
+                          )}
                           <Link href={`/profile/${order.id}`}>
                             <Button
                               variant="outline"
@@ -296,6 +318,33 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                       <Separator />
                     </div>
                   ))}
+                  
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 pt-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                      </Button>
+                      <span className="text-sm text-muted-foreground px-4">
+                        Page {currentPage} of {totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -333,7 +382,11 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                             </div>
                             <div>
                               <h4 className="font-semibold text-lg">
-                                {address.type}
+                                {address.type === "BOTH" 
+                                  ? "Shipping & Billing Address" 
+                                  : address.type === "SHIPPING" 
+                                  ? "Shipping Address" 
+                                  : "Billing Address"}
                               </h4>
                               {address.isDefault && (
                                 <Badge variant="secondary" className="mt-1">
