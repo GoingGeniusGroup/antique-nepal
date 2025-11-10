@@ -123,7 +123,8 @@ const ProductsPage = () => {
 
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
-                <p className="text-gray-600 dark:text-white">
+                <Spinner className="h-10 w-10 mr-2 text-primary" />
+                <p className="text-gray-600 dark:text-gray-200 text-lg font-medium">
                   Loading products...
                 </p>
               </div>

@@ -63,18 +63,18 @@ export default function CategoryPage() {
 
   const columns: HeroColumn<Row>[] = [
     {
-        key: "image",
-        label: "Image",
-        render: (r) => (
-            <div className="w-16 h-16 relative">
-            <Image
-                src={r.image || "/product_placeholder.jpeg"}
-                alt={r.name}
-                fill
-                className="object-cover rounded-md"
-            />
-            </div>
-        ),
+      key: "image",
+      label: "Image",
+      render: (r) => (
+        <div className="w-16 h-16 relative">
+          <Image
+            src={r.image || "/product_placeholder.jpeg"}
+            alt={r.name}
+            fill
+            className="object-cover rounded-md"
+          />
+        </div>
+      ),
     },
     {
       key: "name",
@@ -94,7 +94,7 @@ export default function CategoryPage() {
       render: (r) => r.description || "—",
     },
     {
-      key: "_count.products",
+      key: "_count",
       label: "Products",
       sortable: true,
       render: (r) => <Badge variant="outline">{r._count.products}</Badge>,
