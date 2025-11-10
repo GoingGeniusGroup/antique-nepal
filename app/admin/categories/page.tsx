@@ -94,7 +94,7 @@ export default function CategoryPage() {
       render: (r) => r.description || "—",
     },
     {
-      key: "_count.products",
+      key: "_count",
       label: "Products",
       sortable: true,
       render: (r) => <Badge variant="outline">{r._count.products}</Badge>,

@@ -1,4 +1,4 @@
-import { getProductById } from "../actions/products";
+import { getProductById } from "@/actions/products";
 import ProductDetailClient from "./ProductDetailClient";
 
 export default async function ProductPage({
