@@ -27,7 +27,7 @@ const RegisterPage = () => {
         {/* Background Image */}
         <motion.div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/hemp-field.png')" }}
+          style={{ backgroundImage: "url('/hemp-field.webp')" }}
           {...backgroundFade}
         />
 
