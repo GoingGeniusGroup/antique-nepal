@@ -11,13 +11,14 @@ import { getProducts, type ProductData } from "@/actions/products";
 import { Spinner } from "@/components/ui/spinner";
 
 const PRODUCTS_PER_PAGE = 8;
+const MIN_SEARCH_LENGTH = 3;
 
 const ProductsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery); // debounce state
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   const [products, setProducts] = useState<ProductData[]>([]);
@@ -25,21 +26,34 @@ const ProductsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Debounce search query
+  // Keep a copy of initial products
+  const [initialProducts, setInitialProducts] = useState<ProductData[]>([]);
+  const [initialTotalPages, setInitialTotalPages] = useState(0);
+
+  // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
-      setCurrentPage(1); // reset page when search changes
-    }, 300); // 300ms debounce
+      setCurrentPage(1);
+    }, 300);
+
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
   const fetchProducts = useCallback(async () => {
+    const isInitialLoad = debouncedSearchQuery === "" && !selectedCategory;
+    const isSearchActive =
+      debouncedSearchQuery.length >= MIN_SEARCH_LENGTH || selectedCategory;
+
+    // If not initial load, and search query < MIN_SEARCH_LENGTH, do nothing
+    if (!isInitialLoad && !isSearchActive) return;
+
     setIsLoading(true);
     setError(null);
+
     try {
       const result = await getProducts({
-        searchQuery: debouncedSearchQuery,
+        searchQuery: isSearchActive ? debouncedSearchQuery : "",
         selectedCategory,
         inStockOnly,
         sortBy,
@@ -49,9 +63,15 @@ const ProductsPage = () => {
 
       setProducts(result.products);
       setTotalPages(result.totalPages);
+
+      // Save initial products on first load
+      if (isInitialLoad && currentPage === 1) {
+        setInitialProducts(result.products);
+        setInitialTotalPages(result.totalPages);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load products");
-      console.error("[v0] Error loading products:", err);
+      console.error("[ProductsPage] Error loading products:", err);
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +83,6 @@ const ProductsPage = () => {
     currentPage,
   ]);
 
-  // Fetch products whenever dependencies change
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
@@ -87,88 +106,110 @@ const ProductsPage = () => {
     setSearchQuery(query);
   };
 
+  const isTypingShortQuery =
+    searchQuery.length > 0 && searchQuery.length < MIN_SEARCH_LENGTH;
+
+  // Show initial products if search query is too short
+  const productsToDisplay =
+    isTypingShortQuery && initialProducts.length > 0
+      ? initialProducts
+      : products;
+  const totalPagesToDisplay =
+    isTypingShortQuery && initialProducts.length > 0
+      ? initialTotalPages
+      : totalPages;
+
   return (
-    <>
-      <main className="pt-16 md:pt-20 min-h-screen bg-[#f7f5f2] dark:bg-[#0a0a0a] relative">
-        <ThemeToggle
-          variant="fixed"
-          position="right-4 md:right-8 top-24 md:top-28"
-          animationType="scale"
-          animationDelay={0.3}
-          zIndex={30}
-        />
+    <main className="pt-16 md:pt-20 min-h-screen bg-[#f7f5f2] dark:bg-[#0a0a0a] relative">
+      <ThemeToggle
+        variant="fixed"
+        position="right-4 md:right-8 top-24 md:top-28"
+        animationType="scale"
+        animationDelay={0.3}
+        zIndex={30}
+      />
 
-        <ProductsBannerSection
-          title="Our Hemp Collection"
-          subtitle="Discover handcrafted accessories made from sustainable hemp fiber by skilled artisans in the Himalayan foothills."
-        />
+      <ProductsBannerSection
+        title="Our Hemp Collection"
+        subtitle="Discover handcrafted accessories made from sustainable hemp fiber by skilled artisans in the Himalayan foothills."
+      />
 
-        <div className="flex flex-col gap-8 p-6 mx-3 lg:mx-16 md:p-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col gap-4"
-          >
-            <h1 className="text-4xl font-bold font-inter text-[#2d2520] dark:text-white">
-              PRODUCTS
-            </h1>
+      <div className="flex flex-col gap-8 p-6 mx-3 lg:mx-16 md:p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col gap-4"
+        >
+          <h1 className="text-4xl font-bold font-inter text-[#2d2520] dark:text-white">
+            PRODUCTS
+          </h1>
 
-            <ProductControls
-              selectedCategory={selectedCategory}
-              onCategoryChange={handleCategoryChange}
-              inStockOnly={inStockOnly}
-              onInStockChange={handleInStockChange}
-              sortBy={sortBy}
-              onSortChange={handleSortChange}
-              searchQuery={searchQuery}
-              onSearchChange={handleSearchChange}
-            />
-          </motion.div>
+          <ProductControls
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+            inStockOnly={inStockOnly}
+            onInStockChange={handleInStockChange}
+            sortBy={sortBy}
+            onSortChange={handleSortChange}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+          />
 
-          {/* Products Section */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex-1"
-          >
-            {error && (
-              <div className="p-4 mb-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-lg">
-                {error}
-              </div>
-            )}
+          {isTypingShortQuery && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-3 py-2 rounded-lg border border-amber-200 dark:border-amber-800"
+            >
+              Continue typing... Search will begin after{" "}
+              {MIN_SEARCH_LENGTH - searchQuery.length} more character(s)
+            </motion.div>
+          )}
+        </motion.div>
 
-            {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Spinner className="h-10 w-10 mr-2 text-primary" />
-                <p className="text-gray-600 dark:text-gray-200 text-lg font-medium">
-                  Loading products...
-                </p>
-              </div>
-            ) : (
-              <>
-                <ProductGrid
-                  products={products}
-                  productVariants={products.reduce((acc, p) => {
-                    acc[p.id] = p.variants;
-                    return acc;
-                  }, {} as Record<string, (typeof products)[0]["variants"]>)}
+        {/* Products Section */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="flex-1"
+        >
+          {error && (
+            <div className="p-4 mb-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-lg">
+              {error}
+            </div>
+          )}
+
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Spinner className="h-10 w-10 mr-2 text-primary" />
+              <p className="text-gray-600 dark:text-gray-200 text-lg font-medium">
+                Loading products...
+              </p>
+            </div>
+          ) : (
+            <>
+              <ProductGrid
+                products={productsToDisplay}
+                productVariants={productsToDisplay.reduce((acc, p) => {
+                  acc[p.id] = p.variants;
+                  return acc;
+                }, {} as Record<string, (typeof productsToDisplay)[0]["variants"]>)}
+              />
+
+              {totalPagesToDisplay > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPagesToDisplay}
+                  onPageChange={setCurrentPage}
                 />
-
-                {totalPages > 1 && (
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                  />
-                )}
-              </>
-            )}
-          </motion.div>
-        </div>
-      </main>
-    </>
+              )}
+            </>
+          )}
+        </motion.div>
+      </div>
+    </main>
   );
 };
 
