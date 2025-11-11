@@ -4,11 +4,10 @@ import { Pagination } from "@/components/products/pagination";
 import { ProductControls } from "@/components/products/product-controls";
 import { ProductGrid } from "@/components/products/product-grid";
 import ProductsBannerSection from "@/components/products/ProductsBannerSection";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getProducts, type ProductData } from "@/actions/products";
-import { Spinner } from "@/components/ui/spinner";
 
 const PRODUCTS_PER_PAGE = 8;
 const MIN_SEARCH_LENGTH = 3;
@@ -26,9 +25,16 @@ const ProductsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Keep a copy of initial products
-  const [initialProducts, setInitialProducts] = useState<ProductData[]>([]);
-  const [initialTotalPages, setInitialTotalPages] = useState(0);
+  // Track initial products per category for short query fallback
+  const [initialProducts, setInitialProducts] = useState<
+    Record<string, ProductData[]>
+  >({});
+  const [initialTotalPages, setInitialTotalPages] = useState<
+    Record<string, number>
+  >({});
+
+  // Track latest request to avoid race conditions
+  const latestRequest = useRef(0);
 
   // Debounce search input
   useEffect(() => {
@@ -40,12 +46,14 @@ const ProductsPage = () => {
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
+  // Fetch products safely
   const fetchProducts = useCallback(async () => {
+    const requestId = ++latestRequest.current;
+
     const isInitialLoad = debouncedSearchQuery === "" && !selectedCategory;
     const isSearchActive =
       debouncedSearchQuery.length >= MIN_SEARCH_LENGTH || selectedCategory;
 
-    // If not initial load, and search query < MIN_SEARCH_LENGTH, do nothing
     if (!isInitialLoad && !isSearchActive) return;
 
     setIsLoading(true);
@@ -61,19 +69,32 @@ const ProductsPage = () => {
         perPage: PRODUCTS_PER_PAGE,
       });
 
-      setProducts(result.products);
-      setTotalPages(result.totalPages);
+      if (requestId === latestRequest.current) {
+        setProducts(result.products);
+        setTotalPages(result.totalPages);
 
-      // Save initial products on first load
-      if (isInitialLoad && currentPage === 1) {
-        setInitialProducts(result.products);
-        setInitialTotalPages(result.totalPages);
+        // Save initial products per category for short query fallback
+        if (isInitialLoad && currentPage === 1) {
+          const categoryKey = selectedCategory || "all";
+          setInitialProducts((prev) => ({
+            ...prev,
+            [categoryKey]: result.products,
+          }));
+          setInitialTotalPages((prev) => ({
+            ...prev,
+            [categoryKey]: result.totalPages,
+          }));
+        }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load products");
+      if (requestId === latestRequest.current) {
+        setError(
+          err instanceof Error ? err.message : "Failed to load products"
+        );
+      }
       console.error("[ProductsPage] Error loading products:", err);
     } finally {
-      setIsLoading(false);
+      if (requestId === latestRequest.current) setIsLoading(false);
     }
   }, [
     debouncedSearchQuery,
@@ -87,6 +108,7 @@ const ProductsPage = () => {
     fetchProducts();
   }, [fetchProducts]);
 
+  // Handlers
   const handleCategoryChange = (category: string | null) => {
     setSelectedCategory(category);
     setCurrentPage(1);
@@ -106,18 +128,28 @@ const ProductsPage = () => {
     setSearchQuery(query);
   };
 
+  // Short query fallback logic
+  const categoryKey = selectedCategory || "all";
   const isTypingShortQuery =
     searchQuery.length > 0 && searchQuery.length < MIN_SEARCH_LENGTH;
 
-  // Show initial products if search query is too short
   const productsToDisplay =
-    isTypingShortQuery && initialProducts.length > 0
-      ? initialProducts
+    isTypingShortQuery && initialProducts[categoryKey]?.length > 0
+      ? initialProducts[categoryKey]
       : products;
+
   const totalPagesToDisplay =
-    isTypingShortQuery && initialProducts.length > 0
-      ? initialTotalPages
+    isTypingShortQuery && initialTotalPages[categoryKey]
+      ? initialTotalPages[categoryKey]
       : totalPages;
+
+  // Memoized productVariants map
+  const productVariantsMap = useMemo(() => {
+    return productsToDisplay.reduce((acc, p) => {
+      acc[p.id] = p.variants;
+      return acc;
+    }, {} as Record<string, (typeof productsToDisplay)[0]["variants"]>);
+  }, [productsToDisplay]);
 
   return (
     <main className="pt-16 md:pt-20 min-h-screen bg-[#f7f5f2] dark:bg-[#0a0a0a] relative">
@@ -182,20 +214,19 @@ const ProductsPage = () => {
           )}
 
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Spinner className="h-10 w-10 mr-2 text-primary" />
-              <p className="text-gray-600 dark:text-gray-200 text-lg font-medium">
-                Loading products...
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {Array.from({ length: PRODUCTS_PER_PAGE }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="animate-pulse bg-gray-200 dark:bg-gray-800 h-72 rounded-lg"
+                />
+              ))}
             </div>
           ) : (
             <>
               <ProductGrid
                 products={productsToDisplay}
-                productVariants={productsToDisplay.reduce((acc, p) => {
-                  acc[p.id] = p.variants;
-                  return acc;
-                }, {} as Record<string, (typeof productsToDisplay)[0]["variants"]>)}
+                productVariants={productVariantsMap}
               />
 
               {totalPagesToDisplay > 1 && (
