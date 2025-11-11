@@ -42,124 +42,129 @@ export async function getProducts(params: GetProductsParams) {
       perPage = 8,
     } = params;
 
+    // ✅ Build WHERE clause safely
     const where: Prisma.ProductWhereInput = {
       isActive: true,
+      ...(searchQuery.trim()
+        ? {
+            OR: [
+              { name: { contains: searchQuery, mode: "insensitive" } },
+              { description: { contains: searchQuery, mode: "insensitive" } },
+              {
+                categories: {
+                  some: {
+                    category: {
+                      name: { contains: searchQuery, mode: "insensitive" },
+                    },
+                  },
+                },
+              },
+            ],
+          }
+        : {}),
+
+      ...(selectedCategory && selectedCategory !== "all"
+        ? {
+            categories: {
+              some: {
+                OR: [
+                  { category: { id: selectedCategory } },
+                  { category: { slug: selectedCategory } },
+                ],
+              },
+            },
+          }
+        : {}),
+
+      ...(inStockOnly
+        ? {
+            variants: {
+              some: { inventory: { quantity: { gt: 0 } } },
+            },
+          }
+        : {}),
     };
 
-    // Search by product name
-    if (searchQuery.trim()) {
-      where.OR = [
-        { name: { contains: searchQuery, mode: "insensitive" } },
-        { description: { contains: searchQuery, mode: "insensitive" } },
-        {
+    // ✅ FIX SORT TYPE (Prisma requires `"asc"|"desc"`)
+    const orderBy: Prisma.ProductOrderByWithRelationInput =
+      sortBy === "newest"
+        ? { createdAt: "desc" as const }
+        : sortBy === "price-low"
+        ? { price: "asc" as const }
+        : sortBy === "price-high"
+        ? { price: "desc" as const }
+        : { name: "asc" as const };
+
+    // ✅ Single database round-trip
+    const [totalCount, products] = await prisma.$transaction([
+      prisma.product.count({ where }),
+      prisma.product.findMany({
+        where,
+        skip: (page - 1) * perPage,
+        take: perPage,
+        orderBy,
+        include: {
           categories: {
-            some: {
-              category: {
-                name: { contains: searchQuery, mode: "insensitive" },
-              },
+            select: { category: { select: { id: true, name: true } } },
+          },
+          images: {
+            take: 1,
+            orderBy: [{ isPrimary: "desc" }, { displayOrder: "asc" }],
+            select: { url: true },
+          },
+          variants: {
+            select: {
+              id: true,
+              sku: true,
+              name: true,
+              price: true,
+              color: true,
+              size: true,
+              inventory: { select: { quantity: true } },
             },
           },
         },
-      ];
-    }
-    // Filter by category
-    if (selectedCategory && selectedCategory !== "all") {
-      where.categories = {
-        some: {
-          OR: [
-            { category: { id: selectedCategory } },
-            { category: { slug: selectedCategory } },
-          ],
-        },
-      };
-    }
+      }),
+    ]);
 
-    // Get products with their relations
-    let products = await prisma.product.findMany({
-      where,
-      include: {
-        categories: {
-          include: {
-            category: true,
-          },
-        },
-        images: {
-          orderBy: [{ isPrimary: "desc" }, { displayOrder: "asc" }],
-          take: 1,
-        },
-
-        variants: {
-          include: {
-            inventory: true,
-          },
-        },
-      },
-      orderBy:
-        sortBy === "newest"
-          ? { createdAt: "desc" }
-          : sortBy === "price-low"
-          ? { price: "asc" }
-          : sortBy === "price-high"
-          ? { price: "desc" }
-          : { name: "asc" },
-    });
-
-    if (inStockOnly) {
-      products = products.filter((p) => {
-        // If no variants, consider it in stock
-        // If has variants, check inventory
-        const hasStock =
-          p.variants.length === 0
-            ? true
-            : p.variants.some((v) => v.inventory && v.inventory.quantity > 0);
-        return hasStock;
-      });
-    }
-
-    // Calculate pagination
-    const totalCount = products.length;
     const totalPages = Math.ceil(totalCount / perPage);
-    const skip = (page - 1) * perPage;
 
-    // Apply pagination
-    const paginatedProducts = products.slice(skip, skip + perPage);
+    // ✅ Map products safely
+    const formattedProducts: ProductData[] = products.map((product) => {
+      const category = product.categories[0]?.category?.name || "Uncategorized";
 
-    const formattedProducts: ProductData[] = paginatedProducts.map(
-      (product) => {
-        const category =
-          product.categories[0]?.category?.name || "Uncategorized";
-        let image = "/product_placeholder.jpeg";
-        const chosenImage = product.images[0];
-        if (chosenImage?.url) {
-          const url = chosenImage.url.trim().replace(/^\/+|["']/g, "");
-          image = url.startsWith("http") ? url : `/${url}`;
-        }
-
-        const variants = product.variants.map((v) => ({
-          id: v.id,
-          sku: v.sku,
-          name: v.name,
-          price: v.price ? Number(v.price) : undefined,
-          color: v.color || undefined,
-          size: v.size || undefined,
-          inStock: v.inventory ? v.inventory.quantity > 0 : true,
-        }));
-
-        const hasStock =
-          variants.length === 0 ? true : variants.some((v) => v.inStock);
-
-        return {
-          id: product.id,
-          name: product.name,
-          category,
-          price: Number(product.price),
-          image,
-          inStock: hasStock,
-          badge: product.isFeatured ? "Featured" : category,
-          variants,
-        };
+      let image = "/product_placeholder.jpeg";
+      const img = product.images?.[0];
+      if (img?.url) {
+        const clean = img.url.trim().replace(/^\/+|["']/g, "");
+        image = clean.startsWith("http") ? clean : `/${clean}`;
       }
-    );
+
+      const variants = product.variants.map((v) => ({
+        id: v.id,
+        sku: v.sku,
+        name: v.name,
+        price: v.price ? Number(v.price) : undefined,
+        color: v.color || undefined,
+        size: v.size || undefined,
+        inStock:
+          v.inventory?.quantity && v.inventory.quantity > 0 ? true : false,
+      }));
+
+      const hasStock =
+        variants.length === 0 ? true : variants.some((v) => v.inStock);
+
+      return {
+        id: product.id,
+        name: product.name,
+        category,
+        price: Number(product.price),
+        image,
+        inStock: hasStock,
+        badge: product.isFeatured ? "Featured" : category,
+        variants,
+      };
+    });
 
     return {
       products: formattedProducts,
@@ -168,7 +173,7 @@ export async function getProducts(params: GetProductsParams) {
       currentPage: page,
     };
   } catch (error) {
-    console.error("[v0] Error fetching products:", error);
+    console.error("[getProducts Error]:", error);
     throw new Error("Failed to fetch products");
   }
 }
@@ -177,14 +182,8 @@ export async function getProductById(id: string) {
   const product = await prisma.product.findUnique({
     where: { id },
     include: {
-      images: {
-        orderBy: { displayOrder: "asc" },
-      },
-      categories: {
-        include: {
-          category: true,
-        },
-      },
+      images: { orderBy: { displayOrder: "asc" } },
+      categories: { include: { category: true } },
       reviews: {
         include: {
           user: { select: { name: true } },
@@ -198,6 +197,6 @@ export async function getProductById(id: string) {
 
   return {
     ...product,
-    price: product.price.toNumber(),
+    price: Number(product.price),
   };
 }
