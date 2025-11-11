@@ -8,7 +8,6 @@ import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getProducts, type ProductData } from "@/actions/products";
-
 import { Spinner } from "@/components/ui/spinner";
 
 const PRODUCTS_PER_PAGE = 8;
@@ -18,6 +17,7 @@ const ProductsPage = () => {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery); // debounce state
   const [currentPage, setCurrentPage] = useState(1);
 
   const [products, setProducts] = useState<ProductData[]>([]);
@@ -25,12 +25,21 @@ const ProductsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Debounce search query
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+      setCurrentPage(1); // reset page when search changes
+    }, 300); // 300ms debounce
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const result = await getProducts({
-        searchQuery,
+        searchQuery: debouncedSearchQuery,
         selectedCategory,
         inStockOnly,
         sortBy,
@@ -46,8 +55,15 @@ const ProductsPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [searchQuery, selectedCategory, inStockOnly, sortBy, currentPage]);
+  }, [
+    debouncedSearchQuery,
+    selectedCategory,
+    inStockOnly,
+    sortBy,
+    currentPage,
+  ]);
 
+  // Fetch products whenever dependencies change
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
@@ -69,7 +85,6 @@ const ProductsPage = () => {
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
-    setCurrentPage(1);
   };
 
   return (
@@ -87,6 +102,7 @@ const ProductsPage = () => {
           title="Our Hemp Collection"
           subtitle="Discover handcrafted accessories made from sustainable hemp fiber by skilled artisans in the Himalayan foothills."
         />
+
         <div className="flex flex-col gap-8 p-6 mx-3 lg:mx-16 md:p-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -110,7 +126,7 @@ const ProductsPage = () => {
             />
           </motion.div>
 
-          {/* products section */}
+          {/* Products Section */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -140,7 +156,6 @@ const ProductsPage = () => {
                   }, {} as Record<string, (typeof products)[0]["variants"]>)}
                 />
 
-                {/* pagination */}
                 {totalPages > 1 && (
                   <Pagination
                     currentPage={currentPage}
