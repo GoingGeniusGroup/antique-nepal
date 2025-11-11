@@ -1,48 +1,37 @@
 "use client";
 
 import { useTheme } from "@/contexts/theme-context";
-import { useState, useEffect } from "react";
+import Image from "next/image";
 
 interface ProductsBannerSectionProps {
   title: string;
   subtitle: string;
+  imageSrc?: string; // optional, defaults to your current banner
 }
 
 export default function ProductsBannerSection({
   title,
   subtitle,
+  imageSrc = "/hero-mountains.jpg",
 }: ProductsBannerSectionProps) {
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
 
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
-
-  // Preload image
-  useEffect(() => {
-    const img = new Image();
-    img.src = "/ProductsSectionBanner.png";
-    img.onload = () => setIsImageLoaded(true);
-  }, []);
-
   return (
-    <section
-      className="relative w-full h-[20vh] md:h-[200px] lg:h-[220px] flex items-center justify-center text-center bg-cover transition-all duration-500"
-      style={{
-        backgroundImage: isImageLoaded
-          ? "url('/ProductsSectionBanner.png')"
-          : undefined,
-        backgroundPosition: "center 25%",
-      }}
-    >
-      {/* Fallback / overlay */}
-      {!isImageLoaded && (
-        <div
-          className={`absolute inset-0 flex items-center justify-center ${
-            isDark ? "bg-black/70" : "bg-gray-300"
-          }`}
-        ></div>
-      )}
+    <section className="relative w-full h-[20vh] md:h-[200px] lg:h-[220px] flex items-center justify-center text-center">
+      {/* Optimized image */}
+      <Image
+        src={imageSrc}
+        alt="Products Banner"
+        fill
+        className="object-cover"
+        priority
+        placeholder="blur"
+        style={{ objectPosition: "center 25%" }}
+        blurDataURL="/ProductsSectionBanner_blur.png" // small, tiny blurred image (1–5 KB)
+      />
 
+      {/* Overlay */}
       <div
         className={`absolute inset-0 ${isDark ? "bg-black/70" : "bg-black/50"}`}
       />
