@@ -1,9 +1,8 @@
+// app/api/admin/products/images/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import prisma from "@/lib/prisma";
-import { writeFile } from "fs/promises";
-import path from "path";
 import { productImageSchema } from "@/app/validations/product/image/image-schema";
+import { uploadcare } from "@/lib/uploadCare";
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,32 +23,57 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       console.error("❌ Zod Validation Error:", parsed.error.format());
       return NextResponse.json(
-        { error: parsed.error.flatten() },
+        {
+          success: false,
+          error: "Validation failed",
+          details: parsed.error.flatten(),
+        },
         { status: 400 }
       );
     }
 
     const file = formData.get("image") as File | null;
-    console.log("File:", file);
+    console.log(
+      "File received:",
+      file ? `${file.name} (${file.size} bytes)` : "No file"
+    );
 
     if (!file) {
       return NextResponse.json(
-        { error: "Image file is required" },
+        {
+          success: false,
+          error: "Image file is required",
+        },
         { status: 400 }
       );
     }
 
+    // Convert File to Buffer for Uploadcare
+    console.log("Converting file to buffer...");
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const uploadDir = path.join(process.cwd(), "public/uploads");
-    const filename = `${Date.now()}-${file.name}`;
-    const filepath = path.join(uploadDir, filename);
+    console.log(`Buffer created: ${buffer.length} bytes`);
 
-    await writeFile(filepath, buffer);
+    // Upload to Uploadcare with buffer and filename
+    console.log("Uploading to Uploadcare...");
+    const uploaded = await uploadcare.uploadFile(buffer, {
+      fileName: file.name,
+      contentType: file.type,
+    });
 
+    const uuid = uploaded.uuid;
+    const fileName = file.name;
+
+    // Your custom Uploadcare CDN domain (from your Uploadcare dashboard)
+    const UPLOADCARE_CDN_BASE = "https://6bbzdfr35c.ucarecd.net";
+
+    const imageUrl = `${UPLOADCARE_CDN_BASE}/${uuid}/${fileName}`;
+
+    // Save to database
+    console.log("Saving to database...");
     const newImage = await prisma.productImage.create({
       data: {
-        url: `/uploads/${filename}`,
+        url: imageUrl,
         productId: parsed.data.productId,
         variantId: parsed.data.variantId,
         altText: parsed.data.altText || "",
@@ -58,11 +82,26 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json(newImage, { status: 201 });
-  } catch (error) {
-    console.error("⚠️ Server Error:", error);
+    console.log("✅ Image created successfully:", newImage.id);
+
     return NextResponse.json(
-      { error: "Something went wrong", details: String(error) },
+      {
+        success: true,
+        data: newImage,
+      },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.error("⚠️ Server Error:", error);
+    console.error("Error stack:", error.stack);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Something went wrong",
+        message: error.message,
+        details: error.toString(),
+      },
       { status: 500 }
     );
   }

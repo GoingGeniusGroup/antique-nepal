@@ -3,7 +3,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { Save, Trash } from "lucide-react";
+import { Save } from "lucide-react";
 import { ProductForm } from "./product-form";
 import { ProductImagesForm } from "./product-image-form";
 import { ProductData, ProductImage } from "./types";
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 type Props = {
-  product?: ProductData | null;
+  product?: ProductData | any | null;
   images?: ProductImage[];
   onSave: (product: ProductData, images: ProductImage[]) => void;
 };
@@ -37,7 +37,6 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
     metaTitle: product?.metaTitle || "",
     metaDescription: product?.metaDescription || "",
   });
-  console.log("Images:", images);
 
   const [productImages, setProductImages] = useState<ProductImage[]>(
     images.length > 0
@@ -69,7 +68,8 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
 
     if (field === "displayOrder") newValue = Number(value) || 0;
     if (field === "isPrimary") newValue = Boolean(value);
-    updated[index] = { ...updated[index], [field]: value };
+
+    updated[index] = { ...updated[index], [field]: newValue };
     setProductImages(updated);
   };
 
@@ -89,17 +89,25 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
     setIsDeleting(true);
 
     try {
+      // Only call API if image has an ID (exists in database)
       if (img.id) {
         const res = await fetch(`/api/admin/products/images/${img.id}`, {
           method: "DELETE",
         });
-        if (!res.ok) throw new Error("Failed to delete image");
+
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || "Failed to delete image");
+        }
+
         toast.success("✅ Image deleted successfully");
       }
+
+      // Remove from local state
       setProductImages((prev) => prev.filter((_, i) => i !== deleteIndex));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error("Failed to delete image");
+      toast.error(err.message || "Failed to delete image");
     } finally {
       setDeleteIndex(null);
       setIsDeleting(false);
@@ -115,6 +123,7 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
     setSaving(true);
 
     try {
+      // Save product first
       const url = productData.id
         ? `/api/admin/products/${productData.id}`
         : "/api/admin/products";
@@ -126,52 +135,62 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
         body: JSON.stringify(productData),
       });
 
-      const savedProduct = await productRes.json();
       if (!productRes.ok) {
-        toast.error(savedProduct.message || "Failed to save product.");
+        const error = await productRes.json();
+        toast.error(error.message || "Failed to save product.");
         return;
       }
+
+      const savedProduct = await productRes.json();
+      const productId = savedProduct.product.id;
+
+      // Save images
       for (const img of productImages) {
-        // If all fields are empty, skip it
-        const isEmpty =
-          !img.file &&
-          !img.altText?.trim() &&
-          (img.displayOrder === undefined || img.displayOrder === null) &&
-          img.isPrimary === false;
+        // Skip empty images (no file and no existing ID)
+        if (!img.file && !img.id) continue;
 
-        if (isEmpty) continue; // Skip completely
-
-        // If image has an ID, update existing one (PUT)
+        // Update existing image
         if (img.id) {
           const formData = new FormData();
           if (img.variantId) formData.append("variantId", img.variantId);
           formData.append("altText", img.altText || "");
           formData.append("displayOrder", img.displayOrder?.toString() || "0");
-          formData.append("isPrimary", String(img.isPrimary));
+          formData.append("isPrimary", String(img.isPrimary || false));
 
-          // Include file only if a new one was selected
-          if (img.file) formData.append("image", img.file);
+          // Only include file if user selected a new one
+          if (img.file) {
+            formData.append("image", img.file);
+          }
 
-          await fetch(`/api/admin/products/images/${img.id}`, {
+          const res = await fetch(`/api/admin/products/images/${img.id}`, {
             method: "PUT",
             body: formData,
           });
-        }
 
-        // If image has no ID but has a file, it’s a new one (POST)
+          if (!res.ok) {
+            const error = await res.json();
+            console.error("Failed to update image:", error);
+          }
+        }
+        // Create new image (must have a file)
         else if (img.file) {
           const formData = new FormData();
-          formData.append("productId", savedProduct.product.id);
+          formData.append("productId", productId);
           if (img.variantId) formData.append("variantId", img.variantId);
           formData.append("image", img.file);
           formData.append("altText", img.altText || "");
           formData.append("displayOrder", img.displayOrder?.toString() || "0");
-          formData.append("isPrimary", String(img.isPrimary));
+          formData.append("isPrimary", String(img.isPrimary || false));
 
-          await fetch("/api/admin/products/images", {
+          const res = await fetch("/api/admin/products/images", {
             method: "POST",
             body: formData,
           });
+
+          if (!res.ok) {
+            const error = await res.json();
+            console.error("Failed to create image:", error);
+          }
         }
       }
 
@@ -180,10 +199,11 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
           ? "✅ Product updated successfully!"
           : "✅ Product created successfully!"
       );
+
       onSave(savedProduct.product, productImages);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error("Something went wrong while saving.");
+      toast.error(err.message || "Something went wrong while saving.");
     } finally {
       setSaving(false);
     }
@@ -225,7 +245,7 @@ export function ProductWithImagesForm({ product, images = [], onSave }: Props) {
             <AlertDialogTitle>Delete Image?</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete this image? This action cannot be
-              undone.
+              undone and will also remove it from Uploadcare.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="flex justify-end gap-2 mt-4">

@@ -4,6 +4,7 @@ import { UpdateProductSchema } from "@/app/validations/product/product-schema";
 import { ZodError } from "zod";
 import fs from "fs";
 import path from "path";
+import { deleteUploadcareFile } from "@/lib/uploadCare";
 
 export async function PUT(
   req: NextRequest,
@@ -54,7 +55,6 @@ export async function PUT(
     );
   }
 }
-
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -69,9 +69,10 @@ export async function DELETE(
       );
     }
 
+    // Find the product and related images
     const existing = await prisma.product.findUnique({
       where: { id },
-      include: { images: true }, // fetch linked images
+      include: { images: true },
     });
 
     if (!existing) {
@@ -81,28 +82,32 @@ export async function DELETE(
       );
     }
 
-    // Delete physical files
+    // Delete images from Uploadcare
     for (const img of existing.images) {
-      const filePath = path.join(process.cwd(), "public/uploads", img.url);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+      try {
+        if (img.url) {
+          await deleteUploadcareFile(img.url);
+          console.log("✅ Deleted from Uploadcare:", img.url);
+        }
+      } catch (err) {
+        console.warn("⚠️ Failed to delete from Uploadcare:", img.url, err);
       }
     }
 
-    // Delete image records
+    // Delete image records from DB
     await prisma.productImage.deleteMany({ where: { productId: id } });
 
-    // Delete the product
+    // Delete product record
     await prisma.product.delete({ where: { id } });
 
     return NextResponse.json({
       success: true,
-      message: "Product and associated images deleted successfully",
+      message: "✅ Product and associated images deleted successfully",
     });
-  } catch (error) {
-    console.error("Product delete error:", error);
+  } catch (error: any) {
+    console.error("❌ Product delete error:", error);
     return NextResponse.json(
-      { success: false, message: "Server error" },
+      { success: false, message: "Server error", details: error.message },
       { status: 500 }
     );
   }

@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { verifyEmail } from '@/actions/email-verification';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { verifyEmail } from "@/actions/email-verification";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function EmailVerificationContent({ token }: { token: string }) {
   const router = useRouter();
-  const [message, setMessage] = useState('Verifying your email...');
+  const [message, setMessage] = useState("Verifying your email...");
 
   useEffect(() => {
     async function verify() {
@@ -14,7 +14,7 @@ export default function EmailVerificationContent({ token }: { token: string }) {
       setMessage(result.message);
       if (result.success) {
         setTimeout(() => {
-          router.push('/login');
+          router.push("/login");
         }, 2000);
       }
     }

@@ -1,11 +1,10 @@
+// app/api/admin/products/images/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { writeFile, unlink } from "fs/promises";
-import path from "path";
-import fs from "fs";
 import { updateImageSchema } from "@/app/validations/product/image/image-schema";
+import { uploadcare, deleteUploadcareFile } from "@/lib/uploadCare";
 
-//UPDATE IMAGE
+// UPDATE IMAGE
 export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -36,22 +35,33 @@ export async function PUT(
     const file = formData.get("image") as File | null;
     let newUrl: string | undefined;
 
+    // Get existing image to delete old one if replacing
+    const existing = await prisma.productImage.findUnique({ where: { id } });
+
+    if (!existing) {
+      return NextResponse.json({ error: "Image not found" }, { status: 404 });
+    }
+
     if (file) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const uploadDir = path.join(process.cwd(), "public/uploads");
-      if (!fs.existsSync(uploadDir))
-        fs.mkdirSync(uploadDir, { recursive: true });
+      // Convert File to Buffer
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
 
-      const filename = `${Date.now()}-${file.name}`;
-      const filepath = path.join(uploadDir, filename);
-      await writeFile(filepath, buffer);
-      newUrl = `/uploads/${filename}`;
+      // Upload new image to Uploadcare
+      const uploaded = await uploadcare.uploadFile(buffer, {
+        fileName: file.name,
+        contentType: file.type,
+      });
 
-      // Delete old file
-      const existing = await prisma.productImage.findUnique({ where: { id } });
-      if (existing?.url) {
-        const oldPath = path.join(process.cwd(), "public", existing.url);
-        if (fs.existsSync(oldPath)) await unlink(oldPath);
+      const newUuid = uploaded.uuid;
+      const cdnDomain = "https://6bbzdfr35c.ucarecd.net";
+      newUrl = `${cdnDomain}/${newUuid}/${file.name}`;
+
+      console.log("✅ Uploaded to Uploadcare:", newUrl);
+
+      // Delete old image from Uploadcare
+      if (existing.url) {
+        await deleteUploadcareFile(existing.url);
       }
     }
 
@@ -99,11 +109,13 @@ export async function DELETE(
       return NextResponse.json({ error: "Image not found" }, { status: 404 });
     }
 
+    // Delete from Uploadcare
     if (existing.url) {
-      const filePath = path.join(process.cwd(), "public", existing.url);
-      if (fs.existsSync(filePath)) await unlink(filePath);
+      await deleteUploadcareFile(existing.url);
+      console.log("✅ Deleted from Uploadcare:", existing.url);
     }
 
+    // Delete from database
     await prisma.productImage.delete({ where: { id } });
 
     return NextResponse.json(
@@ -111,7 +123,7 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error: any) {
-    console.error(" DELETE Error:", error);
+    console.error("DELETE Error:", error);
     return NextResponse.json(
       { error: "Failed to delete image", details: error.message },
       { status: 500 }

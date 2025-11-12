@@ -21,4 +21,5 @@ export type ProductImage = {
   altText?: string | null;
   displayOrder: number;
   isPrimary: boolean;
+  uploadcareUuid?: string | null;
 };
