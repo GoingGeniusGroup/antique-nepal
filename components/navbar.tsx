@@ -124,7 +124,9 @@ export const Navbar = () => {
     // Only load from cache if user is logged in
     if (userId && !isAdmin) {
       // Load counts from localStorage immediately for instant display
-      const cachedCartCount = parseInt(localStorage.getItem("cartCount") || "0");
+      const cachedCartCount = parseInt(
+        localStorage.getItem("cartCount") || "0"
+      );
       const cachedWishlistCount = parseInt(
         localStorage.getItem("wishlistCount") || "0"
       );
@@ -134,7 +136,9 @@ export const Navbar = () => {
       setCartCount(cachedCartCount);
       setWishlistCount(cachedWishlistCount);
       setShowCartBadge(cachedCartCount > 0 && cartVisited !== "true");
-      setShowWishlistBadge(cachedWishlistCount > 0 && wishlistVisited !== "true");
+      setShowWishlistBadge(
+        cachedWishlistCount > 0 && wishlistVisited !== "true"
+      );
     }
 
     fetchCounts();
@@ -560,13 +564,13 @@ export const Navbar = () => {
           localStorage.removeItem("wishlistCount");
           localStorage.removeItem("cartVisited");
           localStorage.removeItem("wishlistVisited");
-          
+
           // Reset badge states
           setCartCount(0);
           setWishlistCount(0);
           setShowCartBadge(false);
           setShowWishlistBadge(false);
-          
+
           await signOut({ callbackUrl: "/" });
           sessionStorage.removeItem("loginSuccessToastShown");
           toast.success("Logged out successfully!", {

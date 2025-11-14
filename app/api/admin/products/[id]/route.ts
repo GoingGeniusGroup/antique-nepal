@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { UpdateProductSchema } from "@/app/validations/product/product-schema";
 import { ZodError } from "zod";
-import fs from "fs";
-import path from "path";
 import { deleteUploadcareFile } from "@/lib/uploadCare";
 
 export async function PUT(

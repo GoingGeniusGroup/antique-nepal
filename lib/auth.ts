@@ -68,7 +68,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (!user.isActive) {
           throw new Error(
-            "Your account has been deactivated. Please contact support for assistance.",
+            "Your account has been deactivated. Please contact support for assistance."
           );
         }
 
