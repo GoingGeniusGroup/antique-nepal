@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export interface GetProductsParams {
   searchQuery?: string;
@@ -199,4 +200,24 @@ export async function getProductById(id: string) {
     ...product,
     price: Number(product.price),
   };
+}
+
+export async function incrementProductView(productId: string) {
+  try {
+    await prisma.product.update({
+      where: {
+        id: productId,
+      },
+      data: {
+        viewCount: {
+          increment: 1,
+        },
+      },
+    });
+
+    revalidatePath(`/products/${productId}`);
+  } catch (error) {
+    console.error("Failed to increment product view count:", error);
+    // Optionally, handle the error more gracefully
+  }
 }

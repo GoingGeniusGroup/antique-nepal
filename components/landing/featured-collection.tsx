@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-context";
 import { useHomepageSettings } from "@/contexts/settings-context";
@@ -29,9 +30,65 @@ const itemVariantsCustom = {
   hidden: { ...itemVariants.hidden, y: 40 },
 };
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  images: { url: string }[];
+  description: string;
+  category: string;
+  tag?: string; // Assuming 'tag' is an optional string for "Best Seller", "New", "Popular"
+}
+
 export function FeaturedCollection() {
   const { theme, isReady } = useTheme();
-  const { homepage, loading } = useHomepageSettings();
+  const { homepage } = useHomepageSettings();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const [popularRes, bestSellerRes, latestRes] = await Promise.all([
+          fetch("/api/products/popular"),
+          fetch("/api/products/best-seller"),
+          fetch("/api/products/latest"),
+        ]);
+
+        if (!popularRes.ok || !bestSellerRes.ok || !latestRes.ok) {
+          throw new Error(`HTTP error!`);
+        }
+
+        const [popularProduct, bestSellerProduct, latestProduct] = await Promise.all([
+          popularRes.json(),
+          bestSellerRes.json(),
+          latestRes.json(),
+        ]);
+
+        const allFetchedProducts = [popularProduct, bestSellerProduct, latestProduct].filter(p => p !== null);
+
+        // Filter for unique products based on ID
+        const uniqueProductsMap = new Map<string, Product>();
+        allFetchedProducts.forEach(product => {
+          if (product && !uniqueProductsMap.has(product.id)) {
+            uniqueProductsMap.set(product.id, product);
+          }
+        });
+        const featuredProducts = Array.from(uniqueProductsMap.values());
+
+        setProducts(featuredProducts);
+
+      } catch (error) {
+        console.error("Error fetching featured products:", error);
+        setError("Failed to load featured products.");
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <section
@@ -110,33 +167,24 @@ export function FeaturedCollection() {
           whileInView="visible"
           viewport={viewportConfig}
         >
-          <motion.div variants={itemVariantsCustom}>
-            <ProductCard
-              title="Traditional Weave Tote"
-              price="300"
-              img="/hemp-bag-1%201.png"
-              tag="Best Seller"
-              description="Handwoven with traditional patterns"
-            />
-          </motion.div>
-          <motion.div variants={itemVariantsCustom}>
-            <ProductCard
-              title="Minimalist Hemp Bag"
-              price="300"
-              img="/hemp-bag-2%201.png"
-              tag="New"
-              description="Clean lines, maximum durability"
-            />
-          </motion.div>
-          <motion.div variants={itemVariantsCustom}>
-            <ProductCard
-              title="Mountain Explorer Pack"
-              price="300"
-              img="/hemp-bag-3%201.png"
-              tag="Popular"
-              description="Perfect for your adventures"
-            />
-          </motion.div>
+          {loadingProducts ? (
+            <p className="text-center text-xl">Loading products...</p>
+          ) : error ? (
+            <p className="text-center text-xl text-red-500">{error}</p>
+          ) : (
+            products.map((product, index) => (
+              <motion.div key={`${product.id}-${index}`} variants={itemVariantsCustom}>
+                <ProductCard
+                  id={product.id}
+                  title={product.name}
+                  price={product.price.toString()}
+                  img={product.images?.[0]?.url || "/product_placeholder.jpeg"}
+                  tag={product.tag}
+                  description={product.description}
+                />
+              </motion.div>
+            ))
+          )}
         </motion.div>
 
        
