@@ -124,6 +124,7 @@ model Product {
   variants         ProductVariant[]
   reviews          Review[]
   wishlistItems    WishlistItem[]
+  viewCount        Int               @default(0)
 
   @@index([slug])
   @@index([sku])

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -12,6 +12,7 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { VariantModal } from "@/components/products/variant-modal";
 import toast from "react-hot-toast";
 import type { Product } from "@/lib/product";
+import { incrementProductView } from "@/actions/products";
 
 interface Wishlist {
   id: string;
@@ -49,6 +50,16 @@ const ProductDetailClient = ({
   const userId = session?.user?.id;
   const userRole = (session?.user as { role?: string })?.role;
   const isAdmin = userRole === "ADMIN";
+
+  const hasIncrementedView = useRef(false);
+
+  // Increment view count
+  useEffect(() => {
+    if (initialProduct.id && !hasIncrementedView.current) {
+      incrementProductView(initialProduct.id);
+      hasIncrementedView.current = true;
+    }
+  }, [initialProduct.id]);
 
   // Fetch wishlist status
   useEffect(() => {
