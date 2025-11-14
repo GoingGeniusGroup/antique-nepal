@@ -13,10 +13,10 @@ type Props = {
   img: string;
   tag?: string;
   description?: string;
-  id?: number;
+  id?: string;
 };
 
-export function ProductCard({ title, price, img, tag, description, id = 1 }: Props) {
+export function ProductCard({ title, price, img, tag, description, id = "1" }: Props) {
   const [isHovered, setIsHovered] = useState(false);
   const x = useMotionValue(0);
   const y = useMotionValue(0);

@@ -3,61 +3,45 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    // Step 1: Aggregate OrderItems to find total sales per product variant
+    // 1. Aggregate OrderItems by productVariantId
     const salesByVariant = await prisma.orderItem.groupBy({
       by: ["productVariantId"],
-      _sum: {
-        quantity: true,
-      },
-      orderBy: {
-        _sum: {
-          quantity: "desc",
-        },
-      },
+      _sum: { quantity: true },
+      orderBy: { _sum: { quantity: "desc" } },
     });
 
-    // Step 2: Get the product IDs for these variants
+    // 2. Get parent product IDs for those variants
     const variantIds = salesByVariant.map((item) => item.productVariantId);
+
     const variants = await prisma.productVariant.findMany({
-      where: {
-        id: {
-          in: variantIds,
-        },
-      },
-      select: {
-        id: true,
-        productId: true,
-      },
+      where: { id: { in: variantIds } },
+      select: { id: true, productId: true },
     });
 
-    // Create a map for quick lookup of variantId -> productId
-    const variantToProductMap = new Map(
+    const variantToProduct = new Map(
       variants.map((v) => [v.id, v.productId])
     );
 
-    // Step 3: Aggregate sales by the parent product ID
+    // 3. Sum total sales per product
     const salesByProduct = new Map<string, number>();
+
     for (const sale of salesByVariant) {
-      const productId = variantToProductMap.get(sale.productVariantId);
+      const productId = variantToProduct.get(sale.productVariantId);
       if (productId) {
-        const currentSales = salesByProduct.get(productId) || 0;
-        salesByProduct.set(productId, currentSales + (sale._sum.quantity || 0));
+        const current = salesByProduct.get(productId) || 0;
+        salesByProduct.set(productId, current + (sale._sum.quantity || 0));
       }
     }
 
-    // Step 4: Sort product IDs by total sales and take the top 10
+    // 4. Sort products by sales and take top 10
     const sortedProductIds = Array.from(salesByProduct.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
-      .map((entry) => entry[0]);
+      .map(([id]) => id);
 
-    // Step 5: Fetch the actual product data for the top 10
+    // 5. Fetch product data
     const bestSellers = await prisma.product.findMany({
-      where: {
-        id: {
-          in: sortedProductIds,
-        },
-      },
+      where: { id: { in: sortedProductIds } },
       include: {
         images: {
           take: 1,
@@ -67,27 +51,30 @@ export async function GET() {
       },
     });
 
-    // Preserve the sort order from the sales calculation
+    // 6. Order products according to sortedProductIds *and* tell TypeScript they’re not undefined
     const orderedBestSellers = sortedProductIds
       .map((id) => bestSellers.find((p) => p.id === id))
-      .filter((p) => p); // Filter out any potential undefined values
+      .filter((p): p is typeof bestSellers[number] => Boolean(p));
 
-    const formattedProducts = orderedBestSellers.map((product) => {
-      // Helper function to format image URL
-      const formatImageUrl = (url: string | undefined) => {
-        if (!url) return "/product_placeholder.jpeg";
-        const cleanUrl = url.trim().replace(/^["']+|["']$/g, "");
-        return cleanUrl.startsWith("http") ? cleanUrl : `/${cleanUrl}`;
-      };
+    // Helper to sanitize image URLs
+    const formatImageUrl = (url: string | undefined) => {
+      if (!url) return "/product_placeholder.jpeg";
 
-      return {
-        id: product.id,
-        name: product.name,
-        slug: product.slug,
-        price: Number(product.price),
-        image: formatImageUrl(product.images[0]?.url),
-      };
-    });
+      // Remove unwanted quotes or whitespace
+      const clean = url.trim().replace(/^["']+|["']$/g, "");
+
+      // Ensure it starts with slash or http
+      return clean.startsWith("http") ? clean : `/${clean}`;
+    };
+
+    // 7. Format return shape
+    const formattedProducts = orderedBestSellers.map((product) => ({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: Number(product.price),
+      image: formatImageUrl(product.images[0]?.url),
+    }));
 
     return NextResponse.json(formattedProducts);
   } catch (error) {

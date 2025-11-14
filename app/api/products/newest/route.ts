@@ -24,7 +24,7 @@ export async function GET() {
       // Helper function to format image URL
       const formatImageUrl = (url: string | undefined) => {
         if (!url) return "/product_placeholder.jpeg";
-        const cleanUrl = url.trim().replace(/^/+|["']/g, "");
+        const cleanUrl = url.trim().replace(/^\/+|["']/g, "");
         return cleanUrl.startsWith("http") ? cleanUrl : `/${cleanUrl}`;
       };
 
