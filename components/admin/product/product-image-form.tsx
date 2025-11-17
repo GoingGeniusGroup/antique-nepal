@@ -57,10 +57,17 @@ export function ProductImagesForm({
               <Input
                 type="file"
                 className="mt-1"
-                onChange={(e) =>
-                  onChange(idx, "file", e.target.files?.[0] || null)
-                }
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  onChange(idx, "file", file);
+                }}
               />
+              {/* Show selected file name if present */}
+              {img.file && (
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Selected: {img.file.name}
+                </p>
+              )}
             </div>
 
             {/* Alt Text */}

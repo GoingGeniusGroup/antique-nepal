@@ -197,43 +197,43 @@ export function ProductWithImagesForm({
     });
   };
 
-  const saveVariantsOnly = async () => {
-    if (!productData.id) {
-      toast.error("Save product first before adding variants");
-      return;
-    }
+  // const saveVariantsOnly = async () => {
+  //   if (!productData.id) {
+  //     toast.error("Save product first before adding variants");
+  //     return;
+  //   }
 
-    for (const variant of variants) {
-      if (!variant.name || !variant.sku) continue;
+  //   for (const variant of variants) {
+  //     if (!variant.name || !variant.sku) continue;
 
-      const method = variant.id ? "PUT" : "POST";
-      const url = variant.id
-        ? `/api/admin/products/variants/${variant.id}`
-        : `/api/admin/products/variants`;
-      console.log({
-        name: variant.name,
-        sku: variant.sku,
-        price: variant.price,
-        productId: productData.id,
-        color: variant.color,
-        size: variant.size,
-      });
+  //     const method = variant.id ? "PUT" : "POST";
+  //     const url = variant.id
+  //       ? `/api/admin/products/variants/${variant.id}`
+  //       : `/api/admin/products/variants`;
+  //     console.log({
+  //       name: variant.name,
+  //       sku: variant.sku,
+  //       price: variant.price,
+  //       productId: productData.id,
+  //       color: variant.color,
+  //       size: variant.size,
+  //     });
 
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...variant, productId: productData.id }),
-      });
-      console.log("response:", res);
+  //     const res = await fetch(url, {
+  //       method,
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ ...variant, productId: productData.id }),
+  //     });
+  //     console.log("response:", res);
 
-      if (!res.ok) {
-        toast.error("Failed to save variant");
-        return;
-      }
-    }
+  //     if (!res.ok) {
+  //       toast.error("Failed to save variant");
+  //       return;
+  //     }
+  //   }
 
-    toast.success("Variants saved successfully");
-  };
+  //   toast.success("Variants saved successfully");
+  // };
 
   // Fetch existing variants if product exists
   useEffect(() => {
@@ -431,7 +431,7 @@ export function ProductWithImagesForm({
               onChange={updateVariantField}
               onAdd={addNewVariant}
               onRemove={confirmRemoveVariant}
-              onSave={saveVariantsOnly}
+              // onSave={saveVariantsOnly}
             />
           </div>
         )}

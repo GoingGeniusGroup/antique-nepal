@@ -22,6 +22,7 @@ export type ProductImage = {
   displayOrder: number;
   isPrimary: boolean;
   uploadcareUuid?: string | null;
+  previewUrl?: string | null;
 };
 
 export type ProductVariant = {

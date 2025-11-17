@@ -14,7 +14,7 @@ type Props = {
   onAdd: () => void;
   onChange: (index: number, field: keyof ProductVariant, value: any) => void;
   onRemove: (index: number) => void;
-  onSave: (index: number) => void;
+  // onSave: (index: number) => void;
 };
 
 export function ProductVariantForm({
@@ -22,8 +22,8 @@ export function ProductVariantForm({
   onAdd,
   onChange,
   onRemove,
-  onSave,
-}: Props) {
+}: // onSave,
+Props) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const handleAddNew = () => {
@@ -155,13 +155,13 @@ export function ProductVariantForm({
                     </div>
                   </div>
 
-                  {/* Save Button */}
+                  {/* Save Button
                   <div className="flex justify-end gap-3 pt-2">
                     <Button onClick={() => onSave(index)} variant="default">
                       <Save className="w-4 h-4 mr-1" />
                       Save
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               )}
             </div>
