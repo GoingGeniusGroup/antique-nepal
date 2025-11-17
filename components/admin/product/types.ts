@@ -23,3 +23,13 @@ export type ProductImage = {
   isPrimary: boolean;
   uploadcareUuid?: string | null;
 };
+
+export type ProductVariant = {
+  id?: string;
+  productId: string;
+  sku: string;
+  name: string;
+  price?: number;
+  color?: string;
+  size?: string;
+};

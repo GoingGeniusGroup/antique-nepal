@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 
 import { formatCurrency, formatDate } from "@/lib/admin-utils";
-import { ProductWithImagesForm } from "@/components/admin/product/product-and-image-edit-form";
+import { ProductWithImagesForm } from "@/components/admin/product/product-image-variant-form";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 type Row = {

@@ -142,7 +142,7 @@ model ProductVariant {
   weight       Decimal?       @db.Decimal(8, 2)
   dimensions   String?
   isActive     Boolean        @default(true)
-  displayOrder Int            @default(0)
+  displayOrder Int?           @default(0)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   cartItems    CartItem[]
