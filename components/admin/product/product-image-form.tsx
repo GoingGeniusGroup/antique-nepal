@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ProductImage } from "./types";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   images: ProductImage[];
@@ -89,7 +90,7 @@ export function ProductImagesForm({
             {/* Primary Switch */}
             <div className="flex items-center space-x-2 mt-5">
               <Switch
-                checked={img.isPrimary ?? false} // default false if undefined
+                checked={img.isPrimary ?? false}
                 onCheckedChange={(v) => onChange(idx, "isPrimary", v)}
               />
               <span className="text-gray-700 dark:text-gray-300">
@@ -101,12 +102,9 @@ export function ProductImagesForm({
       ))}
 
       <div className="flex justify-center">
-        <button
-          onClick={onAdd}
-          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors duration-200"
-        >
+        <Button onClick={onAdd} variant={"outline"}>
           Add New Image
-        </button>
+        </Button>
       </div>
     </div>
   );

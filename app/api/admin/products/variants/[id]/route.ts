@@ -1,12 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { variantUpdateSchema } from "@/app/validations/product/variant/variant-schema";
 
 // UPDATE VARIANT
 export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { params } = await context;
+  const { id } = await params;
   try {
     const json = await req.json();
     const parsed = variantUpdateSchema.safeParse(json);
@@ -19,7 +21,7 @@ export async function PUT(
     }
 
     const updated = await prisma.productVariant.update({
-      where: { id: params.id },
+      where: { id },
       data: parsed.data,
     });
 
@@ -35,12 +37,14 @@ export async function PUT(
 
 // DELETE VARIANT
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { params } = await context;
+  const { id } = await params;
   try {
     await prisma.productVariant.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json(

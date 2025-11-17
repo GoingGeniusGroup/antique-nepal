@@ -14,16 +14,15 @@ type Props = {
   onAdd: () => void;
   onChange: (index: number, field: keyof ProductVariant, value: any) => void;
   onRemove: (index: number) => void;
-  onSave: (index: number) => void; // NEW
+  onSave: (index: number) => void;
 };
 
 export function ProductVariantForm({
-  productId = "",
   variants,
   onAdd,
   onChange,
   onRemove,
-  onSave, // NEW
+  onSave,
 }: Props) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
@@ -156,17 +155,8 @@ export function ProductVariantForm({
                     </div>
                   </div>
 
-                  {/* Save + Delete Buttons */}
+                  {/* Save Button */}
                   <div className="flex justify-end gap-3 pt-2">
-                    <Button
-                      onClick={() => onRemove(index)}
-                      variant="ghost"
-                      className="text-red-500 hover:text-red-600"
-                    >
-                      <Trash2 className="w-4 h-4 mr-1" />
-                      Delete
-                    </Button>
-
                     <Button onClick={() => onSave(index)} variant="default">
                       <Save className="w-4 h-4 mr-1" />
                       Save

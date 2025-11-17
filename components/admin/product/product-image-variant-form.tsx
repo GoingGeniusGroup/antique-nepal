@@ -52,6 +52,9 @@ export function ProductWithImagesForm({
     metaTitle: product?.metaTitle || "",
     metaDescription: product?.metaDescription || "",
   });
+  const updateProductField = (field: keyof ProductData, value: any) => {
+    setProductData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const [productImages, setProductImages] = useState<ProductImage[]>(
     images.length > 0
@@ -62,16 +65,19 @@ export function ProductWithImagesForm({
         }))
       : [{ displayOrder: 0, isPrimary: false }]
   );
+
+  // Image state
+  const [deleteImageIndex, setDeleteImageIndex] = useState<number | null>(null);
+  const [isDeletingImage, setIsDeletingImage] = useState(false);
+  // Variant state
+  const [deleteVariantIndex, setDeleteVariantIndex] = useState<number | null>(
+    null
+  );
+  const [isDeletingVariant, setIsDeletingVariant] = useState(false);
   const [variants, setVariants] = useState<ProductVariant[]>(initialVariants);
   const [saving, setSaving] = useState(false);
 
   // ---------------------- IMAGE HANDLERS ----------------------
-  const [deleteImageIndex, setDeleteImageIndex] = useState<number | null>(null);
-  const [isDeletingImage, setIsDeletingImage] = useState(false);
-
-  const updateProductField = (field: keyof ProductData, value: any) => {
-    setProductData((prev) => ({ ...prev, [field]: value }));
-  };
 
   const updateImageField = (
     index: number,
@@ -126,10 +132,6 @@ export function ProductWithImagesForm({
   };
 
   // ---------------------- VARIANT HANDLERS ----------------------
-  const [deleteVariantIndex, setDeleteVariantIndex] = useState<number | null>(
-    null
-  );
-  const [isDeletingVariant, setIsDeletingVariant] = useState(false);
 
   const confirmRemoveVariant = (index: number) => setDeleteVariantIndex(index);
 
@@ -185,7 +187,6 @@ export function ProductWithImagesForm({
 
       let newValue = value;
 
-      // Convert price to number
       if (field === "price") {
         newValue = Number(value);
         if (isNaN(newValue)) newValue = 0;
@@ -195,6 +196,7 @@ export function ProductWithImagesForm({
       return updated;
     });
   };
+
   const saveVariantsOnly = async () => {
     if (!productData.id) {
       toast.error("Save product first before adding variants");
@@ -407,6 +409,7 @@ export function ProductWithImagesForm({
           <ProductForm product={productData} onChange={updateProductField} />
         )}
 
+        {/* Image form */}
         {activeTab === "images" && (
           <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
             <h4 className="text-md font-medium mb-2">Product Images</h4>
@@ -419,6 +422,7 @@ export function ProductWithImagesForm({
           </div>
         )}
 
+        {/* Variant form */}
         {activeTab === "variants" && (
           <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
             <h4 className="text-md font-medium mb-2">Product Variants</h4>
