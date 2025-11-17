@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { ProductData } from "./types";
+import { CategorySelect } from "../category/category-select";
 
 type Props = {
   product: ProductData;
@@ -25,12 +26,10 @@ export function ProductForm({ product, onChange }: Props) {
       </div>
 
       <div>
-        <Label className="text-gray-700 dark:text-gray-300">Slug</Label>
-        <Input
-          value={product.slug}
-          onChange={(e) => onChange("slug", e.target.value)}
-          placeholder="unique-slug"
-          className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+        <Label className="text-gray-700 dark:text-gray-300">Category</Label>
+        <CategorySelect
+          selectedId={product.categoryId || ""}
+          onChange={(id) => onChange("categoryId", id)}
         />
       </div>
 

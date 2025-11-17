@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogDescription,
 } from "@/components/ui/alert-dialog";
+import prisma from "@/lib/prisma";
 
 type Props = {
   product?: ProductData | null;
@@ -42,7 +43,6 @@ export function ProductWithImagesForm({
   const [productData, setProductData] = useState<ProductData>({
     id: product?.id,
     name: product?.name || "",
-    slug: product?.slug || "",
     description: product?.description || "",
     shortDescription: product?.shortDescription || "",
     sku: product?.sku || "",
@@ -51,6 +51,7 @@ export function ProductWithImagesForm({
     isFeatured: product?.isFeatured ?? false,
     metaTitle: product?.metaTitle || "",
     metaDescription: product?.metaDescription || "",
+    categoryId: product?.categoryId || "",
   });
   const updateProductField = (field: keyof ProductData, value: any) => {
     setProductData((prev) => ({ ...prev, [field]: value }));
@@ -262,8 +263,8 @@ export function ProductWithImagesForm({
 
   // ---------------------- SAVE ALL ----------------------
   const saveAll = async () => {
-    if (!productData.name || !productData.slug || !productData.sku) {
-      toast.error("Name, Slug, and SKU are required.");
+    if (!productData.name || !productData.sku) {
+      toast.error("Name and SKU are required.");
       return;
     }
 
@@ -290,6 +291,17 @@ export function ProductWithImagesForm({
 
       const savedProduct = await productRes.json();
       const productId = savedProduct.product.id;
+
+      if (productData.categoryId?.length) {
+        await fetch("/api/admin/products/categories", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            productId,
+            categoryIds: productData.categoryId,
+          }),
+        });
+      }
 
       // Save images (unchanged)
       for (const img of productImages) {

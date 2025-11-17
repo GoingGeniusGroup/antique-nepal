@@ -24,6 +24,7 @@ type Row = {
   metaTitle?: string | null;
   metaDescription?: string | null;
   createdAt: string;
+  categoryId?: string | null;
   categories?: { id: string; name: string }[];
   images?: {
     id: string;
@@ -142,7 +143,14 @@ export default function ProductsPage() {
         {editingProduct && (
           <div className="p-6 rounded-md shadow-md">
             <ProductWithImagesForm
-              product={editingProduct.id ? editingProduct : undefined}
+              product={
+                editingProduct
+                  ? {
+                      ...editingProduct,
+                      categoryId: editingProduct.categoryId ?? undefined,
+                    }
+                  : undefined
+              }
               images={editingProduct.images || []}
               onSave={handleSave}
             />

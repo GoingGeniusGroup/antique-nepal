@@ -1,7 +1,6 @@
 export type ProductData = {
   id?: string;
   name: string;
-  slug: string;
   description?: string | null;
   shortDescription?: string | null;
   sku: string;
@@ -10,6 +9,7 @@ export type ProductData = {
   isFeatured: boolean;
   metaTitle?: string | null;
   metaDescription?: string | null;
+  categoryId?: string;
 };
 
 export type ProductImage = {
@@ -22,7 +22,6 @@ export type ProductImage = {
   displayOrder: number;
   isPrimary: boolean;
   uploadcareUuid?: string | null;
-  previewUrl?: string | null;
 };
 
 export type ProductVariant = {
