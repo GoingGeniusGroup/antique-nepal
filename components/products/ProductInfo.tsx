@@ -126,9 +126,9 @@ export const ProductInfo = ({
         <div>
           <Separator />
           <div className="space-y-4 mt-6">
-            <h3 className="text-lg font-semibold tracking-tight">
+            <h2 className="text-lg font-semibold tracking-tight">
               Available Variants ({variants.length})
-            </h3>
+            </h2>
 
             <details className="group">
               <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground transition">

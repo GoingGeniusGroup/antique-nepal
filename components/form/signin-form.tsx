@@ -101,48 +101,59 @@ const SigninForm = () => {
           </div>
 
           {/* Password */}
-          <div className="relative space-y-2">
+          <div className="relative w-full space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password" className="text-sm font-semibold mb-1">
                 Password <span className="text-destructive">*</span>
               </Label>
               <Link
                 href="/forgot-password"
-                className="text-sm text-blue-700 hover:text-primary-glow transition-smooth "
+                className="text-sm text-blue-700 hover:text-primary-glow transition-smooth"
               >
                 Forgot password?
               </Link>
             </div>
-            <Input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setErrors((prev) => {
-                  const next = { ...prev };
-                  delete next.password;
-                  return next;
-                });
-              }}
-              className={`w-full pr-10 bg-card text-foreground placeholder:text-muted-foreground transition-all ${
-                errors.password
-                  ? "border-destructive border-2 focus:border-destructive"
-                  : "border-border focus:border-primary"
-              }`}
-            />
-            <button
-              type="button"
-              aria-label="Visibility"
-              className="absolute right-5 top-10 text-muted-foreground"
-              onClick={() => setShowPassword((prev) => !prev)}
+
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.password;
+                    return next;
+                  });
+                }}
+                className={`w-full pr-10 bg-card text-foreground placeholder:text-muted-foreground transition-all ${
+                  errors.password
+                    ? "border-destructive border-2 focus:border-destructive"
+                    : "border-border focus:border-primary"
+                }`}
+                aria-invalid={errors.password ? "true" : "false"}
+                aria-describedby="password-error"
+              />
+
+              <button
+                type="button"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute inset-y-0 right-3 flex items-center px-2 text-muted-foreground"
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+
+            <p
+              id="password-error"
+              className="text-xs text-destructive mt-1 min-h-4"
+              role="alert"
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
-            <p className="text-xs text-destructive mt-1 h-4">
-              {errors.password}{" "}
+              {errors.password}
             </p>
           </div>
 

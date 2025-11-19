@@ -213,14 +213,14 @@ export function ProductCard({
               </div>
             )}
 
-            <h3
+            <p
               className={cn(
                 "font-semibold text-[11px] md:text-xs lg:text-sm leading-tight line-clamp-2",
                 isDark ? "text-white" : "text-[#2d2520]"
               )}
             >
               {product.name}
-            </h3>
+            </p>
 
             <div
               className={cn(

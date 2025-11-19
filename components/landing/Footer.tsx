@@ -218,9 +218,9 @@ export const Footer = () => {
         <div className="grid lg:grid-cols-2 gap-12 mt-16 pt-16 border-t border-border">
           {/* Contact Info */}
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold font-cinzel text-foreground">
+            <p className="text-lg font-semibold font-cinzel text-foreground">
               Get in Touch
-            </h3>
+            </p>
             <div className="space-y-4">
               <div className="flex items-start gap-4 group">
                 <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center group-hover:bg-primary transition-colors duration-200 shrink-0">
@@ -269,9 +269,9 @@ export const Footer = () => {
           {/* Newsletter */}
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold font-cinzel text-foreground mb-3">
+              <p className="text-lg font-semibold font-cinzel text-foreground mb-3">
                 {footer?.newsletter?.title}
-              </h3>
+              </p>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-md font-inter">
                 {footer?.newsletter?.description}
               </p>

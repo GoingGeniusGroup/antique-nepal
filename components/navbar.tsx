@@ -411,18 +411,20 @@ export const Navbar = () => {
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Avatar className="w-9 h-9 cursor-pointer">
-                      <AvatarImage
-                        src={session.user?.image || ""}
-                        alt={session.user?.name || ""}
-                      />
-                      <AvatarFallback>
-                        {session.user?.name
-                          ?.split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
+                    <button className="w-9 h-9 cursor-pointer rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                      <Avatar className="w-9 h-9 cursor-pointer">
+                        <AvatarImage
+                          src={session.user?.image || ""}
+                          alt={session.user?.name || ""}
+                        />
+                        <AvatarFallback>
+                          {session.user?.name
+                            ?.split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                    </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-48" align="end">
                     <DropdownMenuLabel>
@@ -449,6 +451,7 @@ export const Navbar = () => {
 
             {/* ✅ Mobile Menu Button */}
             <button
+              aria-label="menubar"
               onClick={() => setIsOpen(!isOpen)}
               className="lg:hidden text-foreground hover:text-primary transition-all p-2 hover:scale-110"
             >

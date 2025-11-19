@@ -183,7 +183,7 @@ export function ProductControls({
               >
                 {category.name}
                 {category.count > 0 && (
-                  <span className="ml-1 opacity-70">({category.count})</span>
+                  <span className="ml-1 text-gray-500">({category.count})</span>
                 )}
               </button>
             );
@@ -193,6 +193,7 @@ export function ProductControls({
         {/* Left scroll indicator */}
         {canScrollLeft && (
           <button
+            aria-label="left-arrow"
             onClick={() => handleScroll(-150)}
             className={cn(
               "absolute left-0 top-1/2 -translate-y-1/2 p-2 rounded-full shadow-md z-10",
@@ -206,6 +207,7 @@ export function ProductControls({
         {/* Right scroll indicator */}
         {canScrollRight && (
           <button
+            aria-label="right-arrow"
             onClick={() => handleScroll(150)}
             className={cn(
               "absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-full shadow-md z-10",
@@ -240,6 +242,7 @@ export function ProductControls({
         >
           <Checkbox
             id="in-stock"
+            aria-label="in-stock"
             checked={inStockOnly}
             onCheckedChange={(checked) => onInStockChange(checked as boolean)}
           />
@@ -258,6 +261,7 @@ export function ProductControls({
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Select value={sortBy} onValueChange={onSortChange}>
             <SelectTrigger
+              aria-label="Sort products"
               className={cn(
                 "w-40 transition-all cursor-pointer duration-200",
                 isDark
