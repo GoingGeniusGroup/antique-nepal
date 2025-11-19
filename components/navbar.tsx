@@ -239,24 +239,26 @@ export const Navbar = () => {
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[500px] gap-2 p-6 md:w-[600px] md:grid-cols-2 lg:w-[700px]">
-                      <li className="md:col-span-2">
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href="/category"
-                            className="block select-none space-y-1 rounded-lg p-4 leading-none no-underline outline-none transition-all hover:shadow-soft border-2 border-primary/20 hover:border-primary/40 bg-gradient-subtle group"
-                          >
-                            <div className="text-base font-bold leading-none text-primary group-hover:scale-105 transition-transform inline-block">
-                              View All Categories
-                            </div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-2">
-                              Explore our complete collection of handcrafted
-                              bags
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
+                      {categories.length > 4 && (
+                        <li className="md:col-span-2">
+                          <NavigationMenuLink asChild>
+                            <Link
+                              href="/category"
+                              className="block select-none space-y-1 rounded-lg p-4 leading-none no-underline outline-none transition-all hover:shadow-soft border-2 border-primary/20 hover:border-primary/40 bg-gradient-subtle group"
+                            >
+                              <div className="text-base font-bold leading-none text-primary group-hover:scale-105 transition-transform inline-block">
+                                View All Categories
+                              </div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-2">
+                                Explore our complete collection of handcrafted
+                                bags
+                              </p>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      )}
 
-                      {categories.map((category) => (
+                      {categories.slice(0, 4).map((category) => (
                         <li key={category.id}>
                           <NavigationMenuLink asChild>
                             <Link
@@ -489,7 +491,7 @@ export const Navbar = () => {
                       Categories
                     </p>
                     <div className="pl-4 space-y-2">
-                      {categories.map((cat) => (
+                      {categories.slice(0, 4).map((cat) => (
                         <Link
                           key={cat.slug}
                           href={`/category/${cat.slug}`}
@@ -498,6 +500,14 @@ export const Navbar = () => {
                           {cat.name}
                         </Link>
                       ))}
+                      {categories.length > 4 && (
+                        <Link
+                          href="/category"
+                          className="block text-sm text-primary hover:text-primary/80 py-1 font-semibold"
+                        >
+                          View All Categories
+                        </Link>
+                      )}
                     </div>
                   </div>
 
