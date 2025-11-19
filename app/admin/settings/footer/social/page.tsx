@@ -10,6 +10,7 @@ import { Share2, Plus, Trash2, Save, ChevronDown, ChevronUp } from "lucide-react
 import { useState, useEffect } from "react";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import toast from "react-hot-toast";
+import { SettingsPreview } from "@/components/admin/settings/preview-section";
 
 type Social = {
   id?: string;
@@ -305,6 +306,23 @@ export default function FooterSocialPage() {
               </div>
             )}
           </div>
+          <SettingsPreview title="Footer Social Preview">
+            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+              {socials.length > 0 ? (
+                socials.map((social) => (
+                  <span
+                    key={social.id ?? social.name}
+                    className="px-2 py-1 rounded-full bg-muted border border-border"
+                  >
+                    {social.name || "Social"}
+                    {social.href ? ` • ${social.href}` : ""}
+                  </span>
+                ))
+              ) : (
+                <span>No social links configured yet.</span>
+              )}
+            </div>
+          </SettingsPreview>
         </Card>
       </div>
 

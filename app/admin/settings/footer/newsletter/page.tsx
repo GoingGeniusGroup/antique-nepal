@@ -10,6 +10,7 @@ import { Bell, Save } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import toast from "react-hot-toast";
+import { SettingsPreview } from "@/components/admin/settings/preview-section";
 
 export default function FooterNewsletterPage() {
   const [newsletter, setNewsletter] = useState<{
@@ -133,17 +134,34 @@ export default function FooterNewsletterPage() {
             </div>
           </div>
 
-          <div className="mt-6 p-4 bg-muted/50 rounded-lg border border-border">
-            <h4 className="text-sm font-medium text-foreground mb-2">Preview</h4>
-            <div className="space-y-2">
-              <p className="text-base font-semibold text-foreground">
-                {newsletter.title || "Join Our Community"}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {newsletter.description || "Subscribe to receive updates..."}
-              </p>
+          <SettingsPreview title="Footer Newsletter Preview" defaultOpen>
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  {newsletter.title || "Join Our Community"}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {newsletter.description ||
+                    "Subscribe to receive updates about new collections and stories."}
+                </p>
+              </div>
+              <div className="flex gap-2 max-w-sm">
+                <Input
+                  type="email"
+                  disabled
+                  placeholder="Enter your email"
+                  className="flex-1 h-8 text-xs bg-background border-border text-foreground placeholder:text-muted-foreground"
+                />
+                <Button
+                  size="sm"
+                  disabled
+                  className="h-8 px-3 text-xs bg-primary text-primary-foreground"
+                >
+                  Subscribe
+                </Button>
+              </div>
             </div>
-          </div>
+          </SettingsPreview>
         </Card>
       </div>
 

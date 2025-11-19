@@ -10,6 +10,7 @@ import { List, Plus, Trash2, Link as LinkIcon, Save, ChevronDown, ChevronUp } fr
 import { useState, useEffect } from "react";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import toast from "react-hot-toast";
+import { SettingsPreview } from "@/components/admin/settings/preview-section";
 
 type FooterSection = {
   id?: string;
@@ -397,6 +398,31 @@ export default function FooterNavigationPage() {
               </div>
             )}
           </div>
+          <SettingsPreview title="Footer Navigation Preview">
+            <div className="grid gap-4 md:grid-cols-3 text-xs text-muted-foreground">
+              {sections.length > 0 ? (
+                sections.map((section) => (
+                  <div key={section.id ?? section.title}>
+                    <div className="font-semibold text-foreground mb-1">
+                      {section.title || "Section"}
+                    </div>
+                    <ul className="space-y-1">
+                      {section.links.slice(0, 4).map((link) => (
+                        <li key={link.id ?? link.name}>
+                          {link.name || link.href || "Link"}
+                        </li>
+                      ))}
+                      {section.links.length > 4 && (
+                        <li>+ {section.links.length - 4} more</li>
+                      )}
+                    </ul>
+                  </div>
+                ))
+              ) : (
+                <p>No navigation sections configured yet.</p>
+              )}
+            </div>
+          </SettingsPreview>
         </Card>
       </div>
 
