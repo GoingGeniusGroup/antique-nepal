@@ -126,7 +126,10 @@ const SignupForm = () => {
                   handleInputChange("countryCode", value)
                 }
               >
-                <SelectTrigger className="w-full sm:w-[140px] bg-card text-foreground border-border">
+                <SelectTrigger
+                  aria-label="Select country code"
+                  className="w-full sm:w-[140px] bg-card text-foreground border-border"
+                >
                   <SelectValue placeholder="Select country" />
                 </SelectTrigger>
                 <SelectContent>
@@ -195,8 +198,9 @@ const SignupForm = () => {
               />
               <button
                 type="button"
+                aria-label="Visibility"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                className="absolute right-5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>

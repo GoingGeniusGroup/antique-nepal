@@ -31,7 +31,7 @@ const iconMap: Record<string, any> = {
 
 export const Footer = () => {
   const { footer, loading } = useFooterSettings();
-  
+
   // Don't render if no data from database
   if (loading) {
     return (
@@ -44,13 +44,20 @@ export const Footer = () => {
       </footer>
     );
   }
-  
-  if (!footer?.brand && !footer?.contact && !footer?.newsletter && (!footer?.sections || footer.sections.length === 0)) {
+
+  if (
+    !footer?.brand &&
+    !footer?.contact &&
+    !footer?.newsletter &&
+    (!footer?.sections || footer.sections.length === 0)
+  ) {
     return (
       <footer className="bg-card border-t border-border">
         <div className="container px-6 py-16">
           <div className="flex items-center justify-center h-32">
-            <p className="text-muted-foreground">Footer content not configured. Please add data in admin settings.</p>
+            <p className="text-muted-foreground">
+              Footer content not configured. Please add data in admin settings.
+            </p>
           </div>
         </div>
       </footer>
@@ -65,7 +72,7 @@ export const Footer = () => {
           {/* Company Info */}
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center relative overflow-hidden">
+              <div className="w-12 h-12 bg-linear-to-br from-primary to-secondary rounded-lg flex items-center justify-center relative overflow-hidden">
                 {footer?.brand?.logo && (
                   <Image
                     src={footer.brand.logo}
@@ -91,11 +98,14 @@ export const Footer = () => {
             <div className="flex gap-3 pt-2">
               <TooltipProvider>
                 {/* Facebook */}
-                {footer?.socials?.find(s => s.icon === "Facebook")?.href && (
+                {footer?.socials?.find((s) => s.icon === "Facebook")?.href && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Link
-                        href={footer?.socials?.find(s => s.icon === "Facebook")?.href || "#"}
+                        href={
+                          footer?.socials?.find((s) => s.icon === "Facebook")
+                            ?.href || "#"
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-9 h-9 rounded-lg bg-muted hover:bg-accent flex items-center justify-center transition-all duration-200 hover:scale-105 group"
@@ -109,13 +119,16 @@ export const Footer = () => {
                     </TooltipContent>
                   </Tooltip>
                 )}
-                
+
                 {/* Instagram */}
-                {footer?.socials?.find(s => s.icon === "Instagram")?.href && (
+                {footer?.socials?.find((s) => s.icon === "Instagram")?.href && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Link
-                        href={footer?.socials?.find(s => s.icon === "Instagram")?.href || "#"}
+                        href={
+                          footer?.socials?.find((s) => s.icon === "Instagram")
+                            ?.href || "#"
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-9 h-9 rounded-lg bg-muted hover:bg-accent flex items-center justify-center transition-all duration-200 hover:scale-105 group"
@@ -129,13 +142,16 @@ export const Footer = () => {
                     </TooltipContent>
                   </Tooltip>
                 )}
-                
+
                 {/* Twitter */}
-                {footer?.socials?.find(s => s.icon === "Twitter")?.href && (
+                {footer?.socials?.find((s) => s.icon === "Twitter")?.href && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Link
-                        href={footer?.socials?.find(s => s.icon === "Twitter")?.href || "#"}
+                        href={
+                          footer?.socials?.find((s) => s.icon === "Twitter")
+                            ?.href || "#"
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-9 h-9 rounded-lg bg-muted hover:bg-accent flex items-center justify-center transition-all duration-200 hover:scale-105 group"
@@ -149,13 +165,16 @@ export const Footer = () => {
                     </TooltipContent>
                   </Tooltip>
                 )}
-                
+
                 {/* LinkedIn */}
-                {footer?.socials?.find(s => s.icon === "Linkedin")?.href && (
+                {footer?.socials?.find((s) => s.icon === "Linkedin")?.href && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Link
-                        href={footer?.socials?.find(s => s.icon === "Linkedin")?.href || "#"}
+                        href={
+                          footer?.socials?.find((s) => s.icon === "Linkedin")
+                            ?.href || "#"
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-9 h-9 rounded-lg bg-muted hover:bg-accent flex items-center justify-center transition-all duration-200 hover:scale-105 group"
@@ -176,9 +195,9 @@ export const Footer = () => {
           {/* Dynamic Sections */}
           {footer?.sections?.map((section) => (
             <div key={section.id}>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-6 font-cinzel">
+              <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-6 font-cinzel">
                 {section.title}
-              </h3>
+              </p>
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.id}>
@@ -204,7 +223,7 @@ export const Footer = () => {
             </h3>
             <div className="space-y-4">
               <div className="flex items-start gap-4 group">
-                <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center group-hover:bg-primary transition-colors duration-200 flex-shrink-0">
+                <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center group-hover:bg-primary transition-colors duration-200 shrink-0">
                   <MapPin className="w-4 h-4 text-muted-foreground group-hover:text-primary-foreground" />
                 </div>
                 <div>
@@ -218,7 +237,7 @@ export const Footer = () => {
               </div>
 
               <div className="flex items-center gap-4 group">
-                <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center group-hover:bg-secondary transition-colors duration-200 flex-shrink-0">
+                <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center group-hover:bg-secondary transition-colors duration-200 shrink-0">
                   <Phone className="w-4 h-4 text-muted-foreground group-hover:text-secondary-foreground" />
                 </div>
                 <div>
@@ -232,7 +251,7 @@ export const Footer = () => {
               </div>
 
               <div className="flex items-center gap-4 group">
-                <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center group-hover:bg-accent transition-colors duration-200 flex-shrink-0">
+                <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center group-hover:bg-accent transition-colors duration-200 shrink-0">
                   <Mail className="w-4 h-4 text-muted-foreground group-hover:text-accent-foreground" />
                 </div>
                 <div>
@@ -283,7 +302,8 @@ export const Footer = () => {
         <div className="container px-6 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground font-inter">
-              © {new Date().getFullYear()} {footer?.brand?.name}. All rights reserved.
+              © {new Date().getFullYear()} {footer?.brand?.name}. All rights
+              reserved.
             </p>
             <div className="flex gap-6">
               {footer?.sections

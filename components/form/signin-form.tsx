@@ -135,7 +135,8 @@ const SigninForm = () => {
             />
             <button
               type="button"
-              className="absolute right-3 top-9 text-muted-foreground"
+              aria-label="Visibility"
+              className="absolute right-5 top-10 text-muted-foreground"
               onClick={() => setShowPassword((prev) => !prev)}
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
