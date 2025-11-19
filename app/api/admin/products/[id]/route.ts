@@ -3,7 +3,6 @@ import prisma from "@/lib/prisma";
 import { UpdateProductSchema } from "@/app/validations/product/product-schema";
 import { ZodError } from "zod";
 import { deleteUploadcareFile } from "@/lib/uploadCare";
-import { revalidateTag } from "next/cache";
 
 export async function PUT(
   req: NextRequest,
@@ -33,7 +32,6 @@ export async function PUT(
       where: { id },
       data,
     });
-    revalidateTag("products", "default");
     return NextResponse.json(
       { success: true, product: updated },
       { status: 200 }
@@ -98,8 +96,6 @@ export async function DELETE(
 
     // Delete product record
     await prisma.product.delete({ where: { id } });
-
-    revalidateTag("products", "default");
 
     return NextResponse.json({
       success: true,
