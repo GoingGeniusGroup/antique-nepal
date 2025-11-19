@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { variantSchema } from "@/app/validations/product/variant/variant-schema";
-import { revalidateTag } from "next/cache";
-import { getVariantsByProductId } from "@/lib/data/variants";
 
 // CREATE VARIANT
 export async function POST(req: Request) {
@@ -20,10 +18,6 @@ export async function POST(req: Request) {
     const data = parsed.data;
 
     const variant = await prisma.productVariant.create({ data });
-
-    // Revalidate cache for this product's variants
-    revalidateTag(`variants-${data.productId}`, "default");
-    revalidateTag("variants", "default"); // Also revalidate general variants cache
 
     return NextResponse.json({ variant }, { status: 201 });
   } catch (error) {
@@ -48,7 +42,10 @@ export async function GET(req: Request) {
       );
     }
 
-    const variants = await getVariantsByProductId(productId);
+    const variants = await prisma.productVariant.findMany({
+      where: { productId },
+      orderBy: { createdAt: "desc" },
+    });
 
     return NextResponse.json({ variants }, { status: 200 });
   } catch (error) {
