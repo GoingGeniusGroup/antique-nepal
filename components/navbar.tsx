@@ -340,6 +340,7 @@ export const Navbar = () => {
               <Link href={"/search"}>
                 <Button
                   variant="ghost"
+                  aria-label="Search"
                   size="icon"
                   className="hover:scale-110 hover:text-primary transition-transform"
                 >
@@ -351,6 +352,7 @@ export const Navbar = () => {
                   <Link href="/wishlist">
                     <Button
                       variant="ghost"
+                      aria-label="WishList"
                       size="icon"
                       className="relative hover:scale-110 hover:text-primary transition-transform"
                     >
@@ -365,6 +367,7 @@ export const Navbar = () => {
                   <Link href="/carts">
                     <Button
                       variant="ghost"
+                      aria-label="Cart"
                       size="icon"
                       className="relative hover:scale-110 hover:text-primary transition-transform group"
                     >
@@ -382,26 +385,28 @@ export const Navbar = () => {
               {/*  Auth Buttons*/}
               {!session || (session.user as any)?.role === "ADMIN" ? (
                 <>
-                  <Link href={"/login"}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="ml-2 hover:shadow-soft transition-all"
-                    >
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="ml-2 hover:shadow-soft transition-all"
+                  >
+                    <Link href={"/login"}>
                       <User className="w-4 h-4 mr-2" />
                       Login
-                    </Button>
-                  </Link>
-                  <Link href={"/register"}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="ml-2 hover:shadow-soft transition-all"
-                    >
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="ml-2 hover:shadow-soft transition-all"
+                  >
+                    <Link href={"/register"}>
                       <User className="w-4 h-4 mr-2" />
                       Signup
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </>
               ) : (
                 <DropdownMenu>
@@ -512,13 +517,18 @@ export const Navbar = () => {
 
                 {/* Actions */}
                 <div className="flex flex-col gap-3 pt-4 border-t border-border/50">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button
+                    aria-label="Search"
+                    variant="outline"
+                    className="w-full justify-start"
+                  >
                     <Search className="w-4 h-4 mr-2" /> Search
                   </Button>
                   {!isAdmin && (
                     <>
                       <Link href="/wishlist">
                         <Button
+                          aria-label="Wishlist"
                           variant="outline"
                           className="w-full justify-start relative"
                         >
@@ -533,6 +543,7 @@ export const Navbar = () => {
                       <Link href="/carts">
                         <Button
                           variant="outline"
+                          aria-label="Cart"
                           className="w-full justify-start relative"
                         >
                           <ShoppingBag className="w-4 h-4 mr-2" /> Cart
