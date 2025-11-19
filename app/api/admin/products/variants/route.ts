@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { variantSchema } from "@/app/validations/product/variant/variant-schema";
+import { revalidateTag } from "next/cache";
 
 // CREATE VARIANT
 export async function POST(req: Request) {
@@ -18,6 +19,7 @@ export async function POST(req: Request) {
     const data = parsed.data;
 
     const variant = await prisma.productVariant.create({ data });
+    revalidateTag("products", { expire: 0 });
 
     return NextResponse.json({ variant }, { status: 201 });
   } catch (error) {

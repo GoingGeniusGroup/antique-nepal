@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { variantUpdateSchema } from "@/app/validations/product/variant/variant-schema";
+import { revalidateTag } from "next/cache";
 
 // UPDATE VARIANT
 export async function PUT(
@@ -24,7 +25,7 @@ export async function PUT(
       where: { id },
       data: parsed.data,
     });
-
+    revalidateTag("products", { expire: 0 });
     return NextResponse.json({ updated });
   } catch (error) {
     console.log(error);
@@ -46,7 +47,7 @@ export async function DELETE(
     await prisma.productVariant.delete({
       where: { id },
     });
-
+    revalidateTag("products", { expire: 0 });
     return NextResponse.json(
       { message: "Variant deleted successfully" },
       { status: 200 }
