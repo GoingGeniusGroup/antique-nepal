@@ -251,10 +251,10 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
       <section className="pb-20 px-4">
         <div className="container">
           <Tabs defaultValue="orders" className="space-y-3">
-            <TabsList className="grid w-full grid-cols-3 ">
+            <TabsList className="grid w-full grid-cols-2 ">
               <TabsTrigger value="orders">Orders</TabsTrigger>
               <TabsTrigger value="addresses">Addresses</TabsTrigger>
-              <TabsTrigger value="security">Security</TabsTrigger>
+              {/* <TabsTrigger value="security">Security</TabsTrigger> */}
               {/* <TabsTrigger value="notifications">Notifications</TabsTrigger> */}
             </TabsList>
 
