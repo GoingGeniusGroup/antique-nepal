@@ -11,6 +11,7 @@ import { Building2, Save } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import toast from "react-hot-toast";
+import { SettingsPreview } from "@/components/admin/settings/preview-section";
 
 export default function FooterBrandPage() {
   const [brand, setBrand] = useState<{
@@ -159,6 +160,41 @@ export default function FooterBrandPage() {
               />
             </div>
           </div>
+          <SettingsPreview title="Footer Brand Preview">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center relative overflow-hidden">
+                  {brand.logo ? (
+                    <img
+                      src={brand.logo}
+                      alt={brand.name || "Footer brand logo"}
+                      className="w-10 h-10 object-contain"
+                    />
+                  ) : (
+                    <span className="text-sm font-semibold text-white/90">
+                      {(brand.name || "AN").slice(0, 2).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <div
+                    className="text-lg font-bold tracking-tight text-foreground"
+                    style={{ fontFamily: "var(--font-cinzel)" }}
+                  >
+                    {brand.name || "Antique Nepal"}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {brand.tagline ||
+                      "Handcrafted Hemp Bags Woven with Himalayan Heritage"}
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed max-w-md">
+                {brand.description ||
+                  "Preserving centuries of Nepalese craftsmanship through sustainable, thoughtfully designed hemp bags."}
+              </p>
+            </div>
+          </SettingsPreview>
         </Card>
       </div>
 

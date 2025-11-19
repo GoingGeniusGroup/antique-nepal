@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Type, Save } from "lucide-react";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import toast from "react-hot-toast";
+import { SettingsPreview } from "@/components/admin/settings/preview-section";
 
 type HeroData = { 
   title?: string; 
@@ -227,6 +228,55 @@ export function HeroSettingsCard({ hero, onChange }: Props) {
           </div>
         </div>
       </div>
+      <SettingsPreview title="Hero Section Preview">
+        <div className="rounded-xl bg-gradient-to-b from-slate-900 to-slate-800 px-5 py-6 text-white shadow-sm">
+          <div className="text-center space-y-3">
+            <p className="text-[10px] tracking-[0.18em] uppercase text-white/60">
+              Hero Heading
+            </p>
+            <p
+              className="text-2xl md:text-3xl font-bold tracking-[0.18em]"
+              style={{ fontFamily: "var(--font-cinzel)" }}
+            >
+              {hero.title || "ANTIQUE NEPAL"}
+            </p>
+            <p className="text-base md:text-lg font-light">
+              {hero.subtitle ||
+                "Handcrafted Hemp Bags Woven with Himalayan Heritage"}
+            </p>
+            <p className="text-sm text-white/80 max-w-2xl mx-auto">
+              {hero.description ||
+                "Every bag tells a story. Crafted by master artisans using centuries-old techniques, sustainable hemp, and adorned with traditional Nepali paper art."}
+            </p>
+          </div>
+          <div className="mt-6 grid gap-4 md:grid-cols-3 text-left text-xs">
+            <div className="rounded-lg bg-white/5 border border-white/15 px-3 py-3">
+              <div className="text-sm font-semibold text-white">
+                {hero.features?.feature1?.title || "100% Eco-Friendly"}
+              </div>
+              <div className="text-xs text-white/80">
+                {hero.features?.feature1?.description || "Sustainable hemp fiber"}
+              </div>
+            </div>
+            <div className="rounded-lg bg-white/5 border border-white/15 px-3 py-3">
+              <div className="text-sm font-semibold text-white">
+                {hero.features?.feature2?.title || "Fair Trade"}
+              </div>
+              <div className="text-xs text-white/80">
+                {hero.features?.feature2?.description || "Supporting local artisans"}
+              </div>
+            </div>
+            <div className="rounded-lg bg-white/5 border border-white/15 px-3 py-3">
+              <div className="text-sm font-semibold text-white">
+                {hero.features?.feature3?.title || "Quality Crafted"}
+              </div>
+              <div className="text-xs text-white/80">
+                {hero.features?.feature3?.description || "15+ years tradition"}
+              </div>
+            </div>
+          </div>
+        </div>
+      </SettingsPreview>
     </Card>
 
     <ConfirmationDialog
