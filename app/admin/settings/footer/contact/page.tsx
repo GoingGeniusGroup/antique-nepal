@@ -10,6 +10,7 @@ import { Phone, Mail, MapPin, Save } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import toast from "react-hot-toast";
+import { SettingsPreview } from "@/components/admin/settings/preview-section";
 
 export default function FooterContactPage() {
   const [contact, setContact] = useState<{
@@ -149,6 +150,43 @@ export default function FooterContactPage() {
               />
             </div>
           </div>
+          <SettingsPreview title="Footer Contact Preview">
+            <div className="space-y-4 text-xs">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-3 h-3 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-foreground">Our Office</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {contact.address || "Thamel, Kathmandu, Nepal"}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-3 h-3 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-foreground">Phone</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {contact.phone || "+977 1 234 5678"}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-3 h-3 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-foreground">Email</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {contact.email || "hello@antiquenepal.com"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </SettingsPreview>
         </Card>
       </div>
 

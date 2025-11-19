@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 
 import { useTheme } from "@/contexts/theme-context";
+import { useGeneralSettings } from "@/contexts/settings-context";
 import navigationData from "@/data/navigation.json";
 import { signOut, useSession } from "next-auth/react";
 import logoImgDark from "@/public/logo/Antique-Nepal-Logo-2.png";
@@ -64,6 +65,13 @@ export const Navbar = () => {
   const isDark = isReady && theme === "dark";
   const pathname = usePathname();
   const userId = session?.user?.id;
+  const { general } = useGeneralSettings();
+  const logoIconSrc =
+    general.logo && typeof general.logo === "string"
+      ? general.logo
+      : isDark
+      ? logoImgWhite
+      : logoImgDark;
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [cartCount, setCartCount] = useState(0);
@@ -192,8 +200,8 @@ export const Navbar = () => {
               {/* Logo Icon */}
               <div className="relative w-8 h-8">
                 <Image
-                  src={isDark ? logoImgWhite : logoImgDark}
-                  alt="Brand Logo"
+                  src={logoIconSrc}
+                  alt={general.siteName || "Brand Logo"}
                   fill
                   className="object-contain transition-all duration-300 group-hover:scale-110"
                 />

@@ -152,6 +152,15 @@ export function useHomepageSettings() {
   };
 }
 
+export function useGeneralSettings() {
+  const { settings, loading, error } = useSettings();
+  return {
+    general: settings.general,
+    loading,
+    error,
+  };
+}
+
 export function useHeroSettings() {
   const { settings, loading, error } = useSettings();
   return {

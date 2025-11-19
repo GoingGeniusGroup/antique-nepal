@@ -5,9 +5,10 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Tag, Save } from "lucide-react";
+import { Tag, Save, Leaf } from "lucide-react";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import toast from "react-hot-toast";
+import { SettingsPreview } from "@/components/admin/settings/preview-section";
 
 type Props = {
   banner: { text?: string; isVisible?: boolean };
@@ -96,15 +97,31 @@ export function BannerSettingsCard({ banner, onChange }: Props) {
           </Button>
         </div>
         <div>
-          <Label htmlFor="bannerText" className="text-sm font-medium text-muted-foreground">Banner Text</Label>
+          <Label
+            htmlFor="bannerText"
+            className="text-sm font-medium text-muted-foreground"
+          >
+            Banner Text
+          </Label>
           <Input
             id="bannerText"
-            placeholder="100% Sustainable • Handcrafted in Nepal"
+            placeholder="100% Sustainable • Handcrafted in Nepal • Est. 2010"
             className="mt-2"
             value={banner.text || ""}
             onChange={(e) => onChange({ ...banner, text: e.target.value })}
           />
         </div>
+        <SettingsPreview title="Homepage Banner Preview">
+          <div className="flex justify-center">
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/5 border border-emerald-500/40 px-4 py-2 text-xs font-medium text-emerald-900 dark:text-emerald-100 shadow-sm">
+              <Leaf className="h-3 w-3 text-emerald-500" />
+              <span>
+                {banner.text ||
+                  "100% Sustainable • Handcrafted in Nepal • Est. 2010"}
+              </span>
+            </div>
+          </div>
+        </SettingsPreview>
       </Card>
 
       <ConfirmationDialog

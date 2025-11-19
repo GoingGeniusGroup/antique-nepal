@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Globe, Save } from "lucide-react";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import toast from "react-hot-toast";
+import { SettingsPreview } from "@/components/admin/settings/preview-section";
 
 type Props = {
   general: { siteName?: string; logo?: string };
@@ -18,6 +19,8 @@ export function GeneralSettingsCard({ general, onChange }: Props) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,10 +42,32 @@ export function GeneralSettingsCard({ general, onChange }: Props) {
   const handleSave = async () => {
     setSaving(true);
     try {
+      let updatedGeneral = { ...general };
+
+      if (logoFile) {
+        const formData = new FormData();
+        formData.append("logo", logoFile);
+
+        const uploadRes = await fetch("/api/admin/site-logo", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error("Failed to upload logo");
+        }
+
+        const uploadData = await uploadRes.json();
+        if (uploadData.logo) {
+          updatedGeneral = { ...updatedGeneral, logo: uploadData.logo };
+          onChange(updatedGeneral);
+        }
+      }
+
       const res = await fetch("/api/admin/site-settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ general }),
+        body: JSON.stringify({ general: updatedGeneral }),
       });
 
       if (!res.ok) {
@@ -116,7 +141,45 @@ export function GeneralSettingsCard({ general, onChange }: Props) {
               onChange={(e) => onChange({ ...general, logo: e.target.value })}
             />
           </div>
+          <div className="md:col-span-2">
+            <Label htmlFor="logoUpload" className="text-sm font-medium text-muted-foreground">Upload Logo File</Label>
+            <Input
+              id="logoUpload"
+              type="file"
+              accept="image/*"
+              className="mt-2"
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null;
+                setLogoFile(file);
+                setLogoPreview(file ? URL.createObjectURL(file) : null);
+              }}
+            />
+          </div>
         </div>
+
+        <SettingsPreview title="Navbar & Admin Logo Preview">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-md bg-muted border border-border flex items-center justify-center overflow-hidden">
+              {(logoPreview || general.logo) ? (
+                <img
+                  src={logoPreview || general.logo || ""}
+                  alt={general.siteName || "Site logo preview"}
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <span className="text-xs text-muted-foreground">Logo</span>
+              )}
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-foreground">
+                {general.siteName || "Antique Nepal"}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                This is how your logo will appear in the navbar and admin panel.
+              </p>
+            </div>
+          </div>
+        </SettingsPreview>
       </Card>
 
       <ConfirmationDialog

@@ -28,6 +28,7 @@ import {
 import { Sidebar, SidebarBody } from "@/components/ui/sidebar";
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-context";
+import { useGeneralSettings } from "@/contexts/settings-context";
 import { Button } from "../ui/button";
 import { signOut, useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -198,6 +199,9 @@ export function AdminSidebar({
   const [expandedLinks, setExpandedLinks] = useState<string[]>([]);
   const { theme, toggleTheme, isReady } = useTheme();
   const { data: session } = useSession();
+  const { general } = useGeneralSettings();
+  const adminLogoSrc =
+    general.logo && typeof general.logo === "string" ? general.logo : logoImgWhite;
 
   // Auto-expand settings if on a settings subpage
   useEffect(() => {
@@ -257,8 +261,8 @@ export function AdminSidebar({
               {/* Logo Icon */}
               <div className="relative h-7 w-7 flex-shrink-0">
                 <Image
-                  src={logoImgWhite}
-                  alt="Antique Nepal Logo"
+                  src={adminLogoSrc}
+                  alt={general.siteName || "Antique Nepal Logo"}
                   fill
                   className="object-contain"
                 />
