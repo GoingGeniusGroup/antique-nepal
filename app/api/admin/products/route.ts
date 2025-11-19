@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { AddProductSchema } from "@/app/validations/product/product-schema";
 import { success, ZodError } from "zod";
+import { revalidateTag } from "next/cache";
 
 // helper to generate slug
 function generateSlug(name: string) {
@@ -89,6 +90,7 @@ export async function POST(req: NextRequest) {
         slug,
       },
     });
+    revalidateTag("products", { expire: 0 });
     return NextResponse.json({ success: true, product }, { status: 201 });
   } catch (error) {
     console.error("Product create error:", error);
