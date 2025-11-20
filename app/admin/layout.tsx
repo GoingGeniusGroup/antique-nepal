@@ -53,6 +53,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       "admin/categories",
       "/admin/products",
       "/admin/settings",
+      "/admin/reviews",
     ];
 
     // Prefetch routes after a short delay to not block initial render

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { Prisma } from "@prisma/client";
 
 // create
 export async function POST(req: Request) {
@@ -86,4 +87,65 @@ export async function DELETE(req: Request) {
     console.error("DELETE /api/reviews error:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
+}
+
+//fetch
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+
+  const page = Number(url.searchParams.get("page") || 1);
+  const pageSize = Number(url.searchParams.get("pageSize") || 10);
+
+  const sort = url.searchParams.get("sort") || "createdAt";
+  const order = url.searchParams.get("order") === "asc" ? "asc" : "desc";
+
+  const search = url.searchParams.get("q") || "";
+
+  const whereClause = search
+    ? {
+        OR: [
+          { title: { contains: search, mode: "insensitive" as const } },
+          { comment: { contains: search, mode: "insensitive" as const } },
+          {
+            user: { name: { contains: search, mode: "insensitive" as const } },
+          },
+          {
+            user: { email: { contains: search, mode: "insensitive" as const } },
+          },
+          {
+            product: {
+              name: { contains: search, mode: "insensitive" as const },
+            },
+          },
+        ],
+      }
+    : {};
+
+  let orderByClause: Prisma.ReviewOrderByWithRelationInput;
+  if (sort === "product") {
+    orderByClause = { product: { name: order } };
+  } else {
+    orderByClause = { [sort]: order };
+  }
+  const reviews = await prisma.review.findMany({
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+    orderBy: orderByClause,
+    where: whereClause,
+    include: {
+      user: { select: { name: true, email: true } },
+      product: { select: { name: true } },
+    },
+  });
+
+  const total = await prisma.review.count({
+    where: whereClause,
+  });
+
+  return NextResponse.json({
+    data: reviews,
+    total,
+    page,
+    pageSize,
+  });
 }
