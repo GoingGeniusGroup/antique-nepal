@@ -94,30 +94,34 @@ export default function AdminHomePage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        // Fetch total users
-        const usersRes = await fetch("/api/admin/users?page=1&pageSize=1");
-        const usersData = await usersRes.json();
+        const [usersRes, productsRes, ordersRes, incomeRes] =
+          await Promise.all([
+            fetch("/api/admin/users?page=1&pageSize=1"),
+            fetch(
+              "/api/admin/products?page=1&pageSize=5&sort=createdAt&order=desc"
+            ),
+            fetch(
+              "/api/admin/orders?page=1&pageSize=5&sort=createdAt&order=desc"
+            ),
+            fetch("/api/admin/orders/stats"),
+          ]);
+
+        const [usersData, productsData, ordersData, incomeData] =
+          await Promise.all([
+            usersRes.json(),
+            productsRes.json(),
+            ordersRes.json(),
+            incomeRes.json(),
+          ]);
+
         setTotalUsers(usersData.total || 0);
 
-        // Fetch total products and recent products
-        const productsRes = await fetch(
-          "/api/admin/products?page=1&pageSize=5&sort=createdAt&order=desc"
-        );
-        const productsData = await productsRes.json();
         setTotalProducts(productsData.total || 0);
         setRecentProducts(productsData.data || []);
 
-        // Fetch total orders and recent orders
-        const ordersRes = await fetch(
-          "/api/admin/orders?page=1&pageSize=5&sort=createdAt&order=desc"
-        );
-        const ordersData = await ordersRes.json();
         setTotalOrders(ordersData.total || 0);
         setRecentOrders(ordersData.data || []);
 
-        // Calculate total income and stats from paid orders
-        const incomeRes = await fetch("/api/admin/orders/stats");
-        const incomeData = await incomeRes.json();
         setTotalIncome(incomeData.totalIncome || 0);
         setTopCategories(incomeData.topCategories || []);
         setPopularProducts(incomeData.popularProducts || []);
