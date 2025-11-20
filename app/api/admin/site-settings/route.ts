@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { revalidateTag, unstable_cache } from "next/cache";
 
 type SettingsPayload = {
   general?: { siteName?: string; logo?: string };
@@ -46,17 +47,33 @@ type SettingsPayload = {
 
 const KEYS = ["general", "hero", "banner", "footer", "homepage"] as const;
 
+const getSiteSettings = unstable_cache(
+  async () => {
+    const rows = await prisma.siteSetting.findMany({
+      where: { key: { in: KEYS as unknown as string[] } },
+    });
+
+    const data: Record<string, any> = {};
+    for (const r of rows) data[r.key] = r.value;
+
+    return {
+      general: data.general || {},
+      hero: data.hero || {},
+      banner: data.banner || {},
+      footer: data.footer || {},
+      homepage: data.homepage || {},
+    };
+  },
+  ["site-settings"],
+  {
+    revalidate: 60,
+    tags: ["site-settings"],
+  }
+);
+
 export async function GET() {
-  const rows = await prisma.siteSetting.findMany({ where: { key: { in: KEYS as unknown as string[] } } });
-  const data: Record<string, any> = {};
-  for (const r of rows) data[r.key] = r.value;
-  return NextResponse.json({
-    general: data.general || {},
-    hero: data.hero || {},
-    banner: data.banner || {},
-    footer: data.footer || {},
-    homepage: data.homepage || {},
-  });
+  const settings = await getSiteSettings();
+  return NextResponse.json(settings);
 }
 
 export async function PATCH(req: Request) {
@@ -75,5 +92,6 @@ export async function PATCH(req: Request) {
   }
   if (ops.length === 0) return NextResponse.json({ ok: true });
   await prisma.$transaction(ops);
+  revalidateTag("site-settings", { expire: 0 });
   return NextResponse.json({ ok: true });
 }

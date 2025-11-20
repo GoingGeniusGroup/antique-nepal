@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 
 /**
  * GET /api/admin/orders/stats
  * Calculate total income from paid orders and top sales categories
+ *
+ * Uses unstable_cache similar to getProducts to avoid recalculating
+ * heavy stats on every dashboard load.
  */
-export async function GET() {
-  try {
+const getAdminOrderStats = unstable_cache(
+  async () => {
     // Get all paid orders
     const paidOrders = await prisma.order.findMany({
       where: {
@@ -220,13 +224,25 @@ export async function GET() {
       .slice(0, 5)
       .map(({ score, ...rest }) => rest);
 
-    return NextResponse.json({
+    return {
       totalIncome,
       totalPaidOrders: paidOrders.length,
       ordersByStatus,
       topCategories,
       popularProducts,
-    });
+    };
+  },
+  ["admin-order-stats"],
+  {
+    revalidate: 30,
+    tags: ["admin-order-stats"],
+  }
+);
+
+export async function GET() {
+  try {
+    const data = await getAdminOrderStats();
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Error calculating order stats:", error);
     return NextResponse.json(
