@@ -14,6 +14,19 @@ import {
 import Link from "next/link";
 import { formatCurrency, formatDate } from "@/lib/admin-utils";
 import { useSession } from "next-auth/react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts";
 
 /**
  * Admin Dashboard Page
@@ -44,6 +57,28 @@ type Order = {
   paymentMethod: string;
 };
 
+type TopCategory = {
+  id: string;
+  name: string;
+  totalSales: number;
+};
+
+type PopularProductStat = {
+  id: string;
+  name: string;
+  wishlistCount: number;
+  cartCount: number;
+  orderCount: number;
+};
+
+const CATEGORY_COLORS = [
+  "#3b82f6",
+  "#10b981",
+  "#f97316",
+  "#a855f7",
+  "#ef4444",
+];
+
 export default function AdminHomePage() {
   const { data: session } = useSession();
   const [totalUsers, setTotalUsers] = useState(0);
@@ -53,6 +88,8 @@ export default function AdminHomePage() {
   const [recentProducts, setRecentProducts] = useState<Product[]>([]);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [topCategories, setTopCategories] = useState<TopCategory[]>([]);
+  const [popularProducts, setPopularProducts] = useState<PopularProductStat[]>([]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -78,10 +115,12 @@ export default function AdminHomePage() {
         setTotalOrders(ordersData.total || 0);
         setRecentOrders(ordersData.data || []);
 
-        // Calculate total income from paid orders
+        // Calculate total income and stats from paid orders
         const incomeRes = await fetch("/api/admin/orders/stats");
         const incomeData = await incomeRes.json();
         setTotalIncome(incomeData.totalIncome || 0);
+        setTopCategories(incomeData.topCategories || []);
+        setPopularProducts(incomeData.popularProducts || []);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -131,8 +170,8 @@ export default function AdminHomePage() {
     <PageTransition>
       <div className="space-y-6">
         {/* Welcome Message */}
-        <div className="mb-2">
-          <h2 className="text-xl text-muted-foreground dark:text-slate-400">
+        <div className="mb-1">
+          <h2 className="text-lg text-muted-foreground dark:text-slate-400">
             Welcome,{" "}
             <span className="font-bold text-foreground dark:text-slate-100">
               {session?.user?.name || "Admin"}
@@ -143,25 +182,25 @@ export default function AdminHomePage() {
         <PageHeader title="Dashboard" />
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
               <Link key={index} href={stat.href}>
-                <Card className="p-6 hover:shadow-lg transition-all cursor-pointer dark:!bg-slate-800 dark:!border-slate-600 border-2 hover:border-blue-300 dark:hover:border-blue-600">
+                <Card className="p-4 hover:shadow-md transition-all cursor-pointer dark:!bg-slate-800 dark:!border-slate-600 border hover:border-blue-300 dark:hover:border-blue-600">
                   <div className="flex items-center justify-between">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-muted-foreground dark:text-slate-400">
+                      <p className="text-xs font-medium text-muted-foreground dark:text-slate-400">
                         {stat.title}
                       </p>
-                      <p className="text-3xl font-bold text-foreground dark:text-slate-100 mt-2">
+                      <p className="text-2xl font-bold text-foreground dark:text-slate-100 mt-1">
                         {stat.value}
                       </p>
                     </div>
                     <div
-                      className={`p-4 rounded-full ${stat.bgColor} flex-shrink-0 ml-4`}
+                      className={`p-3 rounded-full ${stat.bgColor} flex-shrink-0 ml-3`}
                     >
-                      <Icon className={`h-8 w-8 ${stat.color}`} />
+                      <Icon className={`h-6 w-6 ${stat.color}`} />
                     </div>
                   </div>
                 </Card>
@@ -171,11 +210,11 @@ export default function AdminHomePage() {
         </div>
 
         {/* Recent Products and Orders */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           {/* Recent Products */}
-          <Card className="p-6 dark:!bg-slate-800 dark:!border-slate-600">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-foreground dark:text-slate-100">
+          <Card className="p-4 dark:!bg-slate-800 dark:!border-slate-600">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-semibold text-foreground dark:text-slate-100">
                 Recent Products
               </h2>
               <Link
@@ -187,20 +226,20 @@ export default function AdminHomePage() {
               </Link>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {loading ? (
-                <div className="text-center py-8 text-muted-foreground dark:text-slate-400">
+                <div className="text-center py-6 text-muted-foreground dark:text-slate-400 text-sm">
                   Loading...
                 </div>
               ) : recentProducts.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground dark:text-slate-400">
+                <div className="text-center py-6 text-muted-foreground dark:text-slate-400 text-sm">
                   No products found
                 </div>
               ) : (
                 recentProducts.map((product) => (
                   <div
                     key={product.id}
-                    className="flex items-center justify-between p-3 rounded-lg border border-border dark:border-slate-600 hover:bg-muted/50 dark:hover:bg-slate-700/50 transition-colors"
+                    className="flex items-center justify-between p-2 rounded-lg border border-border dark:border-slate-600 hover:bg-muted/50 dark:hover:bg-slate-700/50 transition-colors"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-foreground dark:text-slate-100 truncate">
@@ -225,9 +264,9 @@ export default function AdminHomePage() {
           </Card>
 
           {/* Recent Orders */}
-          <Card className="p-6 dark:!bg-slate-800 dark:!border-slate-600">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-foreground dark:text-slate-100">
+          <Card className="p-4 dark:!bg-slate-800 dark:!border-slate-600">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-semibold text-foreground dark:text-slate-100">
                 Recent Orders
               </h2>
               <Link
@@ -239,20 +278,20 @@ export default function AdminHomePage() {
               </Link>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {loading ? (
-                <div className="text-center py-8 text-muted-foreground dark:text-slate-400">
+                <div className="text-center py-6 text-muted-foreground dark:text-slate-400 text-sm">
                   Loading...
                 </div>
               ) : recentOrders.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground dark:text-slate-400">
+                <div className="text-center py-6 text-muted-foreground dark:text-slate-400 text-sm">
                   No orders found
                 </div>
               ) : (
                 recentOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="flex items-center justify-between p-3 rounded-lg border border-border dark:border-slate-600 hover:bg-muted/50 dark:hover:bg-slate-700/50 transition-colors"
+                    className="flex items-center justify-between p-2 rounded-lg border border-border dark:border-slate-600 hover:bg-muted/50 dark:hover:bg-slate-700/50 transition-colors"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-foreground dark:text-slate-100 truncate">
@@ -290,7 +329,112 @@ export default function AdminHomePage() {
               )}
             </div>
           </Card>
+
+          <Card className="p-4 dark:!bg-slate-800 dark:!border-slate-600">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-semibold text-foreground dark:text-slate-100">
+                Top Sales Categories
+              </h2>
+            </div>
+
+            <div className="h-52">
+              {loading ? (
+                <div className="text-center py-6 text-muted-foreground dark:text-slate-400 text-sm">
+                  Loading...
+                </div>
+              ) : topCategories.length === 0 ? (
+                <div className="text-center py-6 text-muted-foreground dark:text-slate-400 text-sm">
+                  No category sales data
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={topCategories}
+                      dataKey="totalSales"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius="80%"
+                      label
+                    >
+                      {topCategories.map((entry, index) => (
+                        <Cell
+                          key={entry.id}
+                          fill={CATEGORY_COLORS[index % CATEGORY_COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value) =>
+                        formatCurrency(String(value))
+                      }
+                    />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </Card>
         </div>
+
+        <Card className="p-4 dark:!bg-slate-800 dark:!border-slate-600">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-base font-semibold text-foreground dark:text-slate-100">
+              Popular Products
+            </h2>
+          </div>
+
+          <div className="h-64">
+            {loading ? (
+              <div className="text-center py-6 text-muted-foreground dark:text-slate-400 text-sm">
+                Loading...
+              </div>
+            ) : popularProducts.length === 0 ? (
+              <div className="text-center py-6 text-muted-foreground dark:text-slate-400 text-sm">
+                No product engagement data
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={popularProducts}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 10 }}
+                    tickLine={false}
+                    axisLine={{ stroke: "#e5e7eb" }}
+                  />
+                  <YAxis
+                    allowDecimals={false}
+                    tick={{ fontSize: 10 }}
+                    tickLine={false}
+                    axisLine={{ stroke: "#e5e7eb" }}
+                  />
+                  <Tooltip />
+                  <Legend />
+                  <Bar
+                    dataKey="orderCount"
+                    name="Ordered"
+                    fill="#3b82f6"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="cartCount"
+                    name="In Carts"
+                    fill="#22c55e"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="wishlistCount"
+                    name="Wishlisted"
+                    fill="#f97316"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </Card>
       </div>
     </PageTransition>
   );

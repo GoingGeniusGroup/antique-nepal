@@ -24,6 +24,7 @@ import {
   Bell,
   List,
   ShoppingBag,
+  BarChart3,
   MessageCircle,
 } from "lucide-react";
 import { Sidebar, SidebarBody } from "@/components/ui/sidebar";
@@ -95,6 +96,33 @@ const LINKS: NavLink[] = [
     href: "/admin/reviews",
     label: "Reviews",
     icon: <MessageCircle className="text-white h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    href: "/admin/statistics",
+    label: "Statistics",
+    icon: <BarChart3 className="text-white h-5 w-5 flex-shrink-0" />,
+    subLinks: [
+      {
+        href: "/admin/statistics",
+        label: "Overview",
+        icon: <LayoutDashboard className="text-white h-4 w-4 flex-shrink-0" />,
+      },
+      {
+        href: "/admin/statistics/orders",
+        label: "Orders",
+        icon: <ShoppingCart className="text-white h-4 w-4 flex-shrink-0" />,
+      },
+      {
+        href: "/admin/statistics/products",
+        label: "Products",
+        icon: <Package className="text-white h-4 w-4 flex-shrink-0" />,
+      },
+      {
+        href: "/admin/statistics/customers",
+        label: "Customers",
+        icon: <Users className="text-white h-4 w-4 flex-shrink-0" />,
+      },
+    ],
   },
   {
     href: "/admin/settings",
