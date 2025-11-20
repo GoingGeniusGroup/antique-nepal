@@ -25,6 +25,7 @@ import {
   List,
   ShoppingBag,
   BarChart3,
+  MessageCircle,
 } from "lucide-react";
 import { Sidebar, SidebarBody } from "@/components/ui/sidebar";
 import { motion } from "framer-motion";
@@ -90,6 +91,11 @@ const LINKS: NavLink[] = [
     href: "/admin/users",
     label: "Users",
     icon: <Users className="text-white h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    href: "/admin/reviews",
+    label: "Reviews",
+    icon: <MessageCircle className="text-white h-5 w-5 flex-shrink-0" />,
   },
   {
     href: "/admin/statistics",
@@ -229,7 +235,9 @@ export function AdminSidebar({
   const { data: session } = useSession();
   const { general } = useGeneralSettings();
   const adminLogoSrc =
-    general.logo && typeof general.logo === "string" ? general.logo : logoImgWhite;
+    general.logo && typeof general.logo === "string"
+      ? general.logo
+      : logoImgWhite;
 
   // Auto-expand settings if on a settings subpage
   useEffect(() => {
