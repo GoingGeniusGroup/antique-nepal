@@ -32,13 +32,14 @@ export async function GET(req: NextRequest) {
       }
     : {};
 
+  // Fetch total count + paginated data
   const [total, data] = await Promise.all([
     prisma.product.count({ where }),
     prisma.product.findMany({
       where,
       orderBy: { [sort]: order },
       include: {
-        categories: true,
+        categories: { include: { category: true } },
         images: true,
         variants: true,
         reviews: true,
@@ -49,9 +50,15 @@ export async function GET(req: NextRequest) {
     }),
   ]);
 
+  // Map to frontend-friendly format
   const safe = data.map((p) => ({
     ...p,
     price: (p.price as unknown as Prisma.Decimal).toString(),
+    categories:
+      p.categories?.map((pc) => ({
+        id: pc.category.id,
+        name: pc.category.name,
+      })) || [],
   }));
 
   return NextResponse.json({ page, pageSize, total, data: safe });

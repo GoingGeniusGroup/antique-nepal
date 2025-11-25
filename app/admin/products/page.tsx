@@ -114,7 +114,7 @@ export default function ProductsPage() {
     {
       key: "categories",
       label: "Categories",
-      render: (r) => r.categories?.map((c) => c.name).join(", ") || "-",
+      render: (r: Row) => r.categories?.map((c) => c.name).join(", ") || "-",
     },
     {
       key: "images",
@@ -147,7 +147,8 @@ export default function ProductsPage() {
                 editingProduct
                   ? {
                       ...editingProduct,
-                      categoryId: editingProduct.categoryId ?? undefined,
+                      categoryId:
+                        editingProduct.categories?.[0]?.id ?? undefined,
                     }
                   : undefined
               }

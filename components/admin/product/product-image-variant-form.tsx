@@ -298,7 +298,9 @@ export function ProductWithImagesForm({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             productId,
-            categoryIds: productData.categoryId,
+            categoryIds: Array.isArray(productData.categoryId)
+              ? productData.categoryId
+              : [productData.categoryId],
           }),
         });
       }
