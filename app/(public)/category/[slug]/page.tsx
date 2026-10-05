@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 
 import { ProductData } from "@/actions/products";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { ProductControls } from "@/components/products/product-controls";
 import { ProductGrid } from "@/components/products/product-grid";
 import { Pagination } from "@/components/products/pagination";
@@ -127,9 +126,6 @@ const CategoryPage = () => {
 
   return (
     <div className="min-h-screen bg-background mt-20 flex flex-col">
-      {/* Theme Toggle */}
-      <ThemeToggle variant="fixed" position="right-4 top-24" />
-
       {/* Banner */}
       <ProductsBannerSection
         title={category.name}

@@ -116,7 +116,7 @@ export function ProductCard({ title, price, img, tag, description, id = "1" }: P
         >
           <h3
             className={
-              "text-xl sm:text-xl font-inter font-semibold mb-1 text-[#2d2520] dark:text-white"
+              "text-xl sm:text-xl font-serif font-semibold mb-1 text-[#2d2520] dark:text-white"
             }
           >
             {title}

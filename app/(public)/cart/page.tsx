@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { ChevronLeft, Trash2, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
@@ -76,8 +75,6 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Theme Toggle */}
-      <ThemeToggle variant="fixed" position="right-4 top-24" />
       {/* Breadcrumb */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-4">
@@ -135,7 +132,7 @@ export default function CartPage() {
                             <p className="text-xs text-muted-foreground mb-1">
                               {item.category}
                             </p>
-                            <h3 className="font-semibold text-sm mb-2">
+                            <h3 className="font-serif font-semibold text-sm mb-2">
                               {item.name}
                             </h3>
                             <p className="text-lg font-bold text-primary">

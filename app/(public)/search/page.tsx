@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Spinner } from "@/components/ui/spinner";
 import { ProductControls } from "@/components/products/product-controls";
 import { ProductGrid } from "@/components/products/product-grid";
@@ -113,14 +112,6 @@ const SearchPage = () => {
 
   return (
     <main className="pt-16 md:pt-20 min-h-screen bg-[#f7f5f2] dark:bg-[#0a0a0a] relative">
-      <ThemeToggle
-        variant="fixed"
-        position="right-4 md:right-8 top-24 md:top-28"
-        animationType="scale"
-        animationDelay={0.3}
-        zIndex={30}
-      />
-
       <div className="flex flex-col gap-8 p-6 mx-3 lg:mx-16 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

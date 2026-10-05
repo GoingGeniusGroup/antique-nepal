@@ -6,7 +6,6 @@ import { ProductGrid } from "@/components/products/product-grid";
 import ProductsBannerSection from "@/components/products/ProductsBannerSection";
 import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { getProducts, type ProductData } from "@/actions/products";
 
 const PRODUCTS_PER_PAGE = 8;
@@ -153,14 +152,6 @@ const ProductsPage = () => {
 
   return (
     <main className="pt-16 md:pt-20 min-h-screen bg-[#f7f5f2] dark:bg-[#0a0a0a] relative">
-      <ThemeToggle
-        variant="fixed"
-        position="right-4 md:right-8 top-24 md:top-28"
-        animationType="scale"
-        animationDelay={0.3}
-        zIndex={30}
-      />
-
       <ProductsBannerSection
         title="Our Hemp Collection"
         subtitle="Discover handcrafted accessories made from sustainable hemp fiber by skilled artisans in the Himalayan foothills."

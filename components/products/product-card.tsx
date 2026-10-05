@@ -215,7 +215,7 @@ export function ProductCard({
 
             <p
               className={cn(
-                "font-semibold text-[11px] md:text-xs lg:text-sm leading-tight line-clamp-2",
+                "font-serif font-semibold text-sm md:text-base leading-tight line-clamp-2",
                 isDark ? "text-white" : "text-[#2d2520]"
               )}
             >
@@ -225,13 +225,13 @@ export function ProductCard({
             <div
               className={cn(
                 "flex items-center justify-between pt-1.5 md:pt-2 border-t",
-                isDark ? "border-white/20" : "border-white/20"
+                isDark ? "border-white/20" : "border-stone-200"
               )}
             >
               <span
                 className={cn(
-                  "text-sm md:text-base lg:text-lg font-semibold font-cinzel",
-                  isDark ? "text-slate-200" : "text-primary"
+                  "text-sm md:text-base font-bold font-sans",
+                  isDark ? "text-amber-400" : "text-amber-800"
                 )}
               >
                 ${product.price.toFixed(2)}
