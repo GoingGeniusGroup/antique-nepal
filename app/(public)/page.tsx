@@ -47,7 +47,7 @@ export default async function Home() {
     featuredProducts.push(popularProduct);
   }
   return (
-    <div className="pt-16 md:pt-20">
+    <div>
       <Hero />
       <FeaturedCollection products={featuredProducts} />
       <ProductShowcase />
