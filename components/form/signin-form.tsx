@@ -64,11 +64,11 @@ const SigninForm = () => {
     <div className="flex justify-center items-center min-h-screen px-4 py-6 sm:py-8 text-foreground  dark:text-foreground">
       {/* <div> */}
       <div className="w-full max-w-md p-6 sm:p-8 space-y-6">
-        <div className="flex flex-col justify-center items-center text-2xl sm:text-3xl text-primary font-bold mb-6">
-          <h1 className="text-4xl font-cinzel font-bold text-primary mb-2">
-            welcome back
+        <div className="flex flex-col justify-center items-center text-center mb-6">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary mb-2 tracking-tight">
+            Welcome Back
           </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground font-sans">
             Sign in to your account to continue
           </p>
         </div>

@@ -78,10 +78,10 @@ const SignupForm = () => {
     <div className="flex justify-center items-center min-h-screen px-4 py-6 sm:py-8 text-foreground  dark:text-foreground">
       <div className="w-full max-w-md p-6 sm:p-8 space-y-6">
         <div className="text-center mb-6">
-          <h1 className="text-2xl sm:text-3xl text-primary font-cinzel font-bold mb-2">
-            CREATE AN ACCOUNT
+          <h1 className="text-3xl sm:text-4xl text-primary font-serif font-bold mb-2 tracking-tight">
+            Create an Account
           </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground font-sans">
             Get started with your free account
           </p>
         </div>
