@@ -5,6 +5,8 @@ import { useTheme } from "@/contexts/theme-context";
 import { NavigationProvider, useNavigation } from "@/contexts/navigation-context";
 import { LoadingScreen } from "@/components/loading-screen";
 import { Navbar } from "@/components/navbar";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { ScrollNav } from "@/components/scroll-nav";
 import { usePathname } from "next/navigation";
 
 function ClientRootContent({ children }: PropsWithChildren) {
@@ -32,6 +34,16 @@ function ClientRootContent({ children }: PropsWithChildren) {
       <div className={showLoading ? "opacity-0 pointer-events-none" : "opacity-100 transition-opacity duration-300"}>
         {children}
       </div>
+      {!isAdmin && (
+        <>
+          <ThemeToggle
+            variant="fixed"
+            position="right-4 md:right-8 top-1/2 -translate-y-1/2"
+            zIndex={50}
+          />
+          <ScrollNav zIndex={40} />
+        </>
+      )}
     </div>
   );
 }
