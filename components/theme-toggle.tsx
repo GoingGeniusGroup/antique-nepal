@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
 import { useTheme } from "@/contexts/theme-context";
 import {
@@ -28,44 +28,43 @@ interface ThemeToggleProps {
 
 export function ThemeToggle({
   variant = "fixed",
-  position = "right-4 md:right-8 top-24 md:top-28",
+  position = "right-4 md:right-8 top-1/2 -translate-y-1/2",
   animationDelay = 0.3,
-  animationType = "scale",
+  animationType = "slide",
   className,
-  zIndex = 30,
+  zIndex = 50,
 }: ThemeToggleProps = {}) {
   const { theme, isReady, toggleTheme } = useTheme();
   const isDark = isReady && theme === "dark";
 
-  const animationProps =
-    animationType === "slide"
-      ? {
-          initial: { opacity: 0, x: 20 },
-          animate: { opacity: 1, x: 0 },
-          transition: { duration: 0.6, delay: animationDelay },
-        }
-      : {
-          initial: { opacity: 0, scale: 0.8 },
-          animate: { opacity: 1, scale: 1 },
-          transition: { duration: 0.3, delay: animationDelay },
-        };
-
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
           <motion.button
             onClick={toggleTheme}
-            {...animationProps}
+            initial={
+              animationType === "slide"
+                ? { opacity: 0, x: 30 }
+                : { opacity: 0, scale: 0.8 }
+            }
+            animate={
+              animationType === "slide"
+                ? { opacity: 1, x: 0 }
+                : { opacity: 1, scale: 1 }
+            }
+            transition={{ duration: 0.5, delay: animationDelay, ease: "easeOut" }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.92 }}
             className={cn(
               variant === "fixed" && "fixed",
               variant === "absolute" && "absolute",
               variant === "relative" && "relative",
               position,
-              "rounded-full p-3 backdrop-blur-md shadow-lg border transition-all",
+              "group rounded-full p-3 md:p-3.5 backdrop-blur-md transition-colors duration-200 border cursor-pointer select-none",
               isDark
-                ? "bg-white/20 border-white/30 hover:bg-white/30"
-                : "bg-[#f7f5f2]/80 border-[#e8e0d8] hover:bg-white/90",
+                ? "bg-stone-900/80 text-amber-300 border-stone-700/60 shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:bg-stone-800 hover:border-stone-600"
+                : "bg-white/80 text-[#2d2520] border-[#e8e0d8] shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:bg-white hover:border-[#d4c8bc]",
               className
             )}
             style={{ zIndex }}
@@ -73,27 +72,41 @@ export function ThemeToggle({
               isDark ? "Switch to light mode" : "Switch to dark mode"
             }
           >
-            {isReady ? (
-              theme === "dark" ? (
-                <Moon className="h-5 w-5 md:h-6 md:w-6 text-slate-300" />
+            <AnimatePresence mode="wait" initial={false}>
+              {isReady && theme === "dark" ? (
+                <motion.div
+                  key="moon"
+                  initial={{ rotate: -90, opacity: 0, scale: 0.7 }}
+                  animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                  exit={{ rotate: 90, opacity: 0, scale: 0.7 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Moon className="h-5 w-5 md:h-6 md:w-6 text-amber-300" />
+                </motion.div>
               ) : (
-                <Sun className="h-5 w-5 md:h-6 md:w-6 text-[#2d2520]" />
-              )
-            ) : (
-              <Sun className="h-5 w-5 md:h-6 md:w-6" />
-            )}
+                <motion.div
+                  key="sun"
+                  initial={{ rotate: 90, opacity: 0, scale: 0.7 }}
+                  animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                  exit={{ rotate: -90, opacity: 0, scale: 0.7 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Sun className="h-5 w-5 md:h-6 md:w-6 text-[#2d2520]" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.button>
         </TooltipTrigger>
         <TooltipContent
           side="left"
           className={cn(
-            "backdrop-blur-md border",
+            "backdrop-blur-md border px-3 py-1.5 text-xs font-medium shadow-lg rounded-lg",
             isDark
-              ? "bg-white/20 text-white border-white/30"
-              : "bg-white/80 text-[#2d2520] border-[#e8e0d8]"
+              ? "bg-stone-900/90 text-stone-200 border-stone-700/60"
+              : "bg-white/95 text-[#2d2520] border-[#e8e0d8]"
           )}
         >
-          {isDark ? "Light mode" : "Dark mode"}
+          {isDark ? "Switch to Light mode" : "Switch to Dark mode"}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
