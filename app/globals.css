@@ -5,8 +5,10 @@
 @theme inline {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
-  --font-cinzel: var(--font-cinzel);
-  --font-inter: var(--font-inter);
+  --font-cinzel: var(--font-cinzel), "Cinzel", Georgia, serif;
+  --font-inter: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-cinzel), "Cinzel", Georgia, serif;
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --gradient-mountain: hsl(var(--gradient-mountain));
 
   --color-sidebar-ring: var(--sidebar-ring);

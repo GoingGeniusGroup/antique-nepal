@@ -20,7 +20,7 @@ const cinzel = Cinzel({
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["300", "400"], // optional — choose what you need
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -54,7 +54,7 @@ export default async function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${cinzel.variable} ${inter.variable} antialiased bg-background text-foreground`}
+        className={`${cinzel.variable} ${inter.variable} font-sans antialiased bg-background text-foreground`}
       >
         <SessionProvider session={session}>
           <ThemeProvider>
