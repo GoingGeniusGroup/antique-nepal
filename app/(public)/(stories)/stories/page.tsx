@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { NavigationLink } from "@/components/navigation-link";
 import { motion } from "framer-motion";
 
@@ -67,8 +66,6 @@ const itemVariants = {
 export default function StoriesHub() {
   return (
     <div className="min-h-screen bg-background">
-      <ThemeToggle variant="fixed" position="right-4 top-24" />
-
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <Image
