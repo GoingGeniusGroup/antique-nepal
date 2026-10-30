@@ -36,7 +36,7 @@ const getAdminOrderStats = unstable_cache(
       },
     });
 
-    const ordersByStatus = ordersByStatusRaw.map((item) => ({
+    const ordersByStatus = (ordersByStatusRaw as any[]).map((item: any) => ({
       status: item.status,
       count: item._count._all,
     }));
