@@ -113,7 +113,7 @@ export function HeroSettingsCard({ hero, onChange }: Props) {
           <Label htmlFor="heroTitle" className="text-sm font-medium text-muted-foreground">Hero Title</Label>
           <Input
             id="heroTitle"
-            placeholder="ANTIQUE NEPAL"
+            placeholder="ALENA COLLECTION"
             className="mt-2"
             value={hero.title || ""}
             onChange={(e) => onChange({ ...hero, title: e.target.value })}
@@ -133,7 +133,7 @@ export function HeroSettingsCard({ hero, onChange }: Props) {
           <Label htmlFor="heroDescription" className="text-sm font-medium text-muted-foreground">Hero Description</Label>
           <Input
             id="heroDescription"
-            placeholder="Every bag tells a story. Crafted by master artisans using centuries-old techniques..."
+            placeholder="Discover chic, modern pieces curated for your everyday wardrobe..."
             className="mt-2"
             value={hero.description || ""}
             onChange={(e) => onChange({ ...hero, description: e.target.value })}
@@ -148,7 +148,7 @@ export function HeroSettingsCard({ hero, onChange }: Props) {
           <div>
             <Label className="text-sm font-medium text-muted-foreground">Feature 1 Title</Label>
             <Input
-              placeholder="100% Eco-Friendly"
+              placeholder="Thoughtfully Curated"
               className="mt-2 mb-2"
               value={hero.features?.feature1?.title || ""}
               onChange={(e) => onChange({ 
@@ -175,7 +175,7 @@ export function HeroSettingsCard({ hero, onChange }: Props) {
           <div>
             <Label className="text-sm font-medium text-muted-foreground">Feature 2 Title</Label>
             <Input
-              placeholder="Fair Trade"
+              placeholder="Versatile Style"
               className="mt-2 mb-2"
               value={hero.features?.feature2?.title || ""}
               onChange={(e) => onChange({ 
@@ -187,7 +187,7 @@ export function HeroSettingsCard({ hero, onChange }: Props) {
               })}
             />
             <Input
-              placeholder="Supporting local artisans"
+              placeholder="Pieces for every occasion"
               className="mt-1"
               value={hero.features?.feature2?.description || ""}
               onChange={(e) => onChange({ 
@@ -214,7 +214,7 @@ export function HeroSettingsCard({ hero, onChange }: Props) {
               })}
             />
             <Input
-              placeholder="15+ years tradition"
+              placeholder="Effortless, polished looks"
               className="mt-1"
               value={hero.features?.feature3?.description || ""}
               onChange={(e) => onChange({ 
@@ -252,7 +252,7 @@ export function HeroSettingsCard({ hero, onChange }: Props) {
           <div className="mt-6 grid gap-4 md:grid-cols-3 text-left text-xs">
             <div className="rounded-lg bg-white/5 border border-white/15 px-3 py-3">
               <div className="text-sm font-semibold text-white">
-                {hero.features?.feature1?.title || "100% Eco-Friendly"}
+                {hero.features?.feature1?.title || "Thoughtfully Curated"}
               </div>
               <div className="text-xs text-white/80">
                 {hero.features?.feature1?.description || "Curated styles for every occasion"}
@@ -260,10 +260,10 @@ export function HeroSettingsCard({ hero, onChange }: Props) {
             </div>
             <div className="rounded-lg bg-white/5 border border-white/15 px-3 py-3">
               <div className="text-sm font-semibold text-white">
-                {hero.features?.feature2?.title || "Fair Trade"}
+                {hero.features?.feature2?.title || "Versatile Style"}
               </div>
               <div className="text-xs text-white/80">
-                {hero.features?.feature2?.description || "Supporting local artisans"}
+                {hero.features?.feature2?.description || "Pieces for every occasion"}
               </div>
             </div>
             <div className="rounded-lg bg-white/5 border border-white/15 px-3 py-3">
@@ -271,7 +271,7 @@ export function HeroSettingsCard({ hero, onChange }: Props) {
                 {hero.features?.feature3?.title || "Quality Crafted"}
               </div>
               <div className="text-xs text-white/80">
-                {hero.features?.feature3?.description || "15+ years tradition"}
+                {hero.features?.feature3?.description || "Effortless, polished looks"}
               </div>
             </div>
           </div>

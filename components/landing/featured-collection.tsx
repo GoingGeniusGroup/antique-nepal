@@ -110,7 +110,7 @@ export function FeaturedCollection({ products }: { products: FeaturedProduct[] }
                 : "text-neutral-600"
             }`}
           >
-            {homepage?.featuredDescription || "Discover our most beloved pieces, each crafted with centuries of tradition"}
+            {homepage?.featuredDescription || "Discover modern wardrobe essentials and polished styles for every occasion"}
           </p>
         </motion.div>
 

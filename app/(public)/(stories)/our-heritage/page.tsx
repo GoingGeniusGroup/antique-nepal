@@ -5,9 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-import hempField from "@/public/hemp-field.jpg";
-import workshop from "@/public/workshop.jpg";
-import artisanHands from "@/public/artisan-hands.jpg";
 import paperTexture from "@/public/paper-texture.jpg";
 
 export default function Heritage() {
@@ -33,11 +30,11 @@ export default function Heritage() {
               Our Story
             </Badge>
             <h1 className="font-serif text-5xl md:text-7xl text-foreground font-bold tracking-tight">
-              Centuries of Tradition
+              The Alena Collection Story
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              From the mountains of Nepal to your hands, our heritage is woven
-              into every thread.
+              A modern wardrobe edit designed to make everyday dressing feel
+              effortless, polished, and personal.
             </p>
           </div>
         </div>
@@ -50,20 +47,19 @@ export default function Heritage() {
             {/* 1800s */}
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
-                <Badge variant="outline">1800s</Badge>
+                <Badge variant="outline">The Vision</Badge>
                 <h2 className="font-serif text-4xl font-bold text-foreground">
-                  Ancient Beginnings
+                  Style Made Simple
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Hemp weaving has been practiced in the Himalayan foothills for
-                  centuries. Our ancestors discovered that the mountain climate
-                  produced the strongest, most durable hemp fibers in the world.
+                  Alena Collection brings together modern, feminine pieces with
+                  flattering silhouettes and wearable details for everyday life.
                 </p>
               </div>
               <div className="relative aspect-video rounded-lg overflow-hidden shadow-elegant">
                 <Image
-                  src={hempField}
-                  alt="Hemp fields"
+                  src={paperTexture}
+                  alt="Textural inspiration for the collection"
                   fill
                   className="object-cover"
                 />
@@ -73,22 +69,20 @@ export default function Heritage() {
             {/* 1950s */}
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6 md:order-2">
-                <Badge variant="outline">1950s</Badge>
+                <Badge variant="outline">The Collection</Badge>
                 <h2 className="font-serif text-4xl font-bold text-foreground">
-                  Family Tradition
+                  Pieces to Make Your Own
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Our family workshop was established in the heart of Kathmandu
-                  valley. Three generations have passed down the sacred
-                  techniques of hemp cultivation and traditional weaving
-                  patterns.
+                  From versatile dresses and coordinated sets to statement
+                  outerwear, each edit is selected to work across your wardrobe.
                 </p>
               </div>
 
               <div className="relative aspect-video rounded-lg overflow-hidden shadow-elegant md:order-1">
                 <Image
-                  src={workshop}
-                  alt="Traditional workshop"
+                  src={paperTexture}
+                  alt="Collection inspiration"
                   fill
                   className="object-cover"
                 />
@@ -101,18 +95,18 @@ export default function Heritage() {
               <div className="space-y-6">
                 <Badge variant="outline">Today</Badge>
                 <h2 className="font-serif text-4xl font-bold text-foreground">
-                  Modern Craftsmanship
+                  Made for Every Moment
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  We honor our heritage while embracing sustainable practices.
-                  Each bag is handcrafted by skilled artisans using time-honored
-                  techniques combined with contemporary design sensibilities.
+                  Find polished looks for workdays, weekends, and special
+                  occasions, with considered details that feel unmistakably
+                  yours.
                 </p>
               </div>
               <div className="relative aspect-video rounded-lg overflow-hidden shadow-elegant">
                 <Image
-                  src={artisanHands}
-                  alt="Artisan at work"
+                  src={paperTexture}
+                  alt="Details that inspire the collection"
                   fill
                   className="object-cover"
                 />
@@ -131,7 +125,7 @@ export default function Heritage() {
                 Our Values
               </h2>
               <p className="text-lg text-muted-foreground">
-                Principles that guide every stitch
+                The Alena Collection approach
               </p>
             </div>
 
@@ -142,11 +136,11 @@ export default function Heritage() {
                   <span className="text-2xl">🌱</span>
                 </div>
                 <h3 className="font-serif text-2xl font-semibold">
-                  Sustainability
+                  Thoughtful Style
                 </h3>
                 <p className="text-muted-foreground">
-                  We use only organic hemp and natural dyes, ensuring minimal
-                  environmental impact.
+                  Discover versatile pieces selected to complement your personal
+                  style.
                 </p>
               </Card>
 
@@ -155,11 +149,11 @@ export default function Heritage() {
                   <span className="text-2xl">🤝</span>
                 </div>
                 <h3 className="font-serif text-2xl font-semibold">
-                  Fair Trade
+                  Effortless Dressing
                 </h3>
                 <p className="text-muted-foreground">
-                  Every artisan receives fair wages and works in safe, dignified
-                  conditions.
+                  Find easy-to-style looks for everyday plans and special
+                  occasions.
                 </p>
               </Card>
 
@@ -169,8 +163,8 @@ export default function Heritage() {
                 </div>
                 <h3 className="font-serif text-2xl font-semibold">Quality</h3>
                 <p className="text-muted-foreground">
-                  We never compromise on craftsmanship. Each piece is made to
-                  last generations.
+                  Explore flattering silhouettes, considered details, and
+                  polished finishes.
                 </p>
               </Card>
             </div>

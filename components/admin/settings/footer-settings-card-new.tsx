@@ -423,7 +423,7 @@ export function FooterSettingsCardNew({ footer, onChange }: Props) {
             <Label htmlFor="footerLogo" className="text-sm font-medium text-muted-foreground">Logo URL</Label>
             <Input
               id="footerLogo"
-              placeholder="/logo/logo.png"
+              placeholder="/logo/alena-collection.svg"
               className="mt-2"
               value={footer.brand?.logo || ""}
               onChange={(e) => updateBrand("logo", e.target.value)}

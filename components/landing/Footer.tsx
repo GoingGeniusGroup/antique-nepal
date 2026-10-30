@@ -79,15 +79,13 @@ export const Footer = () => {
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-linear-to-br from-primary to-secondary rounded-lg flex items-center justify-center relative overflow-hidden">
-                {footer?.brand?.logo && (
-                  <Image
-                    src={footer.brand.logo}
-                    alt={footer.brand.name}
-                    width={48}
-                    height={48}
-                    className="w-10 h-10 object-contain"
-                  />
-                )}
+                <Image
+                  src={footer?.brand?.logo || "/logo/alena-collection.svg"}
+                  alt={footer?.brand?.name || "Alena Collection"}
+                  width={48}
+                  height={48}
+                  className="w-10 h-10 object-contain"
+                />
               </div>
               <div>
                 <span className="text-2xl font-bold font-cinzel tracking-tight text-foreground">

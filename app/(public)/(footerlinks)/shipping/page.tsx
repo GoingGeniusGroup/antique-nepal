@@ -11,7 +11,7 @@ export default function ShippingPage() {
     hero: {
       icon: Package,
       title: "Shipping Information",
-      subtitle: "We ship worldwide with care and commitment to sustainability",
+      subtitle: "Find delivery information for local and international orders",
     },
     shippingTypes: [
       {
@@ -27,7 +27,7 @@ export default function ShippingPage() {
       {
         icon: Globe,
         title: "International Shipping",
-        description: "Worldwide shipping with carbon-neutral delivery",
+        description: "International delivery with tracking",
         list: [
           "Delivery: 7-14 business days",
           "Customs duties may apply",
@@ -55,7 +55,7 @@ export default function ShippingPage() {
       {
         title: "Package Care",
         content:
-          "Each item is carefully wrapped in sustainable packaging to ensure it arrives in perfect condition. We use recycled materials and biodegradable packing materials whenever possible.",
+          "Each item is carefully wrapped to help it arrive in perfect condition.",
       },
       {
         title: "Customs & Duties",

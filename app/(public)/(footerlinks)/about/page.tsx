@@ -3,14 +3,14 @@
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
-import { Mountain, Heart, Users, Leaf } from "lucide-react";
+import { Sparkles, Heart, Users, Leaf } from "lucide-react";
 import paperTexture from "@/public/paper-texture.jpg";
 
 export default function AboutPage() {
   // 🗂️ Dictionary-style About page content
   const aboutData = {
     hero: {
-      icon: Mountain,
+      icon: Sparkles,
       title: "About Alena Collection",
       subtitle:
         "Alena Collection brings together modern womenswear designed to make everyday dressing feel effortless, polished, and personal.",

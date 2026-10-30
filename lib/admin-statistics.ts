@@ -94,6 +94,22 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
     ),
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const productSalesQuery: Promise<any[]> = prisma.orderItem.groupBy({
+    by: ["productVariantId"],
+    where: { order: { paymentStatus: "PAID" } },
+    _sum: { quantity: true, total: true },
+  });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const customerSalesQuery: Promise<any[]> = prisma.order.groupBy({
+    by: ["userId"],
+    where: { paymentStatus: "PAID" },
+    _sum: { total: true },
+    _count: { _all: true },
+    orderBy: { _sum: { total: "desc" } },
+    take: 5,
+  });
+
   const [
     lifetimeRevenue,
     totalOrders,
@@ -140,11 +156,7 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
       },
       select: { createdAt: true },
     }),
-    prisma.orderItem.groupBy({
-      by: ["productVariantId"],
-      where: { order: { paymentStatus: "PAID" } },
-      _sum: { quantity: true, total: true },
-    }),
+    productSalesQuery,
     prisma.inventory.findMany({
       where: { productVariant: { product: { isActive: true } } },
       select: {
@@ -161,14 +173,7 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
         },
       },
     }),
-    prisma.order.groupBy({
-      by: ["userId"],
-      where: { paymentStatus: "PAID" },
-      _sum: { total: true },
-      _count: { _all: true },
-      orderBy: { _sum: { total: "desc" } },
-      take: 5,
-    }),
+    customerSalesQuery,
   ]);
 
   const revenueByDate = new Map<string, { revenue: number; orders: number }>();
@@ -205,7 +210,8 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
     newActiveProducts.filter((product) => product.createdAt >= start && product.createdAt < end).length;
 
   const salesByVariant = new Map(
-    productSales.map((sale) => [
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    productSales.map((sale: any) => [
       sale.productVariantId,
       {
         unitsSold: sale._sum.quantity ?? 0,
@@ -260,7 +266,8 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
     }
   }
 
-  const customerIds = customerSales.map((customer) => customer.userId);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const customerIds = customerSales.map((customer: any) => customer.userId);
   const customers = customerIds.length
     ? await prisma.user.findMany({
         where: { id: { in: customerIds } },
@@ -329,7 +336,8 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
       .sort((a, b) => b.unitsSold - a.unitsSold || b.revenue - a.revenue)
       .slice(0, 5),
     lowStock: lowStockItems.sort((a, b) => a.available - b.available),
-    topCustomers: customerSales.flatMap((sale) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    topCustomers: customerSales.flatMap((sale: any) => {
       const customer = customerById.get(sale.userId);
       return customer
         ? [{

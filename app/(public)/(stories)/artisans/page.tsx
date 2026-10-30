@@ -7,57 +7,55 @@ import { Heart, Users, Award } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 import paperTexture from "@/public/paper-texture.jpg";
-import artisanHands from "@/public/artisan-hands.jpg";
-import workshop from "@/public/workshop.jpg";
 
-const artisans = [
+const styleNotes = [
   {
-    name: "Devi Sharma",
-    role: "Master Weaver",
-    experience: "35 years",
+    name: "The Everyday Edit",
+    role: "Versatile Wardrobe Staples",
+    experience: "Easy to style",
     story:
-      "Devi learned the art of hemp weaving from her grandmother at age 12. Her intricate patterns have won national awards and her techniques are now taught to the next generation.",
-    image: "/placeholder.svg",
+      "Build polished everyday looks with modern essentials, flattering silhouettes, and pieces that work together.",
+    image: paperTexture,
   },
   {
-    name: "Ram Bahadur",
-    role: "Hemp Cultivator",
-    experience: "28 years",
+    name: "Occasion Dressing",
+    role: "Looks for Your Moments",
+    experience: "Make an impression",
     story:
-      "Ram manages our organic hemp farms in the mountain valleys. His sustainable farming practices ensure the highest quality fibers while protecting the environment.",
-    image: "/placeholder.svg",
+      "Discover feminine dresses and coordinated styles for celebrations, evenings out, and moments worth remembering.",
+    image: paperTexture,
   },
   {
-    name: "Sita Thapa",
-    role: "Natural Dye Specialist",
-    experience: "22 years",
+    name: "Comfortable Layers",
+    role: "Modern Outerwear",
+    experience: "Layer with ease",
     story:
-      "Sita creates our signature colors using only plant-based dyes. Her knowledge of traditional dyeing methods produces rich, long-lasting hues.",
-    image: "/placeholder.svg",
+      "Add a polished finishing layer to your look with versatile pieces designed to complement your wardrobe.",
+    image: paperTexture,
   },
   {
-    name: "Krishna Gurung",
-    role: "Senior Craftsman",
-    experience: "30 years",
+    name: "Coordinated Looks",
+    role: "Effortless Co-ord Sets",
+    experience: "Style in a moment",
     story:
-      "Krishna specializes in bag construction and finishing. His attention to detail ensures every bag meets our exacting standards.",
-    image: "/placeholder.svg",
+      "Matching pieces make getting dressed simple while giving you the freedom to wear each piece your own way.",
+    image: paperTexture,
   },
   {
-    name: "Maya Tamang",
-    role: "Embroidery Artist",
-    experience: "18 years",
+    name: "Color & Detail",
+    role: "Thoughtful Finishing Touches",
+    experience: "Make it personal",
     story:
-      "Maya's delicate embroidery work adds unique character to our premium collection. Each piece tells a story through traditional Nepali motifs.",
-    image: "/placeholder.svg",
+      "Explore refined details and fresh colors that help every outfit feel polished and unmistakably yours.",
+    image: paperTexture,
   },
   {
-    name: "Prakash Rai",
-    role: "Quality Master",
-    experience: "25 years",
+    name: "Your Signature Style",
+    role: "Pieces to Make Your Own",
+    experience: "Find your favorites",
     story:
-      "Prakash oversees quality control, ensuring every product honors our heritage of excellence. His trained eye catches even the smallest imperfections.",
-    image: "/placeholder.svg",
+      "Create a wardrobe that feels personal with versatile styles for workdays, weekends, and special occasions.",
+    image: paperTexture,
   },
 ];
 
@@ -80,14 +78,14 @@ export default function Artisans() {
         <div className="container relative">
           <div className="max-w-4xl mx-auto text-center space-y-6">
             <Badge variant="secondary" className="mb-4">
-              Meet the Masters
+              Style Notes
             </Badge>
             <h1 className="font-serif text-5xl md:text-7xl text-foreground font-bold tracking-tight">
-              Our Artisan Stories
+              A Wardrobe to Make Your Own
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Every bag is a collaboration between skilled hands and passionate
-              hearts. Meet the artisans who bring our heritage to life.
+              Explore versatile pieces, modern silhouettes, and styling ideas
+              for every part of your day.
             </p>
           </div>
         </div>
@@ -101,40 +99,40 @@ export default function Artisans() {
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
                 <Users className="w-8 h-8 text-primary" />
               </div>
-              <div className="text-4xl font-bold text-primary">47</div>
-              <p className="text-muted-foreground">Skilled Artisans</p>
+              <div className="text-4xl font-bold text-primary">01</div>
+              <p className="text-muted-foreground">Find Your Fit</p>
             </div>
             <div className="space-y-3">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
                 <Award className="w-8 h-8 text-primary" />
               </div>
-              <div className="text-4xl font-bold text-primary">800+</div>
-              <p className="text-muted-foreground">Years Combined Experience</p>
+              <div className="text-4xl font-bold text-primary">02</div>
+              <p className="text-muted-foreground">Build Your Wardrobe</p>
             </div>
             <div className="space-y-3">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
                 <Heart className="w-8 h-8 text-primary" />
               </div>
-              <div className="text-4xl font-bold text-primary">3</div>
-              <p className="text-muted-foreground">Generations of Mastery</p>
+              <div className="text-4xl font-bold text-primary">03</div>
+              <p className="text-muted-foreground">Make It Your Own</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Artisan Profiles */}
+      {/* Style inspiration */}
       <section className="py-20 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {artisans.map((artisan, index) => (
+            {styleNotes.map((styleNote, index) => (
               <Card
                 key={index}
                 className="overflow-hidden border-border/50 hover:shadow-elegant transition-all group"
               >
                 <div className="relative aspect-square overflow-hidden bg-gradient-subtle">
                   <Image
-                    src={artisan.image}
-                    alt={artisan.name}
+                    src={styleNote.image}
+                    alt=""
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
@@ -142,15 +140,15 @@ export default function Artisans() {
                 <div className="p-6 space-y-4">
                   <div>
                     <h3 className="font-serif text-2xl font-bold text-foreground">
-                      {artisan.name}
+                      {styleNote.name}
                     </h3>
-                    <p className="text-primary font-medium">{artisan.role}</p>
+                    <p className="text-primary font-medium">{styleNote.role}</p>
                     <Badge variant="outline" className="mt-2">
-                      {artisan.experience}
+                      {styleNote.experience}
                     </Badge>
                   </div>
                   <p className="text-muted-foreground leading-relaxed">
-                    {artisan.story}
+                    {styleNote.story}
                   </p>
                 </div>
               </Card>
@@ -166,33 +164,31 @@ export default function Artisans() {
             <div className="space-y-6">
               <Badge variant="secondary">Behind the Scenes</Badge>
               <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground">
-                Inside Our Workshop
+                The Alena Collection Edit
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Our workshop in Kathmandu is more than a workplace—it's a
-                community. Artisans work in bright, comfortable conditions with
-                fair wages, health benefits, and opportunities for skill
-                development.
+                Alena Collection brings together modern, feminine pieces
+                selected for flattering silhouettes and wearable details.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                We believe that great craftsmanship comes from happy
-                craftspeople. That's why we invest in our artisans' wellbeing,
-                education, and growth.
+                From versatile dresses and coordinated sets to statement
+                outerwear, discover polished looks for work, weekends, and
+                special moments.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="relative aspect-square rounded-lg overflow-hidden shadow-elegant">
                 <Image
-                  src={workshop}
-                  alt="Workshop"
+                  src={paperTexture}
+                  alt="Alena Collection design texture"
                   fill
                   className="object-cover"
                 />
               </div>
               <div className="relative aspect-square rounded-lg overflow-hidden shadow-elegant mt-8">
                 <Image
-                  src={artisanHands}
-                  alt="Artisan hands"
+                  src={paperTexture}
+                  alt="Alena Collection design texture"
                   fill
                   className="object-cover"
                 />

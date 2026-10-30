@@ -3,21 +3,12 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Leaf, Users, Award, ShoppingBag, ArrowRight } from "lucide-react";
+import { Sparkles, Shirt, Heart, ShoppingBag, ArrowRight } from "lucide-react";
 import { NavigationLink } from "@/components/navigation-link";
 import type { LucideIcon } from "lucide-react";
 import { useTheme } from "@/contexts/theme-context";
 import { useHeroSettings, useBannerSettings } from "@/contexts/settings-context";
 import { ThemeToggle } from "@/components/theme-toggle";
-
-// Prayer flag colors
-const PRAYER_FLAG_COLORS = [
-  { bg: "bg-blue-500/60", shadow: "shadow-[0_0_20px_rgba(59,130,246,0.5)]" },
-  { bg: "bg-white/60", shadow: "shadow-[0_0_20px_rgba(255,255,255,0.5)]" },
-  { bg: "bg-red-500/60", shadow: "shadow-[0_0_20px_rgba(239,68,68,0.5)]" },
-  { bg: "bg-emerald-500/60", shadow: "shadow-[0_0_20px_rgba(16,185,129,0.5)]" },
-  { bg: "bg-amber-400/60", shadow: "shadow-[0_0_20px_rgba(251,191,36,0.5)]" },
-] as const;
 
 // Feature cards data
 interface FeatureCard {
@@ -31,27 +22,27 @@ interface FeatureCard {
 
 const FEATURE_CARDS: FeatureCard[] = [
   {
-    icon: Leaf,
+    icon: Sparkles,
     iconColor: "text-emerald-400",
     hoverGradient: "from-emerald-400/20",
-    title: "100% Eco-Friendly",
-    description: "Curated styles for every occasion",
+    title: "Thoughtfully Curated",
+    description: "Modern styles for every occasion",
     delay: 0.1,
   },
   {
-    icon: Users,
+    icon: Shirt,
     iconColor: "text-blue-400",
     hoverGradient: "from-blue-400/20",
-    title: "Fair Trade",
-    description: "Supporting local artisans",
+    title: "Versatile Style",
+    description: "Pieces that work across your wardrobe",
     delay: 0.2,
   },
   {
-    icon: Award,
+    icon: Heart,
     iconColor: "text-slate-400",
     hoverGradient: "from-slate-400/20",
-    title: "Quality Crafted",
-    description: "15+ years tradition",
+    title: "Made for You",
+    description: "Effortless, polished looks",
     delay: 0.3,
   },
 ];
@@ -99,10 +90,9 @@ export function Hero() {
   const { banner, loading: bannerLoading } = useBannerSettings();
   return (
     <section className="relative background-cover min-h-screen w-full overflow-hidden">
-      {/* Original Image Background */}
       <Image
-        src="/hero-mountains%201.png"
-        alt="Himalayan mountains"
+        src="/paper-texture.jpg"
+        alt=""
         fill
         priority
         className="object-cover opacity-100"
@@ -127,67 +117,7 @@ export function Hero() {
         className="p-3 md:p-3.5 shadow-[0_10px_28px_rgba(0,0,0,0.28)]"
       />
 
-      {/* Prayer Flags Animation - Enhanced */}
-      <div className="absolute top-0 left-0 right-0 h-32 overflow-hidden pointer-events-none z-10 flex items-start justify-between px-2">
-        {[...Array(12)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="relative w-16 h-12 -mt-2.5"
-            animate={{
-              y: [0, 8, 0],
-              rotate: [0, 3, 0, -3, 0],
-            }}
-            transition={{
-              duration: 2 + i * 0.2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 0.1,
-            }}
-          >
-            <div
-              className={`w-full h-full ${PRAYER_FLAG_COLORS[i % 5].bg} ${
-                PRAYER_FLAG_COLORS[i % 5].shadow
-              } backdrop-blur-sm border border-white/30 shadow-lg`}
-            />
-          </motion.div>
-        ))}
-        <motion.div
-          className="absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-white/50 to-transparent shadow-[0_0_10px_rgba(255,255,255,0.5)]"
-          animate={{ scaleX: [0.8, 1, 0.8] }}
-          transition={{ duration: 3, repeat: Infinity }}
-        />
-      </div>
-
-      {/* Mountain Silhouette Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none z-10">
-        <svg
-          className="absolute bottom-0 w-full h-full opacity-20"
-          viewBox="0 0 1200 300"
-          preserveAspectRatio="none"
-        >
-          <motion.path
-            d="M0,300 L0,200 L200,100 L400,150 L600,50 L800,120 L1000,80 L1200,150 L1200,300 Z"
-            fill="url(#mountainGradient)"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.3 }}
-            transition={{ duration: 2 }}
-          />
-          <defs>
-            <linearGradient
-              id="mountainGradient"
-              x1="0%"
-              y1="0%"
-              x2="0%"
-              y2="100%"
-            >
-              <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#000000" stopOpacity="0.3" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      {/* Floating Particles (Snow/Dust) */}
+      {/* Floating light accents */}
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
@@ -221,9 +151,9 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              <Leaf className="h-4 w-4 text-emerald-300" />
+              <Sparkles className="h-4 w-4 text-amber-200" />
               <span className="text-sm font-inter">
-                {banner?.text || "100% Sustainable • Handcrafted in Nepal • Est. 2010"}
+                {banner?.text || "Modern essentials • Considered details • Effortless style"}
               </span>
             </motion.div>
           </div>

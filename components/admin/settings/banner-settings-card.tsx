@@ -105,7 +105,7 @@ export function BannerSettingsCard({ banner, onChange }: Props) {
           </Label>
           <Input
             id="bannerText"
-            placeholder="100% Sustainable • Handcrafted in Nepal • Est. 2010"
+            placeholder="Modern essentials • Considered details • Effortless style"
             className="mt-2"
             value={banner.text || ""}
             onChange={(e) => onChange({ ...banner, text: e.target.value })}
@@ -117,7 +117,7 @@ export function BannerSettingsCard({ banner, onChange }: Props) {
               <Leaf className="h-3 w-3 text-emerald-500" />
               <span>
                 {banner.text ||
-                  "100% Sustainable • Handcrafted in Nepal • Est. 2010"}
+                  "Modern essentials • Considered details • Effortless style"}
               </span>
             </div>
           </div>

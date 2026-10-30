@@ -125,7 +125,7 @@ export function CategoryForm({ category, onSave }: Props) {
             id="name"
             value={categoryData.name}
             onChange={(e) => updateField("name", e.target.value)}
-            placeholder="e.g. Handmade Bags"
+            placeholder="e.g. Dresses"
           />
         </div>
         <div>
@@ -134,7 +134,7 @@ export function CategoryForm({ category, onSave }: Props) {
             id="slug"
             value={categoryData.slug}
             onChange={(e) => updateField("slug", e.target.value)}
-            placeholder="e.g. handmade-bags"
+            placeholder="e.g. dresses"
           />
         </div>
         <div>

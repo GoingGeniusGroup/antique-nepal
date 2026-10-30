@@ -106,7 +106,7 @@ export function LoadingScreen({ isLoading }: LoadingScreenProps) {
                 className="text-2xl md:text-3xl font-bold tracking-[0.15em] text-emerald-300"
                 style={{ fontFamily: "var(--font-cinzel)" }}
               >
-                ANTIQUE NEPAL
+                ALENA COLLECTION
               </h1>
             </motion.div>
 

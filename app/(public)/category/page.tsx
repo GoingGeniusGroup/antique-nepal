@@ -27,7 +27,7 @@ const pageData = {
   },
   whyChoose: [
     {
-      icon: "🌿",
+      icon: "✦",
       title: "Versatile Styles",
       description: "Easy-to-style pieces for your everyday wardrobe",
       bgColor: "bg-primary/10",
@@ -39,8 +39,8 @@ const pageData = {
       bgColor: "bg-secondary/20",
     },
     {
-      icon: "♻️",
-      title: "Sustainable",
+      icon: "✨",
+      title: "For Every Occasion",
       description: "Discover looks for workdays, weekends, and occasions",
       bgColor: "bg-terracotta/20",
     },

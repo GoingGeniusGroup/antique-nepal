@@ -4,7 +4,7 @@ import Image from "next/image";
 import paperTexture from "@/public/paper-texture.jpg";
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-context";
-import { Leaf, Mountain } from "lucide-react";
+import { Sparkles, Shirt } from "lucide-react";
 import {
   containerVariants,
   itemVariants,
@@ -20,7 +20,7 @@ export default function Heritage() {
 
   return (
     <section
-      id="heritage"
+      id="collection"
       className={`py-20 relative overflow-hidden ${getThemeClass(theme, isReady, "bg-background", "bg-[#141414]")}`}
     >
       {/* Decorative Background */}
@@ -40,7 +40,7 @@ export default function Heritage() {
           animate={{ rotate: [0, 10, -10, 0] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Leaf
+          <Sparkles
             className={`w-16 h-16 ${getThemeClass(theme, isReady, "text-emerald-600", "text-emerald-400")}`}
           />
         </motion.div>
@@ -50,7 +50,7 @@ export default function Heritage() {
           animate={{ y: [0, -10, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Mountain
+          <Shirt
             className={`w-12 h-12 ${getThemeClass(theme, isReady, "text-slate-600", "text-slate-400")}`}
           />
         </motion.div>
@@ -69,7 +69,7 @@ export default function Heritage() {
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
-                <Leaf
+                <Sparkles
                   className={`w-8 h-8 ${getThemeClass(theme, isReady, "text-emerald-600", "text-emerald-400")}`}
                 />
               </motion.div>
@@ -77,13 +77,13 @@ export default function Heritage() {
                 className={`text-4xl md:text-5xl font-bold ${getThemeClass(theme, isReady, "text-foreground", "text-white")}`}
                 style={{ fontFamily: "Cinzel, serif" }}
               >
-                Rooted in Nepali Heritage
+                A More Considered Wardrobe
               </h2>
               <motion.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
               >
-                <Mountain
+                <Shirt
                   className={`w-8 h-8 ${getThemeClass(theme, isReady, "text-slate-600", "text-slate-400")}`}
                 />
               </motion.div>
@@ -101,7 +101,7 @@ export default function Heritage() {
             whileInView="visible"
             viewport={viewportConfig}
           >
-            {/* Traditional Craftsmanship Card */}
+            {/* Curated style card */}
             <motion.div
               variants={itemVariants}
               whileHover={hoverScale}
@@ -111,7 +111,7 @@ export default function Heritage() {
                 className={`bg-card p-8 rounded-2xl shadow-soft border border-border relative overflow-hidden ${getThemeClass(theme, isReady, "bg-card", "bg-[#1a1a1a] border-white/10")}`}
               >
                 <div className="absolute top-4 right-4 opacity-5">
-                  <Leaf
+                  <Sparkles
                     className={`w-20 h-20 ${getThemeClass(theme, isReady, "text-emerald-600", "text-emerald-400")}`}
                   />
                 </div>
@@ -138,7 +138,7 @@ export default function Heritage() {
               </div>
             </motion.div>
 
-            {/* Sustainable by Nature Card */}
+            {/* Everyday wardrobe card */}
             <motion.div
               variants={itemVariants}
               whileHover={hoverScale}
@@ -148,7 +148,7 @@ export default function Heritage() {
                 className={`bg-card p-8 rounded-2xl shadow-soft border border-border relative overflow-hidden ${getThemeClass(theme, isReady, "bg-card", "bg-[#1a1a1a] border-white/10")}`}
               >
                 <div className="absolute top-4 right-4 opacity-5">
-                  <Mountain
+                  <Shirt
                     className={`w-20 h-20 ${getThemeClass(theme, isReady, "text-slate-600", "text-slate-400")}`}
                   />
                 </div>
@@ -186,10 +186,10 @@ export default function Heritage() {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="absolute top-2 right-4 opacity-10">
-              <Mountain className="w-16 h-16 text-white" />
+              <Shirt className="w-16 h-16 text-white" />
             </div>
             <div className="absolute bottom-2 left-4 opacity-10">
-              <Leaf className="w-12 h-12 text-white" />
+              <Sparkles className="w-12 h-12 text-white" />
             </div>
             <p
               className="text-xl md:text-2xl leading-relaxed relative z-10"

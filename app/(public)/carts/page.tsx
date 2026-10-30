@@ -231,8 +231,8 @@ const Cart = ({ userId }: { userId: string }) => {
                   Your cart is empty
                 </h2>
                 <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                  Discover dresses, coordinated sets, and modern layers made for
-                  skilled Nepali artisans
+                  Find dresses, coordinated sets, and modern layers that make
+                  everyday styling feel effortless.
                 </p>
                 <Button asChild size="lg">
                   <Link href="/products">Browse Products</Link>

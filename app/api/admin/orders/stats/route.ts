@@ -29,14 +29,16 @@ const getAdminOrderStats = unstable_cache(
     }, 0);
 
     // Aggregate orders by status for additional dashboard insights
-    const ordersByStatusRaw = await prisma.order.groupBy({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ordersByStatusRaw: any = await prisma.order.groupBy({
       by: ["status"],
       _count: {
         _all: true,
       },
     });
 
-    const ordersByStatus = (ordersByStatusRaw as any[]).map((item: any) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ordersByStatus = ordersByStatusRaw.map((item: any) => ({
       status: item.status,
       count: item._count._all,
     }));
@@ -119,7 +121,8 @@ const getAdminOrderStats = unstable_cache(
       }
     >();
 
-    const wishlistCounts = await prisma.wishlistItem.groupBy({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const wishlistCounts: any = await prisma.wishlistItem.groupBy({
       by: ["productId"],
       _count: {
         _all: true,

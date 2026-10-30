@@ -89,7 +89,8 @@ export async function getPopularProduct() {
 
 export async function getBestSellerProduct() {
     try {
-        const bestSeller = await prisma.orderItem.groupBy({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const bestSeller: any = await prisma.orderItem.groupBy({
           by: ["productVariantId"],
           _sum: {
             quantity: true,

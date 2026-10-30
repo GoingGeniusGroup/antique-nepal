@@ -78,8 +78,8 @@ export const CallToAction = () => {
                 Stay Connected
               </h3>
               <p className="text-primary-foreground/80 dark:text-slate-400 font-inter">
-                Subscribe to receive updates on new collections and artisan
-                stories
+                Subscribe for new arrivals, styling inspiration, and collection
+                updates.
               </p>
             </motion.div>
 

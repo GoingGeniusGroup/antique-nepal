@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 96" role="img" aria-labelledby="title">
+  <title id="title">Alena Collection</title>
+  <g fill="none" stroke="#2d2520" stroke-width="3">
+    <path d="M44 12 13 80h12l8-18h22l8 18h12L44 12Z"/>
+    <path d="M37 52h15"/>
+  </g>
+  <text x="94" y="52" fill="#2d2520" font-family="Georgia, serif" font-size="35" letter-spacing="3">ALENA</text>
+  <text x="96" y="76" fill="#75665b" font-family="Arial, sans-serif" font-size="13" letter-spacing="6">COLLECTION</text>
+</svg>

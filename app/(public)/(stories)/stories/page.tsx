@@ -8,36 +8,33 @@ import { NavigationLink } from "@/components/navigation-link";
 import { motion } from "framer-motion";
 
 import paperTexture from "@/public/paper-texture.jpg";
-import hempField from "@/public/hemp-field.jpg";
-import workshop from "@/public/workshop.jpg";
-import artisanHands from "@/public/artisan-hands.jpg";
 
 const storyCategories = [
   {
-    title: "Our Heritage",
-    description: "Centuries of tradition",
-    image: hempField,
+    title: "The Alena Edit",
+    description: "Discover the collection",
+    image: paperTexture,
     href: "/our-heritage",
     gradient: "from-amber-500/20 to-orange-500/20",
   },
   {
-    title: "Artisan Stories",
-    description: "Meet our craftspeople",
-    image: artisanHands,
+    title: "Style Notes",
+    description: "Ideas for every occasion",
+    image: paperTexture,
     href: "/artisans",
     gradient: "from-blue-500/20 to-purple-500/20",
   },
   {
-    title: "Sustainability",
-    description: "Our eco commitment",
-    image: hempField,
+    title: "Wardrobe Essentials",
+    description: "Build a versatile wardrobe",
+    image: paperTexture,
     href: "/sustainability",
     gradient: "from-emerald-500/20 to-teal-500/20",
   },
   {
-    title: "Our Workshop",
-    description: "Where tradition meets craft",
-    image: workshop,
+    title: "Behind the Collection",
+    description: "A closer look at our style",
+    image: paperTexture,
     href: "/workshop",
     gradient: "from-rose-500/20 to-pink-500/20",
   },
@@ -93,9 +90,8 @@ export default function StoriesHub() {
               Our Stories
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-              Discover the heart and soul behind every handcrafted piece. From
-              ancient traditions to sustainable practices, explore the stories
-              that make us who we are.
+              Explore the inspiration behind Alena Collection, with versatile
+              wardrobe ideas, styling notes, and pieces for every occasion.
             </p>
           </motion.div>
         </div>
@@ -116,7 +112,7 @@ export default function StoriesHub() {
                     <div className="relative aspect-[4/3] overflow-hidden bg-gradient-subtle">
                       <Image
                         src={story.image}
-                        alt={story.title}
+                        alt=""
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-700"
                       />
@@ -151,13 +147,11 @@ export default function StoriesHub() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground">
-              Every Bag Tells a Story
+              Style That Feels Like You
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Behind every thread, every stitch, and every design lies a rich
-              tapestry of culture, craftsmanship, and care. These are the
-              stories that transform our bags from products into treasured
-              pieces of heritage.
+              Discover modern silhouettes, thoughtful details, and easy-to-style
+              pieces designed to make getting dressed feel effortless.
             </p>
           </motion.div>
         </div>

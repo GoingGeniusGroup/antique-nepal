@@ -129,7 +129,7 @@ export default function FooterBrandPage() {
               </Label>
               <Input
                 id="brandLogo"
-                placeholder="/logo/logo.png"
+                placeholder="/logo/alena-collection.svg"
                 className="mt-2"
                 value={brand.logo}
                 onChange={(e) => setBrand({ ...brand, logo: e.target.value })}
@@ -141,7 +141,7 @@ export default function FooterBrandPage() {
               </Label>
               <Input
                 id="brandTagline"
-                placeholder="Handcrafted Heritage"
+                placeholder="Effortless style, thoughtfully curated"
                 className="mt-2"
                 value={brand.tagline}
                 onChange={(e) => setBrand({ ...brand, tagline: e.target.value })}
@@ -153,7 +153,7 @@ export default function FooterBrandPage() {
               </Label>
               <Textarea
                 id="brandDescription"
-                placeholder="Preserving centuries of Nepalese craftsmanship..."
+                placeholder="Discover modern womenswear, from versatile dresses and coordinated sets to statement outerwear."
                 className="mt-2 min-h-[100px]"
                 value={brand.description}
                 onChange={(e) => setBrand({ ...brand, description: e.target.value })}
@@ -172,7 +172,7 @@ export default function FooterBrandPage() {
                     />
                   ) : (
                     <span className="text-sm font-semibold text-white/90">
-                      {(brand.name || "AN").slice(0, 2).toUpperCase()}
+                      {(brand.name || "AC").slice(0, 2).toUpperCase()}
                     </span>
                   )}
                 </div>

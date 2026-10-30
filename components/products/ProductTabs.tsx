@@ -165,8 +165,8 @@ export const ProductTabs = ({
               )}
               <p className="text-muted-foreground leading-relaxed">
                 Each product is crafted with attention to detail and quality. By
-                choosing this product, you&apos;re supporting sustainable
-                practices and artisans who are passionate about their craft.
+                choosing this piece, you can explore the details, fit, and care
+                information to find the right addition to your wardrobe.
               </p>
             </CardContent>
           </Card>

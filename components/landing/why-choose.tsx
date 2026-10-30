@@ -89,9 +89,9 @@ export function WhyChoose() {
           transition={{ duration: 0.6 }}
           className="relative"
         >
-          {/* Hemp Plant & Mountain Elements */}
+          {/* Decorative brand accents */}
           <div className="flex items-center justify-center gap-3 mb-4">
-            {/* Hemp Leaf Left */}
+            {/* Left accent */}
             <motion.svg
               width="40"
               height="40"
@@ -179,7 +179,7 @@ export function WhyChoose() {
               />
             </motion.svg>
 
-            {/* Hemp Leaf Right */}
+            {/* Right accent */}
             <motion.svg
               width="40"
               height="40"

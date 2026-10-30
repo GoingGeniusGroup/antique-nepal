@@ -10,10 +10,10 @@ import {
 
 // Statistics data
 const stats = [
-  { value: "200+", label: "Artisan Families" },
-  { value: "15", label: "Years of Heritage" },
-  { value: "10K+", label: "Happy Customers" },
-  { value: "100%", label: "Natural Materials" },
+  { value: "01", label: "Everyday Essentials" },
+  { value: "02", label: "Modern Silhouettes" },
+  { value: "03", label: "Occasion Styles" },
+  { value: "04", label: "Finishing Details" },
 ];
 
 export const Stats = () => {

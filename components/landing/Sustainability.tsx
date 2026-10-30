@@ -47,7 +47,7 @@ export const Sustainability = () => {
 
   return (
     <section
-      id="sustainability"
+      id="style"
       className={`py-20 relative overflow-hidden ${getThemeClass(theme, isReady, "bg-gradient-paper", "bg-[#0f0f0f]")}`}
     >
       {/* Decorative Elements */}
@@ -93,7 +93,7 @@ export const Sustainability = () => {
                 className={`text-4xl md:text-5xl font-bold ${getThemeClass(theme, isReady, "text-foreground", "text-white")}`}
                 style={{ fontFamily: "Cinzel, serif" }}
               >
-                Our Environmental Commitment
+                Versatile Style, Thoughtfully Curated
               </h2>
               <motion.div
                 animate={{ y: [0, -6, 0] }}
@@ -107,7 +107,7 @@ export const Sustainability = () => {
             <p
               className={`text-xl max-w-2xl mx-auto ${getThemeClass(theme, isReady, "text-muted-foreground", "text-neutral-400")}`}
             >
-              Every bag you carry makes a positive impact on our planet
+              Find polished pieces that move effortlessly from day to evening.
             </p>
           </motion.div>
 
@@ -213,16 +213,16 @@ export const Sustainability = () => {
                   <h4
                     className={`text-xl font-semibold mb-6 ${getThemeClass(theme, isReady, "text-foreground", "text-white")}`}
                   >
-                    Environmental Benefits
+                    A Wardrobe with Options
                   </h4>
                   <ul
                     className={`space-y-3 ${getThemeClass(theme, isReady, "text-muted-foreground", "text-neutral-400")}`}
                   >
                     {[
-                      "Biodegradable and compostable at end of life",
-                      "Improves soil structure for future crops",
-                      "Produces more fiber per acre than trees",
-                      "Natural UV protection and antimicrobial properties",
+                      "Versatile pieces for easy everyday styling",
+                      "Modern silhouettes for a polished look",
+                      "Coordinated styles that work together",
+                      "Finishing layers for different occasions",
                     ].map((benefit, idx) => (
                       <li key={idx} className="flex items-start gap-3">
                         <div

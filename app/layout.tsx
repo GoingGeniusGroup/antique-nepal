@@ -12,8 +12,26 @@ import { ThemeAwareTopLoader } from "@/components/theme-aware-toploader";
 import { AuthSuccessHandler } from "@/components/auth-success-handler";
 
 export const metadata: Metadata = {
-  title: "Alena Collection",
-  description: "Discover chic dresses, co-ord sets, and modern wardrobe essentials at Alena Collection.",
+  title: {
+    default: "Alena Collection",
+    template: "%s | Alena Collection",
+  },
+  description:
+    "Discover chic dresses, co-ord sets, and modern wardrobe essentials at Alena Collection.",
+  openGraph: {
+    title: "Alena Collection",
+    description:
+      "Discover chic dresses, co-ord sets, and modern wardrobe essentials at Alena Collection.",
+    siteName: "Alena Collection",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Alena Collection",
+    description:
+      "Discover chic dresses, co-ord sets, and modern wardrobe essentials at Alena Collection.",
+  },
 };
 
 export default async function RootLayout({

@@ -1,11 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Hammer, Heart } from "lucide-react";
-import workshopImage from "@/public/workshop.jpg";
-import artisanHands from "@/public/artisan-hands.jpg";
-import hempField from "@/public/hemp-field.jpg";
+import collectionTexture from "@/public/paper-texture.jpg";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const Workshop = () => {
@@ -16,18 +15,18 @@ const Workshop = () => {
       {/* Hero Section */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <Image
-          src={workshopImage}
-          alt="Our Workshop"
+          src={collectionTexture}
+          alt="Alena Collection design texture"
           className="object-cover"
           fill
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
         <div className="relative z-10 text-center px-4">
           <h1 className="text-5xl md:text-7xl font-bold font-cinzel text-white mb-4">
-            Our Workshop
+            Behind the Collection
           </h1>
           <p className="text-xl md:text-2xl font-inter text-white/90 max-w-2xl mx-auto">
-            Where centuries of tradition meet skilled hands
+            A considered edit of modern, feminine pieces
           </p>
         </div>
       </section>
@@ -36,14 +35,13 @@ const Workshop = () => {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold font-cinzel mb-6">
-            The Heart of Creation
+            The Alena Edit
           </h2>
           <p className="text-lg text-muted-foreground font-inter leading-relaxed">
-            Step into the world where ancient techniques are preserved and
-            practiced daily. Our workshop in the hills of Nepal is more than a
-            production facility—it's a living museum of craftsmanship, where
-            master artisans pass down their knowledge to the next generation,
-            ensuring that centuries-old traditions continue to thrive.
+            Explore versatile dresses, coordinated sets, and statement layers
+            selected to make everyday dressing feel polished and personal.
+            Discover thoughtful details and easy-to-style pieces for every
+            occasion.
           </p>
         </div>
       </section>
@@ -55,18 +53,18 @@ const Workshop = () => {
             {[
               {
                 icon: Users,
-                title: "Master Artisans",
-                desc: "Over 50 skilled craftspeople, each with decades of experience in traditional hemp weaving and natural dyeing techniques.",
+                title: "Versatile Silhouettes",
+                desc: "Explore flattering shapes and modern styles that work across your wardrobe.",
               },
               {
                 icon: Hammer,
-                title: "Traditional Tools",
-                desc: "We use handlooms and traditional tools passed down through generations, preserving authentic techniques that create unique character in every piece.",
+                title: "Considered Details",
+                desc: "Find polished finishes and thoughtful touches that bring each look together.",
               },
               {
                 icon: Heart,
-                title: "Fair Practices",
-                desc: "Every artisan receives fair wages, healthcare benefits, and the respect they deserve for their invaluable skills and dedication.",
+                title: "Effortless Styling",
+                desc: "Build looks for workdays, weekends, and special moments with pieces that are easy to make your own.",
               },
             ].map((item, idx) => (
               <div
@@ -90,29 +88,29 @@ const Workshop = () => {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-4xl font-bold font-cinzel text-center mb-16">
-            From Field to Finished Product
+            From Inspiration to Your Wardrobe
           </h2>
 
           <div className="space-y-20">
             {[
               {
                 step: "Step 01",
-                title: "Hemp Cultivation",
-                desc: "Our journey begins in the organic hemp fields of the Himalayan foothills. Local farmers grow hemp using traditional sustainable methods, without pesticides or chemical fertilizers. The plants are harvested by hand at peak maturity to ensure the strongest, most durable fibers.",
-                image: hempField,
+                title: "Discover Your Style",
+                desc: "Start with a considered edit of dresses, co-ord sets, outerwear, and wardrobe essentials.",
+                image: collectionTexture,
                 reverse: true,
               },
               {
                 step: "Step 02",
-                title: "Traditional Weaving",
-                desc: "In our workshop, master weavers transform raw hemp fiber into beautiful fabric using traditional handlooms. Each artisan brings their own style and expertise, creating textiles with unique character and unmatched quality. The rhythmic sound of looms fills our workshop from dawn to dusk.",
-                image: artisanHands,
+                title: "Choose Versatile Pieces",
+                desc: "Pair modern silhouettes and coordinated styles to create looks that feel polished from morning to evening.",
+                image: collectionTexture,
               },
               {
                 step: "Step 03",
-                title: "Handcrafted Assembly",
-                desc: "Skilled artisans cut, stitch, and assemble each bag by hand with meticulous attention to detail. Every seam is reinforced, every handle carefully attached, ensuring durability that lasts for years. Natural dyes and embellishments are added, making each piece truly one-of-a-kind.",
-                image: workshopImage,
+                title: "Make It Your Own",
+                desc: "Complete your look with thoughtful details and pieces that reflect your personal style.",
+                image: collectionTexture,
                 reverse: true,
               },
             ].map((step, idx) => (
@@ -136,7 +134,7 @@ const Workshop = () => {
                 <div className="relative w-full h-[400px] rounded-lg shadow-lg">
                   <Image
                     src={step.image}
-                    alt={step.title}
+                    alt=""
                     className="object-cover rounded-lg"
                     fill
                   />
@@ -151,15 +149,17 @@ const Workshop = () => {
       <section className="py-20 bg-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto text-center px-4">
           <h2 className="text-4xl font-cinzel font-bold mb-6">
-            Experience the Craftsmanship
+            Find Your Next Favorite
           </h2>
           <p className="text-xl font-inter mb-8 opacity-90">
-            Each bag tells a story of tradition, skill, and dedication. Discover
-            our collection and own a piece of Nepalese heritage.
+            Explore modern wardrobe essentials, effortless dresses, and
+            coordinated styles curated for you.
           </p>
-          <Button size="lg" variant="secondary" className="group font-inter">
-            Shop Our Collection
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          <Button asChild size="lg" variant="secondary" className="group font-inter">
+            <Link href="/products">
+              Shop Our Collection
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </Button>
         </div>
       </section>

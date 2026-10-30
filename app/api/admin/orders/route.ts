@@ -13,6 +13,7 @@ export async function GET() {
     const totalRevenue = revenueResult._sum.total ? Number(revenueResult._sum.total) : 0;
 
     // ✅ Explicitly type as 'any' to prevent strict empty-object inference during build
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ordersByStatusRaw: any = await prisma.order.groupBy({
       by: ["status"],
       _count: {
@@ -20,6 +21,7 @@ export async function GET() {
       },
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ordersByStatus = ordersByStatusRaw.map((item: any) => ({
       status: item.status,
       count: item._count._all,

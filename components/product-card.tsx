@@ -126,7 +126,7 @@ export function ProductCard({ title, price, img, tag, description, id = "1" }: P
               "text-xs sm:text-base mb-3 sm:mb-4 text-neutral-600 dark:text-neutral-400"
             }
           >
-            {description || "Handwoven with traditional patterns"}
+            {description || "A thoughtfully selected piece with a refined finish"}
           </p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
             <motion.div
