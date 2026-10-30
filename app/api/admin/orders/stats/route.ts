@@ -3,6 +3,13 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 
+interface OrderStatusGroup {
+  status: string;
+  _count: {
+    _all: number;
+  };
+}
+
 /**
  * GET /api/admin/orders/stats
  * Calculate total income from paid orders and top sales categories
@@ -29,14 +36,16 @@ const getAdminOrderStats = unstable_cache(
     }, 0);
 
     // Aggregate orders by status for additional dashboard insights
-    const ordersByStatusRaw = (await prisma.order.groupBy({
+    const ordersByStatusRaw = await prisma.order.groupBy({
       by: ["status"],
       _count: {
         _all: true,
       },
-    })) as unknown as Array<{ status: string; _count: { _all: number } }>;
+    });
 
-    const ordersByStatus = ordersByStatusRaw.map((item) => ({
+    const ordersByStatus = (
+      ordersByStatusRaw as unknown as OrderStatusGroup[]
+    ).map((item: OrderStatusGroup) => ({
       status: item.status,
       count: item._count._all,
     }));
