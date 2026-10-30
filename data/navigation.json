@@ -1,0 +1,46 @@
+{
+  "brand": {
+    "name": "Alena Collection",
+    "tagline": "EFFORTLESS STYLE, THOUGHTFULLY CURATED",
+    "description": "Discover modern womenswear, from versatile dresses and coordinated sets to statement outerwear."
+  },
+  "categories": [
+    {
+      "id": 1,
+      "name": "Dresses",
+      "href": "/category",
+      "description": "Effortless styles for every occasion",
+      "image": "/product_placeholder.jpeg"
+    },
+    {
+      "id": 2,
+      "name": "Co-ord Sets",
+      "href": "/category",
+      "description": "Polished matching looks",
+      "image": "/product_placeholder.jpeg"
+    },
+    {
+      "id": 3,
+      "name": "Outerwear",
+      "href": "/category",
+      "description": "Modern layers for every season",
+      "image": "/product_placeholder.jpeg"
+    },
+    {
+      "id": 4,
+      "name": "Tops",
+      "href": "/category",
+      "description": "Easy-to-style wardrobe essentials",
+      "image": "/product_placeholder.jpeg"
+    }
+  ],
+  "stories": [
+    {
+      "id": 1,
+      "name": "New Arrivals",
+      "href": "/products",
+      "description": "Discover the latest Alena Collection styles",
+      "image": "/product_placeholder.jpeg"
+    }
+  ]
+}

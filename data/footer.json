@@ -1,0 +1,163 @@
+{
+  "brand": {
+    "name": "Alena Collection",
+    "logo": "",
+    "tagline": "Effortless style, thoughtfully curated",
+    "description": "Discover modern womenswear, from versatile dresses and coordinated sets to statement outerwear."
+  },
+  "social": [
+    {
+      "id": 1,
+      "name": "Facebook",
+      "icon": "Facebook",
+      "href": "https://facebook.com"
+    },
+    {
+      "id": 2,
+      "name": "Instagram",
+      "icon": "Instagram",
+      "href": "https://instagram.com"
+    },
+    {
+      "id": 3,
+      "name": "Twitter",
+      "icon": "Twitter",
+      "href": "https://twitter.com"
+    },
+    {
+      "id": 4,
+      "name": "Pinterest",
+      "icon": "Pinterest",
+      "href": "https://pinterest.com"
+    }
+  ],
+  "sections": [
+    {
+      "id": 1,
+      "title": "Shop",
+      "links": [
+        {
+          "id": 1,
+          "name": "All Products",
+          "href": "/products"
+        },
+        {
+          "id": 2,
+          "name": "Dresses",
+          "href": "/category"
+        },
+        {
+          "id": 3,
+          "name": "Co-ord Sets",
+          "href": "/category"
+        },
+        {
+          "id": 4,
+          "name": "Outerwear",
+          "href": "/category"
+        },
+        {
+          "id": 5,
+          "name": "Tops",
+          "href": "/category"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Company",
+      "links": [
+        {
+          "id": 1,
+          "name": "About Us",
+          "href": "/about"
+        },
+        {
+          "id": 2,
+          "name": "Contact Us",
+          "href": "/contact"
+        },
+        {
+          "id": 3,
+          "name": "FAQ",
+          "href": "/faq"
+        },
+        {
+          "id": 4,
+          "name": "Returns & Exchanges",
+          "href": "/returns"
+        },
+        {
+          "id": 5,
+          "name": "Privacy Policy",
+          "href": "/privacy"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Customer Service",
+      "links": [
+        {
+          "id": 1,
+          "name": "Contact Us",
+          "href": "/contact"
+        },
+        {
+          "id": 2,
+          "name": "Shipping Info",
+          "href": "/shipping"
+        },
+        {
+          "id": 3,
+          "name": "Returns & Exchanges",
+          "href": "/returns"
+        },
+        {
+          "id": 4,
+          "name": "FAQ",
+          "href": "/faq"
+        },
+        {
+          "id": 5,
+          "name": "Size Guide",
+          "href": "/size-guide"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Legal",
+      "links": [
+        {
+          "id": 1,
+          "name": "Privacy Policy",
+          "href": "/privacy"
+        },
+        {
+          "id": 2,
+          "name": "Terms of Service",
+          "href": "/terms"
+        },
+        {
+          "id": 3,
+          "name": "Cookie Policy",
+          "href": "/cookies"
+        }
+      ]
+    }
+  ],
+  "contact": {
+    "email": "hello@alenacollection.com",
+    "phone": "+977 9863678321",
+    "address": "Thamel, Kathmandu, Nepal"
+  },
+  "newsletter": {
+    "title": "Join Our Community",
+    "description": "Subscribe for new arrivals, collection updates, and special offers."
+  },
+  "copyright": {
+    "year": 2024,
+    "text": "Alena Collection. All rights reserved."
+  }
+}
