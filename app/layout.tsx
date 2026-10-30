@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Cinzel, Inter } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { Toaster } from "react-hot-toast";
@@ -11,18 +10,6 @@ import { ClientRoot } from "../components/client-root";
 import { auth } from "@/lib/auth";
 import { ThemeAwareTopLoader } from "@/components/theme-aware-toploader";
 import { AuthSuccessHandler } from "@/components/auth-success-handler";
-
-const cinzel = Cinzel({
-  variable: "--font-cinzel",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"], // optional — choose what you need
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["300", "400"], // optional — choose what you need
-});
 
 export const metadata: Metadata = {
   title: "Alena Collection",
@@ -39,6 +26,14 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Load Cinzel and Inter via standard Google Fonts link to bypass Vercel build-time network bugs */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+
         <Script id="theme-initializer" strategy="beforeInteractive">
           {`
             (function() {
@@ -55,7 +50,7 @@ export default async function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${cinzel.variable} ${inter.variable} antialiased bg-background text-foreground`}
+        className="font-sans antialiased bg-background text-foreground"
       >
         <SessionProvider session={session}>
           <ThemeProvider>
