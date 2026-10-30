@@ -29,16 +29,14 @@ const getAdminOrderStats = unstable_cache(
     }, 0);
 
     // Aggregate orders by status for additional dashboard insights
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ordersByStatusRaw: any = await prisma.order.groupBy({
+    const ordersByStatusRaw = (await prisma.order.groupBy({
       by: ["status"],
       _count: {
         _all: true,
       },
-    });
+    })) as unknown as Array<{ status: string; _count: { _all: number } }>;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ordersByStatus = ordersByStatusRaw.map((item: any) => ({
+    const ordersByStatus = ordersByStatusRaw.map((item) => ({
       status: item.status,
       count: item._count._all,
     }));
