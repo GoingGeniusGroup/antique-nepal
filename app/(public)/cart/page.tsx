@@ -103,7 +103,7 @@ export default function CartPage() {
           </Link>
 
           <div className="mb-8">
-            <h1 className="font-serif text-4xl font-bold mb-2">
+            <h1 className="font-serif text-3xl font-bold mb-2 sm:text-4xl">
               Shopping Cart
             </h1>
             <p className="text-muted-foreground">
@@ -113,29 +113,29 @@ export default function CartPage() {
           </div>
 
           {cartItems.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-3">
               {/* Cart Items */}
               <div className="lg:col-span-2 space-y-4">
                 {paginatedItems.map((item) => (
                   <Card key={item.id} className="overflow-hidden">
-                    <CardContent className="p-4">
-                      <div className="flex gap-4">
-                        <div className="w-24 h-24 shrink-0 rounded-md bg-muted overflow-hidden">
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="flex gap-3 sm:gap-4">
+                        <div className="h-20 w-20 shrink-0 rounded-md bg-muted overflow-hidden sm:h-24 sm:w-24">
                           <Image
                             src={item.image || "/placeholder.svg"}
                             alt={item.name}
-                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                            className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
                             width={200}
                             height={200}
                           />
                         </div>
 
-                        <div className="flex-1 flex flex-col justify-between">
+                        <div className="min-w-0 flex-1 flex flex-col justify-between">
                           <div>
                             <p className="text-xs text-muted-foreground mb-1">
                               {item.category}
                             </p>
-                            <h3 className="font-semibold text-sm mb-2">
+                            <h3 className="font-semibold text-sm mb-2 break-words">
                               {item.name}
                             </h3>
                             <p className="text-lg font-bold text-primary">
@@ -144,7 +144,7 @@ export default function CartPage() {
                           </div>
                         </div>
 
-                        <div className="flex flex-col items-end justify-between">
+                        <div className="shrink-0 flex flex-col items-end justify-between">
                           <button className="text-muted-foreground cursor-pointer hover:text-destructive transition-colors">
                             <Trash2 className="h-5 w-5" />
                           </button>
@@ -153,7 +153,7 @@ export default function CartPage() {
                             <button className="px-3 py-1 cursor-pointer hover:bg-accent transition-colors">
                               <Minus className="h-4 w-4" />
                             </button>
-                            <span className="px-4 py-1 border-x border-border text-sm font-medium">
+                            <span className="px-2 sm:px-4 py-1 border-x border-border text-sm font-medium">
                               {item.quantity}
                             </span>
                             <button className="px-3 py-1 cursor-pointer hover:bg-accent transition-colors">
@@ -182,7 +182,7 @@ export default function CartPage() {
 
               {/* Order Summary */}
               <div className="lg:col-span-1">
-                <Card className="sticky top-20">
+                <Card className="lg:sticky lg:top-20">
                   <CardHeader>
                     <CardTitle className="text-lg">Order Summary</CardTitle>
                   </CardHeader>

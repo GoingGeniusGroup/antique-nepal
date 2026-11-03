@@ -241,7 +241,7 @@ const ProductDetailClient = ({
   return (
     <div className="min-h-screen bg-background pt-16">
       <section className="py-12">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-3 sm:px-4">
           <Link
             href="/products"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
@@ -250,7 +250,7 @@ const ProductDetailClient = ({
             Back to Products
           </Link>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-12">
             <ProductImageGallery
               images={product.images}
               productName={product.name}

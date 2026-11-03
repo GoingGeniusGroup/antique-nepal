@@ -42,7 +42,7 @@ export const Footer = () => {
   if (loading) {
     return (
       <footer className="bg-card border-t border-border">
-        <div className="container px-6 py-16">
+        <div className="container px-4 py-10 sm:px-6 sm:py-16">
           <div className="flex items-center justify-center h-32">
             <p className="text-muted-foreground">Loading footer...</p>
           </div>
@@ -59,7 +59,7 @@ export const Footer = () => {
   ) {
     return (
       <footer className="bg-card border-t border-border">
-        <div className="container px-6 py-16">
+        <div className="container px-4 py-10 sm:px-6 sm:py-16">
           <div className="flex items-center justify-center h-32">
             <p className="text-muted-foreground">
               Footer content not configured. Please add data in admin settings.
@@ -73,7 +73,7 @@ export const Footer = () => {
   return (
     <footer className="bg-card border-t border-border">
       {/* Main Footer Content */}
-      <div className="container px-6 py-16">
+      <div className="container px-4 py-10 sm:px-6 sm:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12">
           {/* Company Info */}
           <div className="lg:col-span-2 space-y-6">
@@ -88,7 +88,7 @@ export const Footer = () => {
                 />
               </div>
               <div>
-                <span className="text-2xl font-bold font-cinzel tracking-tight text-foreground">
+                <span className="break-words text-xl font-bold font-cinzel tracking-tight text-foreground sm:text-2xl">
                   {footer?.brand?.name}
                 </span>
                 <p className="text-sm text-muted-foreground font-inter mt-1">
@@ -219,7 +219,7 @@ export const Footer = () => {
         </div>
 
         {/* Contact & Newsletter Section */}
-        <div className="grid lg:grid-cols-2 gap-12 mt-16 pt-16 border-t border-border">
+        <div className="mt-10 grid gap-8 border-t border-border pt-10 sm:mt-16 sm:gap-12 sm:pt-16 lg:grid-cols-2">
           {/* Contact Info */}
           <div className="space-y-6">
             <p className="text-lg font-semibold font-cinzel text-foreground">
@@ -286,14 +286,14 @@ export const Footer = () => {
                 {footer?.newsletter?.description}
               </p>
             </div>
-            <div className="flex gap-3 max-w-md">
+            <div className="flex max-w-md flex-col gap-3 sm:flex-row">
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary font-inter"
+                className="min-w-0 flex-1 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary font-inter"
               />
               <Button
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 flex items-center gap-2 transition-all duration-200 hover:scale-105 font-inter"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground px-6 flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 font-inter sm:w-auto"
                 size="sm"
               >
                 Subscribe
@@ -309,13 +309,13 @@ export const Footer = () => {
 
       {/* Bottom Bar */}
       <div className="border-t border-border bg-muted/30">
-        <div className="container px-6 py-6">
+        <div className="container px-4 py-6 sm:px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground font-inter">
               © {new Date().getFullYear()} {footer?.brand?.name}. All rights
               reserved.
             </p>
-            <div className="flex gap-6">
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 md:justify-end sm:gap-6">
               {footer?.sections
                 ?.find((s) => s.title === "Legal")
                 ?.links.map((link) => (

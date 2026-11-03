@@ -219,16 +219,16 @@ export const Navbar = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-elegant">
+      <nav aria-label="Main navigation" className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-elegant">
         <div className="container px-4 mx-auto">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Logo */}
-            <Link href="/" className="group font-cinzel text-lg font-semibold tracking-wide transition-opacity hover:opacity-80 sm:text-xl">
+            <Link href="/" className="group min-w-0 max-w-[calc(100vw-6rem)] truncate font-cinzel text-base font-semibold tracking-wide transition-opacity hover:opacity-80 sm:text-xl xl:max-w-none">
               {general?.siteName || "Alena Collection"}
             </Link>
 
             {/* Desktop Navigation */}
-            <NavigationMenu className="hidden lg:flex">
+            <NavigationMenu className="hidden xl:flex">
               <NavigationMenuList className="gap-2">
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
@@ -352,7 +352,7 @@ export const Navbar = () => {
             </NavigationMenu>
 
             {/* Desktop Actions */}
-            <div className="hidden lg:flex items-center gap-2">
+            <div className="hidden xl:flex items-center gap-2">
               <Link href="/search">
                 <Button
                   variant="ghost"
@@ -466,9 +466,12 @@ export const Navbar = () => {
 
             {/* Mobile Menu Toggle Button */}
             <button
-              aria-label="Toggle navigation menu"
-              onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden text-foreground hover:text-primary transition-all p-2 hover:scale-110"
+              type="button"
+              aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={isOpen}
+              aria-controls="mobile-navigation"
+              onClick={() => setIsOpen((open) => !open)}
+              className="xl:hidden shrink-0 text-foreground hover:text-primary transition-all p-2 hover:scale-110"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -476,7 +479,7 @@ export const Navbar = () => {
 
           {/* Mobile Navigation Drawer */}
           {isOpen && (
-            <div className="lg:hidden py-6 border-t border-border/50 animate-fade-in">
+            <div id="mobile-navigation" className="xl:hidden max-h-[calc(100dvh-4rem)] sm:max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain py-5 sm:py-6 border-t border-border/50 animate-fade-in">
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-4">
                   <Link

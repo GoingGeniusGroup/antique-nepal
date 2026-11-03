@@ -146,13 +146,13 @@ export function Hero() {
         {(banner?.isVisible !== false && (banner?.text || !bannerLoading)) && (
           <div className="flex justify-center mb-8">
             <motion.div
-              className="rounded-full bg-white/18 border border-white/35 text-white backdrop-blur-md px-6 py-2.5 inline-flex items-center gap-2 shadow-[0_10px_28px_rgba(0,0,0,0.28)]"
+              className="max-w-full rounded-xl sm:rounded-full bg-white/18 border border-white/35 text-white backdrop-blur-md px-3 sm:px-6 py-2.5 inline-flex items-center gap-2 text-center shadow-[0_10px_28px_rgba(0,0,0,0.28)]"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
               <Sparkles className="h-4 w-4 text-amber-200" />
-              <span className="text-sm font-inter">
+              <span className="text-xs sm:text-sm font-inter">
                 {banner?.text || "Modern essentials • Considered details • Effortless style"}
               </span>
             </motion.div>
@@ -167,7 +167,7 @@ export function Hero() {
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
               viewport={{ once: true }}
-              className="relative text-4xl sm:text-8xl md:text-8xl lg:text-8xl tracking-[0.18em] font-bold"
+              className="relative text-[clamp(1.75rem,8vw,3rem)] sm:text-6xl md:text-7xl xl:text-8xl tracking-[0.06em] sm:tracking-[0.12em] font-bold"
               style={{ fontFamily: "var(--font-cinzel)" }}
             >
               <motion.span
@@ -192,7 +192,7 @@ export function Hero() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.7 }}
               viewport={{ once: true }}
-              className="max-w-2xl mx-auto text-3xl sm:text-3xl md:text-3xl font-inter font-light text-white"
+              className="max-w-2xl mx-auto text-xl sm:text-2xl md:text-3xl font-inter font-light text-white"
             >
               {hero?.subtitle || "Modern style, made for every day"}
             </motion.p>
@@ -208,10 +208,10 @@ export function Hero() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-16">
-            <motion.div {...ANIMATION_CONFIG.hoverScale}>
+          <div className="flex w-full flex-col items-center sm:flex-row sm:justify-center gap-3 sm:gap-4 mb-12 sm:mb-16">
+            <motion.div className="w-full sm:w-auto" {...ANIMATION_CONFIG.hoverScale}>
               <NavigationLink href="/products">
-                <Button className="relative overflow-hidden rounded-md h-11 px-7 text-lg font-inter font-medium group text-white bg-primary hover:bg-[#b44f36] dark:bg-emerald-600 dark:hover:bg-emerald-500">
+                <Button className="w-full sm:w-auto relative overflow-hidden rounded-md h-11 px-5 sm:px-7 text-base sm:text-lg font-inter font-medium group text-white bg-primary hover:bg-[#b44f36] dark:bg-emerald-600 dark:hover:bg-emerald-500">
                   <span className="relative flex items-center">
                     <ShoppingBag className="mr-2 h-4 w-4" />
                     Explore Collection
@@ -225,9 +225,9 @@ export function Hero() {
                 </Button>
               </NavigationLink>
             </motion.div>
-            <motion.div {...ANIMATION_CONFIG.hoverScale}>
+            <motion.div className="w-full sm:w-auto" {...ANIMATION_CONFIG.hoverScale}>
               <NavigationLink href="/stories">
-                <Button variant="outline" className="relative overflow-hidden rounded-md h-11 px-7 text-lg font-medium border-white/50 bg-white/5 text-white hover:bg-white/15 hover:text-white backdrop-blur-sm">
+                <Button variant="outline" className="w-full sm:w-auto relative overflow-hidden rounded-md h-11 px-5 sm:px-7 text-base sm:text-lg font-medium border-white/50 bg-white/5 text-white hover:bg-white/15 hover:text-white backdrop-blur-sm">
                   <motion.div
                     className="absolute inset-0 bg-white/10"
                     initial={{ scale: 0, opacity: 0 }}
@@ -241,8 +241,8 @@ export function Hero() {
           </div>
 
           {/* Dynamic Feature Cards */}
-          <div className="max-w-5xl w-full px-6 pb-12">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="max-w-5xl w-full px-0 sm:px-6 pb-8 sm:pb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
               {FEATURE_CARDS.map((card, index) => {
                 const Icon = card.icon;
                 const dynamicFeature = index === 0 ? hero?.features?.feature1 : 
@@ -257,7 +257,7 @@ export function Hero() {
                     transition={{ delay: card.delay, duration: 0.6 }}
                     viewport={{ once: true }}
                     whileHover={{ y: -8, scale: 1.05 }}
-                    className="relative rounded-xl bg-white/10 backdrop-blur-md shadow-[0_14px_40px_rgba(0,0,0,0.3)] border border-white/20 p-6 flex flex-col items-center text-center group cursor-pointer overflow-hidden"
+                    className="relative rounded-xl bg-white/10 backdrop-blur-md shadow-[0_14px_40px_rgba(0,0,0,0.3)] border border-white/20 p-4 sm:p-6 flex flex-col items-center text-center group cursor-pointer overflow-hidden"
                   >
                     <motion.div
                       className={`absolute inset-0 bg-linear-to-br ${card.hoverGradient} to-transparent opacity-0 group-hover:opacity-100`}

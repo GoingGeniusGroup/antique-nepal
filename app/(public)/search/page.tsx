@@ -121,14 +121,14 @@ const SearchPage = () => {
         zIndex={30}
       />
 
-      <div className="flex flex-col gap-8 p-6 mx-3 lg:mx-16 md:p-8">
+      <div className="mx-auto flex w-full max-w-[90rem] flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="flex flex-col gap-4"
         >
-          <h1 className="text-4xl font-bold font-inter text-[#2d2520] dark:text-white">
+          <h1 className="text-2xl font-bold font-inter text-[#2d2520] dark:text-white sm:text-3xl md:text-4xl">
             Search
           </h1>
 

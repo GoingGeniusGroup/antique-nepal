@@ -213,9 +213,9 @@ const Cart = ({ userId }: { userId: string }) => {
         <ThemeToggle variant="fixed" position="right-4 top-24" />
 
         <main className="flex-1 pt-24 pb-16">
-          <div className="container mx-auto px-4 max-w-7xl">
+          <div className="container mx-auto max-w-7xl px-3 sm:px-4">
             <div className="mb-8">
-              <h1 className="font-serif text-4xl font-bold mb-2">
+              <h1 className="font-serif text-3xl font-bold mb-2 sm:text-4xl">
                 Shopping Cart
               </h1>
               <p className="text-muted-foreground">
@@ -239,7 +239,7 @@ const Cart = ({ userId }: { userId: string }) => {
                 </Button>
               </div>
             ) : (
-              <div className="grid lg:grid-cols-3 gap-8">
+              <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
                 {/* CART ITEMS */}
                 <div className="lg:col-span-2 space-y-4">
                   {visibleItems.map((item) => {
@@ -248,21 +248,21 @@ const Cart = ({ userId }: { userId: string }) => {
                     return (
                       <div
                         key={item.id}
-                        className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow"
+                        className="bg-card border border-border rounded-lg p-3 sm:p-6 hover:shadow-lg transition-shadow"
                       >
-                        <div className="flex gap-6">
-                          <div className="relative flex-shrink-0 w-32 h-32">
+                        <div className="flex gap-3 sm:gap-6">
+                          <div className="relative h-20 w-20 flex-shrink-0 sm:h-32 sm:w-32">
                             <img
                               src={item.image}
                               alt={item.name}
-                              className="w-32 h-32 object-cover rounded-lg border border-border"
+                              className="h-full w-full object-cover rounded-lg border border-border"
                             />
                           </div>
 
-                          <div className="flex-1 space-y-4">
-                            <div className="flex justify-between items-start">
-                              <div className="space-y-2">
-                                <h3 className="font-serif text-xl font-semibold">
+                          <div className="min-w-0 flex-1 space-y-3 sm:space-y-4">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0 space-y-2">
+                                <h3 className="font-serif text-base font-semibold break-words sm:text-xl">
                                   {item.name}
                                 </h3>
                                 <div className="flex flex-wrap gap-3 text-sm">
@@ -302,8 +302,8 @@ const Cart = ({ userId }: { userId: string }) => {
                               </Button>
                             </div>
 
-                            <div className="flex items-center justify-between pt-2">
-                              <div className="flex items-center gap-3 border border-border rounded-lg">
+                            <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+                              <div className="flex items-center gap-1 border border-border rounded-lg sm:gap-3">
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -311,7 +311,7 @@ const Cart = ({ userId }: { userId: string }) => {
                                     updateQuantity(item.id, -1, "minus")
                                   }
                                   disabled={!!loadingButton}
-                                  className="h-10 w-10"
+                                  className="h-9 w-9 sm:h-10 sm:w-10"
                                   aria-label="minus"
                                 >
                                   {loadingButton === "minus" ? (
@@ -321,7 +321,7 @@ const Cart = ({ userId }: { userId: string }) => {
                                   )}
                                 </Button>
 
-                                <span className="text-lg font-semibold w-12 text-center">
+                                <span className="w-8 text-center text-base font-semibold sm:w-12 sm:text-lg">
                                   {item.quantity}
                                 </span>
 
@@ -332,7 +332,7 @@ const Cart = ({ userId }: { userId: string }) => {
                                     updateQuantity(item.id, 1, "plus")
                                   }
                                   disabled={!!loadingButton}
-                                  className="h-10 w-10"
+                                  className="h-9 w-9 sm:h-10 sm:w-10"
                                   aria-label="plus"
                                 >
                                   {loadingButton === "plus" ? (
@@ -344,7 +344,7 @@ const Cart = ({ userId }: { userId: string }) => {
                               </div>
 
                               <div className="text-right">
-                                <p className="text-2xl font-bold text-primary">
+                                <p className="text-lg font-bold text-primary sm:text-2xl">
                                   ${(item.price * item.quantity).toFixed(2)}
                                 </p>
                                 <p className="text-sm text-muted-foreground">
@@ -369,8 +369,8 @@ const Cart = ({ userId }: { userId: string }) => {
 
                 {/* ORDER SUMMARY */}
                 <div className="lg:col-span-1">
-                  <div className="bg-card border border-border rounded-lg p-6 sticky top-24 space-y-6">
-                    <h2 className="font-serif text-2xl font-bold">
+                  <div className="bg-card border border-border rounded-lg p-4 sm:p-6 lg:sticky lg:top-24 space-y-6">
+                    <h2 className="font-serif text-xl font-bold sm:text-2xl">
                       Order Summary
                     </h2>
 

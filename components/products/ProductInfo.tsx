@@ -15,18 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import toast from "react-hot-toast";
-
-interface ProductReview {
-  rating: number;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  reviews: ProductReview[];
-}
+import type { Product, ProductReview } from "@/lib/product";
 
 export interface ProductVariant {
   id: string;
@@ -40,7 +29,7 @@ export interface ProductVariant {
 }
 
 interface ProductInfoProps {
-  product: Product;
+  product: Pick<Product, "id" | "name" | "description" | "price" | "reviews">;
   quantity: number;
   setQuantity: (qty: number) => void;
   isWishlisted: boolean;
@@ -104,10 +93,10 @@ export const ProductInfo = ({
           </div>
         </div>
 
-        <h1 className="font-serif text-4xl font-bold mb-4">{product.name}</h1>
+        <h1 className="font-serif text-3xl font-bold mb-4 break-words sm:text-4xl">{product.name}</h1>
 
-        <div className="flex items-center gap-3 mb-6">
-          <span className="text-4xl font-bold text-primary">
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <span className="text-3xl font-bold text-primary sm:text-4xl">
             ₹{Number(product.price).toLocaleString("en-IN")}
           </span>
           <Badge variant="default" className="px-3 py-1">
@@ -176,7 +165,7 @@ export const ProductInfo = ({
       <Separator />
 
       <div className="space-y-4">
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           {!isAdmin && (
             <>
               <Button
@@ -231,7 +220,7 @@ export const ProductInfo = ({
 
       <Card>
         <CardContent className="p-4">
-          <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="grid grid-cols-1 gap-4 text-center sm:grid-cols-3">
             <div className="space-y-2">
               <Truck className="h-6 w-6 mx-auto text-primary" />
               <p className="text-xs font-medium">Free Shipping</p>

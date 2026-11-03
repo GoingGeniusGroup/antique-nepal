@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 // Adjust these weights to change the importance of each metric
 const WEIGHTS = {
@@ -16,7 +17,7 @@ const formatImageUrl = (url: string | undefined) => {
 
 export async function getPopularProduct() {
   try {
-    const products = await prisma.product.findMany({
+    const productsQuery = {
       where: {
         isActive: true,
       },
@@ -38,7 +39,13 @@ export async function getPopularProduct() {
           select: { url: true },
         },
       },
-    });
+    } satisfies Prisma.ProductFindManyArgs;
+
+    type ProductWithPopularityInputs = Prisma.ProductGetPayload<
+      typeof productsQuery
+    >;
+    const products: ProductWithPopularityInputs[] =
+      await prisma.product.findMany(productsQuery);
 
     const productsWithPopularity = products.map((product) => {
       const reviewCount = product.reviews.length;
@@ -89,9 +96,13 @@ export async function getPopularProduct() {
 
 export async function getBestSellerProduct() {
     try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const bestSeller: any = await prisma.orderItem.groupBy({
-          by: ["productVariantId"],
+        type BestSellerGroup = Pick<
+          Prisma.OrderItemGroupByOutputType,
+          "productVariantId"
+        >;
+        // Accelerate widens groupBy results, so type the selected key explicitly.
+        const bestSeller = (await prisma.orderItem.groupBy({
+          by: ["productVariantId"] as const,
           _sum: {
             quantity: true,
           },
@@ -101,10 +112,10 @@ export async function getBestSellerProduct() {
             },
           },
           take: 1,
-        });
+        })) as BestSellerGroup[];
     
         if (bestSeller.length > 0 && bestSeller[0].productVariantId) {
-          const productVariant = await prisma.productVariant.findUnique({
+          const productVariantQuery = {
             where: {
               id: bestSeller[0].productVariantId,
             },
@@ -120,7 +131,12 @@ export async function getBestSellerProduct() {
                 },
               },
             },
-          });
+          } satisfies Prisma.ProductVariantFindUniqueArgs;
+          type ProductVariantWithProduct = Prisma.ProductVariantGetPayload<
+            typeof productVariantQuery
+          >;
+          const productVariant: ProductVariantWithProduct | null =
+            await prisma.productVariant.findUnique(productVariantQuery);
     
           if (productVariant) {
             const productData = {
@@ -146,7 +162,7 @@ export async function getBestSellerProduct() {
 
 export async function getLatestProduct() {
   try {
-    const latestProduct = await prisma.product.findFirst({
+    const latestProductQuery = {
       where: {
         isActive: true,
       },
@@ -161,7 +177,10 @@ export async function getLatestProduct() {
           select: { url: true },
         },
       },
-    });
+    } satisfies Prisma.ProductFindFirstArgs;
+    type LatestProduct = Prisma.ProductGetPayload<typeof latestProductQuery>;
+    const latestProduct: LatestProduct | null =
+      await prisma.product.findFirst(latestProductQuery);
 
     if (!latestProduct) {
       return null;

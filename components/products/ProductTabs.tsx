@@ -14,17 +14,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { Pagination } from "@/components/products/pagination";
 import toast from "react-hot-toast";
-import type { Product } from "@/lib/product";
-
-interface ProductReview {
-  id: string;
-  rating: number;
-  comment: string;
-  title?: string | null;
-  createdAt: Date;
-  userId: string;
-  user?: { name?: string | null };
-}
+import type { Product, ProductReview } from "@/lib/product";
 
 interface ProductTabsProps {
   product: Product;

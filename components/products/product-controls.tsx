@@ -258,12 +258,12 @@ export function ProductControls({
         </motion.div>
 
         {/* Sort By */}
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+        <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Select value={sortBy} onValueChange={onSortChange}>
             <SelectTrigger
               aria-label="Sort products"
               className={cn(
-                "w-40 transition-all cursor-pointer duration-200",
+                "w-full sm:w-40 transition-all cursor-pointer duration-200",
                 isDark
                   ? "bg-white/5 border-white/10 hover:bg-white/10"
                   : "bg-white border-[#e8e0d8] hover:border-primary"

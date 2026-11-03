@@ -136,7 +136,7 @@ export default function CheckoutClient() {
   if (loading || status === "loading") {
     return (
       <div className="min-h-screen pt-24 pb-16 bg-background">
-        <div className="container mx-auto px-4 max-w-2xl">
+        <div className="container mx-auto max-w-2xl px-3 sm:px-4">
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
             <p className="text-muted-foreground">Loading checkout...</p>
@@ -149,9 +149,9 @@ export default function CheckoutClient() {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen pt-24 pb-16">
-        <div className="container mx-auto px-4 max-w-2xl text-center">
+        <div className="container mx-auto max-w-2xl px-3 text-center sm:px-4">
           <ShoppingBag className="mx-auto h-24 w-24 text-muted-foreground mb-6" />
-          <h1 className="font-serif text-3xl font-bold mb-4">Your cart is empty</h1>
+          <h1 className="font-serif text-2xl font-bold mb-4 sm:text-3xl">Your cart is empty</h1>
           <p className="text-muted-foreground mb-8">Add some items to proceed with checkout</p>
           <Button asChild>
             <Link href="/products">Browse Products</Link>
@@ -163,10 +163,10 @@ export default function CheckoutClient() {
 
   return (
     <div className="min-h-screen pt-24 pb-16 bg-background">
-      <div className="container mx-auto px-4 max-w-6xl">
-        <h1 className="font-serif text-4xl font-bold mb-8">Checkout</h1>
+      <div className="container mx-auto max-w-6xl px-3 sm:px-4">
+        <h1 className="font-serif text-3xl font-bold mb-6 sm:mb-8 sm:text-4xl">Checkout</h1>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
           {/* Left Column - Address & Payment */}
           <div className="lg:col-span-2 space-y-6">
             {/* Delivery Address */}
@@ -281,7 +281,7 @@ export default function CheckoutClient() {
 
           {/* Right Column - Order Summary */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-24">
+            <Card className="lg:sticky lg:top-24">
               <CardHeader>
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
@@ -289,7 +289,7 @@ export default function CheckoutClient() {
                 {/* Cart Items */}
                 <div className="space-y-3">
                   {cartItems.map((item) => (
-                    <div key={item.id} className="flex gap-3">
+                    <div key={item.id} className="flex min-w-0 gap-2 sm:gap-3">
                       <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                         {item.image && (
                           <img
@@ -299,14 +299,14 @@ export default function CheckoutClient() {
                           />
                         )}
                       </div>
-                      <div className="flex-1 min-w-0">
+                      <div className="min-w-0 flex-1">
                         <p className="font-medium text-sm truncate">{item.name}</p>
                         <p className="text-xs text-muted-foreground">
                           {item.color} • {item.size}
                         </p>
                         <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                       </div>
-                      <div className="text-sm font-medium">${item.price * item.quantity}</div>
+                      <div className="shrink-0 text-right text-xs font-medium sm:text-sm">${item.price * item.quantity}</div>
                     </div>
                   ))}
                 </div>
