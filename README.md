@@ -31,6 +31,8 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Use the repository root as the Vercel project root and `pnpm build` as the build command. The build script generates Prisma Client before running `next build`; the `postinstall` script also generates it after dependency installation.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Configure `DATABASE_URL` and `DIRECT_URL` in the Vercel environment for each deployment target. Prisma reads both while generating the client. Configure the authentication, email, and Uploadcare environment variables used by the features you enable as well; do not commit their values.
+
+See the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
