@@ -1,0 +1,10 @@
+allowBuilds:
+  '@heroui/shared-utils': false
+  '@prisma/client': true
+  '@prisma/engines': true
+  bcrypt: true
+  core-js: false
+  esbuild: true
+  prisma: true
+  sharp: true
+  unrs-resolver: false
