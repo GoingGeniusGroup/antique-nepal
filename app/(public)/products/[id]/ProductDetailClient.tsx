@@ -42,6 +42,7 @@ const ProductDetailClient = ({
   const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
   const [showVariantModal, setShowVariantModal] = useState(false);
   const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
+  const [variantsLoaded, setVariantsLoaded] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const { theme, isReady } = useTheme();
@@ -82,11 +83,13 @@ const ProductDetailClient = ({
     const fetchVariants = async () => {
       try {
         const res = await fetch(`/api/products/${product.id}/variants`);
-
-        if (res.ok) {
-          const data = await res.json();
-          setProductVariants(data.variants || []);
+        if (!res.ok) {
+          throw new Error("Failed to fetch product variants");
         }
+
+        const data: { variants: ProductVariant[] } = await res.json();
+        setProductVariants(data.variants);
+        setVariantsLoaded(true);
       } catch (err) {
         console.error("Failed to fetch variants", err);
       }
@@ -190,16 +193,34 @@ const ProductDetailClient = ({
       return;
     }
 
+    if (!variantsLoaded) {
+      toast.error("Product options are still loading. Please try again.");
+      return;
+    }
+
     if (productVariants.length > 0) {
       setShowVariantModal(true);
     } else {
-      toast.error("No variants available for this product.");
+      void handleAddToCart(null, quantity);
     }
   };
 
-  const handleAddToCart = async (variantId: string, qty: number) => {
+  const handleAddToCart = async (variantId: string | null, qty: number) => {
     if (!userId) {
       toast.error("Please sign in to add items to cart");
+      return;
+    }
+
+    if (
+      productVariants.length > 0 &&
+      (!variantId || !productVariants.some((variant) => variant.id === variantId))
+    ) {
+      toast.error("Please select an available product option.");
+      return;
+    }
+
+    if (productVariants.length === 0 && variantId !== null) {
+      toast.error("This product does not have selectable options.");
       return;
     }
 
@@ -209,21 +230,37 @@ const ProductDetailClient = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId,
-          productVariantId: variantId,
+          productId: product.id,
+          variantId,
           quantity: qty,
         }),
       });
 
       if (!res.ok) {
-        throw new Error("Failed to add to cart");
+        let errorMessage = "Failed to add to cart";
+        try {
+          const response: unknown = await res.json();
+          if (
+            typeof response === "object" &&
+            response !== null &&
+            "error" in response &&
+            typeof response.error === "string" &&
+            response.error.trim()
+          ) {
+            errorMessage = response.error;
+          }
+        } catch (error) {
+          console.error("Failed to read add-to-cart error response:", error);
+        }
+        toast.error(errorMessage);
+        return;
       }
 
       // Update cart count in localStorage
       const currentCount = Number.parseInt(
         localStorage.getItem("cartCount") || "0"
       );
-      localStorage.setItem("cartCount", (currentCount + 1).toString());
+      localStorage.setItem("cartCount", (currentCount + qty).toString());
       localStorage.removeItem("cartVisited");
       window.dispatchEvent(new Event("storage"));
 
@@ -231,8 +268,9 @@ const ProductDetailClient = ({
       setQuantity(1);
     } catch (error) {
       console.error("Error adding to cart:", error);
-      toast.error("Failed to add to cart");
-      throw error;
+      toast.error(
+        error instanceof Error ? error.message : "Failed to add to cart"
+      );
     } finally {
       setIsAddingToCart(false);
     }

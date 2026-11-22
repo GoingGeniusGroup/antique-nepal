@@ -26,7 +26,7 @@ const SignupForm = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    countryCode: "",
+    countryCode: "+977",
     phone: "",
     email: "",
     password: "",
@@ -47,6 +47,8 @@ const SignupForm = () => {
     try {
       const form = new FormData(e.currentTarget);
       form.set("countryCode", formData.countryCode);
+      // Automatically enforce role as customer
+      form.set("role", "customer");
 
       const result = await registerUser(form);
 
@@ -56,13 +58,11 @@ const SignupForm = () => {
         if (result.errors) {
           setErrors(result.errors);
         } else {
-          // General error (e.g., email already exists)
           toast.error(result.message || "Something went wrong");
         }
       } else {
         setErrors({});
         toast.success(result.message ?? "Account created successfully");
-        // Redirect after a short delay
         setTimeout(() => {
           router.push("/login");
         }, 500);
@@ -75,14 +75,14 @@ const SignupForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen px-4 py-6 sm:py-8 text-foreground  dark:text-foreground">
-      <div className="w-full max-w-md p-6 sm:p-8 space-y-6">
+    <div className="flex justify-center items-center min-h-screen px-4 py-6 sm:py-8 text-foreground dark:text-foreground">
+      <div className="w-full max-w-md p-6 sm:p-8 space-y-6 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700">
         <div className="text-center mb-6">
           <h1 className="text-2xl sm:text-3xl text-primary font-cinzel font-bold mb-2">
             CREATE AN ACCOUNT
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            Get started with your free account
+            Join Alena Collection to start shopping
           </p>
         </div>
 
@@ -98,7 +98,7 @@ const SignupForm = () => {
                 <Input
                   name={field}
                   type="text"
-                  placeholder={field === "firstName" ? "John" : "Doe"}
+                  placeholder={field === "firstName" ? "Alena" : "Maharjan"}
                   value={formData[field as keyof typeof formData] || ""}
                   onChange={(e) => handleInputChange(field, e.target.value)}
                   className={`bg-card text-foreground placeholder:text-muted-foreground transition-all ${
@@ -121,7 +121,7 @@ const SignupForm = () => {
             </Label>
             <div className="flex flex-col sm:flex-row gap-2">
               <Select
-                value={formData.countryCode || ""}
+                value={formData.countryCode || "+977"}
                 onValueChange={(value) =>
                   handleInputChange("countryCode", value)
                 }
@@ -200,7 +200,7 @@ const SignupForm = () => {
                 type="button"
                 aria-label="Visibility"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-5 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground transition-colors"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -236,11 +236,11 @@ const SignupForm = () => {
           <FacebookSigninButton />
         </div>
 
-        <p className="text-center text-sm text-primary cursor-default">
+        <p className="text-center text-sm text-muted-foreground cursor-default">
           Already have an account?{" "}
           <Link
             href={"/login"}
-            className="text-blue-700 hover:text-primary-glow transition-smooth underline cursor-pointer"
+            className="text-amber-700 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300 transition-colors underline cursor-pointer font-semibold"
           >
             Sign in
           </Link>

@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { formatCurrency, formatDate } from "@/lib/admin-utils";
 import { ProductWithImagesForm } from "@/components/admin/product/product-image-variant-form";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { CsvImporter } from "@/components/admin/csv-importer";
 
 type Row = {
   id: string;
@@ -19,6 +20,8 @@ type Row = {
   shortDescription?: string | null;
   sku: string;
   price: number;
+  stockQuantity: number;
+  lowStockThreshold: number;
   isActive: boolean;
   isFeatured: boolean;
   metaTitle?: string | null;
@@ -137,7 +140,10 @@ export default function ProductsPage() {
   return (
     <PageTransition>
       <div className="space-y-6">
-        <PageHeader title="Products" />
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <PageHeader title="Products" />
+          <CsvImporter />
+        </div>
 
         {/* Form */}
         {editingProduct && (
@@ -181,8 +187,7 @@ export default function ProductsPage() {
           onOpenChange={() => setDeleteProduct(null)}
           onConfirm={confirmDeleteProduct}
           title="Delete Product?"
-          description="Are you sure you want to delete this image? This action cannot
-                be undone."
+          description="Are you sure you want to delete this product? This action cannot be undone."
           confirmText="Delete"
           cancelText="Cancel"
           variant="destructive"

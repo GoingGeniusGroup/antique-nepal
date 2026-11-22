@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import toast from "react-hot-toast";
 import type { Product, ProductReview } from "@/lib/product";
+import { formatNpr } from "@/lib/utils";
 
 export interface ProductVariant {
   id: string;
@@ -97,7 +98,7 @@ export const ProductInfo = ({
 
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <span className="text-3xl font-bold text-primary sm:text-4xl">
-            ₹{Number(product.price).toLocaleString("en-IN")}
+            {formatNpr(Number(product.price))}
           </span>
           <Badge variant="default" className="px-3 py-1">
             In Stock
@@ -225,7 +226,7 @@ export const ProductInfo = ({
               <Truck className="h-6 w-6 mx-auto text-primary" />
               <p className="text-xs font-medium">Free Shipping</p>
               <p className="text-xs text-muted-foreground">
-                On orders over ₹999
+                On orders over {formatNpr(999)}
               </p>
             </div>
             <div className="space-y-2">

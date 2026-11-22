@@ -98,11 +98,11 @@ export async function getBestSellerProduct() {
     try {
         type BestSellerGroup = Pick<
           Prisma.OrderItemGroupByOutputType,
-          "productVariantId"
+          "productId"
         >;
         // Accelerate widens groupBy results, so type the selected key explicitly.
         const bestSeller = (await prisma.orderItem.groupBy({
-          by: ["productVariantId"] as const,
+          by: ["productId"] as const,
           _sum: {
             quantity: true,
           },
@@ -114,37 +114,33 @@ export async function getBestSellerProduct() {
           take: 1,
         })) as BestSellerGroup[];
     
-        if (bestSeller.length > 0 && bestSeller[0].productVariantId) {
-          const productVariantQuery = {
+        if (bestSeller.length > 0 && bestSeller[0].productId) {
+          const productQuery = {
             where: {
-              id: bestSeller[0].productVariantId,
+              id: bestSeller[0].productId,
             },
             include: {
-              product: {
-                include: {
-                  images: {
-                    take: 1,
-                    where: { url: { not: "" } },
-                    orderBy: [{ isPrimary: "desc" }, { displayOrder: "asc" }],
-                    select: { url: true },
-                  },
-                },
+              images: {
+                take: 1,
+                where: { url: { not: "" } },
+                orderBy: [{ isPrimary: "desc" }, { displayOrder: "asc" }],
+                select: { url: true },
               },
             },
-          } satisfies Prisma.ProductVariantFindUniqueArgs;
-          type ProductVariantWithProduct = Prisma.ProductVariantGetPayload<
-            typeof productVariantQuery
+          } satisfies Prisma.ProductFindUniqueArgs;
+          type ProductWithImages = Prisma.ProductGetPayload<
+            typeof productQuery
           >;
-          const productVariant: ProductVariantWithProduct | null =
-            await prisma.productVariant.findUnique(productVariantQuery);
+          const product: ProductWithImages | null =
+            await prisma.product.findUnique(productQuery);
     
-          if (productVariant) {
+          if (product) {
             const productData = {
-              id: productVariant.product.id,
-              name: productVariant.product.name,
-              price: Number(productVariant.product.price),
-              description: productVariant.product.description,
-              images: productVariant.product.images.map(img => ({ url: formatImageUrl(img.url) })),
+              id: product.id,
+              name: product.name,
+              price: Number(product.price),
+              description: product.description,
+              images: product.images.map(img => ({ url: formatImageUrl(img.url) })),
               tag: "Best Seller",
             };
     

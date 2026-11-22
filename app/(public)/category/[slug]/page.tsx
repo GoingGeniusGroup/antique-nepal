@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 
-import { ProductData } from "@/actions/products";
-import { ThemeToggle } from "@/components/theme-toggle";
+import type { ProductData } from "@/actions/products";
 import { ProductControls } from "@/components/products/product-controls";
 import { ProductGrid } from "@/components/products/product-grid";
 import { Pagination } from "@/components/products/pagination";
 import ProductsBannerSection from "@/components/products/ProductsBannerSection";
+import { getCategoryDisplayName } from "@/data/category-options";
 
 const PRODUCTS_PER_PAGE = 8;
 
@@ -18,6 +18,21 @@ interface Category {
   name: string;
   description?: string;
   hero?: { subtitle?: string };
+}
+
+interface CategoryProductResponse {
+  id: string;
+  name: string;
+  price: number;
+  images?: { url: string; isPrimary: boolean }[];
+  inStock: boolean;
+  variants: ProductData["variants"];
+}
+
+interface CategoryProductsResponse {
+  category: Category | null;
+  products: CategoryProductResponse[];
+  totalPages: number;
 }
 
 const CategoryPage = () => {
@@ -53,7 +68,7 @@ const CategoryPage = () => {
         const url = `/api/categories/${params.slug}/products?${queryParams.toString()}`;
         console.log("Fetching from URL:", url);
         const res = await fetch(url);
-        const data = await res.json();
+        const data: CategoryProductsResponse = await res.json();
 
         console.log("API response:", data);
 
@@ -64,11 +79,12 @@ const CategoryPage = () => {
           return;
         }
 
-        setCategory(data.category);
+        const category = data.category;
+        setCategory(category);
         const formattedProducts: ProductData[] = data.products.map(
-          (product: any) => {
+          (product) => {
             const imageUrl =
-              product.images?.find((img: any) => img.isPrimary)?.url ||
+              product.images?.find((img) => img.isPrimary)?.url ||
               product.images?.[0]?.url;
 
             let image = "/product_placeholder.jpeg";
@@ -85,11 +101,12 @@ const CategoryPage = () => {
             return {
               id: product.id,
               name: product.name,
-              category: data.category.name,
+              category: category.name,
               price: Number(product.price),
               image,
-              inStock: product.isActive, // Assuming isActive indicates stock
-              badge: data.category.name,
+              inStock: product.inStock,
+              badge: category.name,
+              variants: product.variants,
             };
           }
         );
@@ -127,12 +144,9 @@ const CategoryPage = () => {
 
   return (
     <div className="min-h-screen bg-background mt-20 flex flex-col">
-      {/* Theme Toggle */}
-      <ThemeToggle variant="fixed" position="right-4 top-24" />
-
       {/* Banner */}
       <ProductsBannerSection
-        title={category.name}
+        title={getCategoryDisplayName(category.name)}
         subtitle={category.hero?.subtitle || "Explore our collection"}
       />
 
@@ -144,7 +158,7 @@ const CategoryPage = () => {
           className="flex flex-col gap-4"
         >
           <h1 className="text-2xl font-bold font-inter sm:text-3xl md:text-4xl">
-            {category.name.toUpperCase()}
+            {getCategoryDisplayName(category.name).toUpperCase()}
           </h1>
 
           <ProductControls

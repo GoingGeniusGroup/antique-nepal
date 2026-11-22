@@ -5,6 +5,8 @@ export type ProductData = {
   shortDescription?: string | null;
   sku: string;
   price: number;
+  stockQuantity: number;
+  lowStockThreshold: number;
   isActive: boolean;
   isFeatured: boolean;
   metaTitle?: string | null;

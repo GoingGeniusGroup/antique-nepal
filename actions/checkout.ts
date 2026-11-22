@@ -27,8 +27,9 @@ export async function createOrder(data: {
       include: {
         items: {
           include: {
+            product: true,
             productVariant: {
-              include: { product: true },
+              include: { inventory: true },
             },
           },
         },
@@ -37,6 +38,27 @@ export async function createOrder(data: {
 
     if (!cart || cart.items.length === 0) {
       return { success: false, error: "Cart is empty" };
+    }
+
+    const unavailableItem = cart.items.find((item) => {
+      if (!item.product.isActive) return true;
+
+      const availableQuantity = item.productVariant
+        ? Math.max(
+            0,
+            (item.productVariant.inventory?.quantity ?? 0) -
+              (item.productVariant.inventory?.reservedQuantity ?? 0)
+          )
+        : item.product.stockQuantity;
+
+      return item.quantity > availableQuantity;
+    });
+
+    if (unavailableItem) {
+      return {
+        success: false,
+        error: `${unavailableItem.product.name} no longer has enough stock.`,
+      };
     }
 
     // Validate address exists
@@ -84,10 +106,11 @@ export async function createOrder(data: {
           customerNote: data.customerNote,
           items: {
             create: cart.items.map((item) => ({
+              productId: item.productId,
               productVariantId: item.productVariantId,
-              productName: item.productVariant.product.name,
-              variantName: item.productVariant.name || "",
-              sku: item.productVariant.sku || "",
+              productName: item.product.name,
+              variantName: item.productVariant?.name || "",
+              sku: item.productVariant?.sku || item.product.sku,
               quantity: item.quantity,
               price: item.price,
               total: Number(item.price) * item.quantity,
@@ -148,12 +171,13 @@ export async function getCart() {
       include: {
         items: {
           include: {
-            productVariant: {
+            product: {
               include: {
-                product: {
-                  include: { images: true },
-                },
+                images: true,
               },
+            },
+            productVariant: {
+              select: { color: true, size: true },
             },
           },
         },
@@ -163,12 +187,12 @@ export async function getCart() {
     const cartItems =
       cart?.items.map((ci) => ({
         id: ci.id,
-        name: ci.productVariant.product.name,
+        name: ci.product.name,
         price: Number(ci.price),
         quantity: ci.quantity,
-        color: ci.productVariant.color || "",
-        size: ci.productVariant.size || "",
-        image: ci.productVariant.product.images[0]?.url || "",
+        color: ci.productVariant?.color || "",
+        size: ci.productVariant?.size || "",
+        image: ci.product.images[0]?.url || "",
       })) || [];
 
     return { success: true, items: cartItems };

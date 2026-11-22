@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import toast from "react-hot-toast";
+import { formatNpr } from "@/lib/utils";
 
 interface ProductVariant {
   id: string;
@@ -30,7 +31,7 @@ interface VariantModalProps {
   productName: string;
   variants: ProductVariant[];
   basePrice: number;
-  onAddToCart: (variantId: string, quantity: number) => Promise<void>;
+  onAddToCart: (variantId: string | null, quantity: number) => Promise<void>;
 }
 
 export function VariantModal({
@@ -47,12 +48,18 @@ export function VariantModal({
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedVariant(variants[0]?.id || "");
+    }
+  }, [isOpen, variants]);
+
   const selectedVariantData = variants.find((v) => v.id === selectedVariant);
   const displayPrice = selectedVariantData?.price || basePrice;
 
   const handleAddToCart = async () => {
-    if (!selectedVariant) {
-      toast.error("Please select a variant");
+    if (!selectedVariantData) {
+      toast.error("Please select an available variant");
       return;
     }
 
@@ -63,7 +70,7 @@ export function VariantModal({
 
     try {
       setIsLoading(true);
-      await onAddToCart(selectedVariant, quantity);
+      await onAddToCart(selectedVariantData.id, quantity);
       setQuantity(1);
       setSelectedVariant(variants[0]?.id || "");
       onClose();
@@ -115,7 +122,7 @@ export function VariantModal({
                         </div>
                         {variant.price && variant.price !== basePrice && (
                           <span className="font-semibold">
-                            ${Number(variant.price).toFixed(2)}
+                            {formatNpr(Number(variant.price))}
                           </span>
                         )}
                       </div>
@@ -167,13 +174,13 @@ export function VariantModal({
             <div className="flex justify-between">
               <span className="text-muted-foreground">Unit Price:</span>
               <span className="font-medium">
-                ${Number(displayPrice).toFixed(2)}
+                {formatNpr(Number(displayPrice))}
               </span>
             </div>
             <div className="flex justify-between text-lg font-bold">
               <span>Total:</span>
               <span className="text-primary">
-                ${(displayPrice * quantity).toFixed(2)}
+                {formatNpr(displayPrice * quantity)}
               </span>
             </div>
           </div>

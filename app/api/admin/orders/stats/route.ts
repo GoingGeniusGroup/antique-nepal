@@ -59,18 +59,14 @@ const getAdminOrderStats = unstable_cache(
       },
       select: {
         total: true,
-        productVariant: {
+        product: {
           select: {
-            product: {
+            categories: {
               select: {
-                categories: {
+                category: {
                   select: {
-                    category: {
-                      select: {
-                        id: true,
-                        name: true,
-                      },
-                    },
+                    id: true,
+                    name: true,
                   },
                 },
               },
@@ -93,7 +89,7 @@ const getAdminOrderStats = unstable_cache(
         (item.total as unknown as Prisma.Decimal).toString()
       );
 
-      const productCategories = item.productVariant.product.categories;
+      const productCategories = item.product.categories;
 
       if (!productCategories || productCategories.length === 0) {
         continue;
@@ -147,16 +143,12 @@ const getAdminOrderStats = unstable_cache(
     const cartItems = await prisma.cartItem.findMany({
       select: {
         quantity: true,
-        productVariant: {
-          select: {
-            productId: true,
-          },
-        },
+        productId: true,
       },
     });
 
     for (const item of cartItems) {
-      const productId = item.productVariant.productId;
+      const productId = item.productId;
       const existing =
         productStatsMap.get(productId) ??
         {
@@ -177,16 +169,12 @@ const getAdminOrderStats = unstable_cache(
       },
       select: {
         quantity: true,
-        productVariant: {
-          select: {
-            productId: true,
-          },
-        },
+        productId: true,
       },
     });
 
     for (const item of orderItems) {
-      const productId = item.productVariant.productId;
+      const productId = item.productId;
       const existing =
         productStatsMap.get(productId) ??
         {

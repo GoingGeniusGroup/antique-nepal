@@ -18,8 +18,11 @@ export default async function StatisticsProductsPage() {
         id: true,
         name: true,
         sku: true,
+        stockQuantity: true,
+        lowStockThreshold: true,
         viewCount: true,
         variants: {
+          where: { isActive: true },
           select: { inventory: { select: { quantity: true, reservedQuantity: true, lowStockThreshold: true } } },
         },
       },
@@ -29,33 +32,45 @@ export default async function StatisticsProductsPage() {
       select: {
         quantity: true,
         total: true,
-        productVariant: { select: { productId: true } },
+        productId: true,
       },
     }),
   ]);
   const sales = new Map<string, { quantity: number; revenue: number }>();
   for (const item of orderItems) {
-    const current = sales.get(item.productVariant.productId) ?? { quantity: 0, revenue: 0 };
+    const current = sales.get(item.productId) ?? { quantity: 0, revenue: 0 };
     current.quantity += item.quantity;
     current.revenue += decimalToNumber(item.total);
-    sales.set(item.productVariant.productId, current);
+    sales.set(item.productId, current);
   }
   const inventory = products.map((product) => {
-    const available = product.variants.reduce(
-      (sum, variant) => sum + Math.max(0, (variant.inventory?.quantity ?? 0) - (variant.inventory?.reservedQuantity ?? 0)),
-      0
-    );
+    const isVariantless = product.variants.length === 0;
+    const available = isVariantless
+      ? product.stockQuantity
+      : product.variants.reduce(
+          (sum, variant) =>
+            sum +
+            Math.max(
+              0,
+              (variant.inventory?.quantity ?? 0) -
+                (variant.inventory?.reservedQuantity ?? 0)
+            ),
+          0
+        );
     const lowStockVariants = product.variants.filter((variant) =>
       variant.inventory && variant.inventory.quantity - variant.inventory.reservedQuantity <= variant.inventory.lowStockThreshold
     ).length;
-    return { product, available, lowStockVariants };
+    const lowStock = isVariantless
+      ? product.stockQuantity <= product.lowStockThreshold
+      : lowStockVariants > 0;
+    return { product, available, lowStockVariants, lowStock };
   });
   const ranked = products
     .map((product) => ({ ...product, ...(sales.get(product.id) ?? { quantity: 0, revenue: 0 }) }))
     .sort((a, b) => b.revenue - a.revenue);
   const bestRevenue = ranked[0];
   const bestQuantity = [...ranked].sort((a, b) => b.quantity - a.quantity)[0];
-  const lowStock = inventory.filter(({ lowStockVariants }) => lowStockVariants > 0)
+  const lowStock = inventory.filter((item) => item.lowStock)
     .sort((a, b) => a.available - b.available);
 
   return (
@@ -65,7 +80,7 @@ export default async function StatisticsProductsPage() {
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <StatCard title="Top by Revenue" value={bestRevenue?.name ?? "—"} description={bestRevenue ? formatNpr(bestRevenue.revenue) : "No paid sales yet"} icon={Trophy} accent="bg-amber-500/10 text-amber-700 dark:text-amber-300" />
           <StatCard title="Top by Quantity Sold" value={bestQuantity?.name ?? "—"} description={bestQuantity ? `${bestQuantity.quantity.toLocaleString("en-NP")} units sold` : "No paid sales yet"} icon={Package} accent="bg-sky-500/10 text-sky-700 dark:text-sky-300" />
-          <StatCard title="Low-stock Products" value={lowStock.length.toLocaleString("en-NP")} description="At least one variant is at or below its threshold" icon={Eye} accent="bg-rose-500/10 text-rose-700 dark:text-rose-300" />
+          <StatCard title="Low-stock Products" value={lowStock.length.toLocaleString("en-NP")} description="A base product or one of its variants is below its threshold" icon={Eye} accent="bg-rose-500/10 text-rose-700 dark:text-rose-300" />
         </div>
         <section className="overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm">
           <div className="border-b p-5">
@@ -104,7 +119,7 @@ export default async function StatisticsProductsPage() {
         <section className="rounded-xl border bg-card p-5 text-card-foreground shadow-sm">
           <div className="mb-4">
             <h2 className="font-semibold">Low-stock alerts</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Based on each variant’s configured low-stock threshold.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Based on base-product and variant low-stock thresholds.</p>
           </div>
           {lowStock.length ? (
             <ul className="divide-y">
@@ -112,7 +127,7 @@ export default async function StatisticsProductsPage() {
                 <li key={product.id} className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0 last:pb-0">
                   <span className="font-medium">{product.name}</span>
                   <span className="text-sm text-rose-700 dark:text-rose-300">
-                    {available} available · {lowStockVariants} low-stock {lowStockVariants === 1 ? "variant" : "variants"}
+                    {available} available · {lowStockVariants > 0 ? `${lowStockVariants} low-stock ${lowStockVariants === 1 ? "variant" : "variants"}` : "low stock"}
                   </span>
                 </li>
               ))}

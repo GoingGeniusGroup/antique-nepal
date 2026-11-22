@@ -9,41 +9,19 @@ import type {
   Order,
   OrderItem,
   ProductVariant,
-  Product,
   ProductImage,
   Address,
 } from "@prisma/client";
 
-// Define serializable types
-type SerializableProduct = Omit<
-  Product,
-  "price" | "createdAt" | "updatedAt"
-> & {
-  price: string;
-  createdAt: string;
-  updatedAt: string;
-  images: ProductImage[];
-};
-
-type SerializableProductVariant = Omit<
-  ProductVariant,
-  "price" | "weight" | "createdAt" | "updatedAt"
-> & {
-  price: string | null;
-  weight: string | null;
-  createdAt: string;
-  updatedAt: string;
-  product: SerializableProduct;
-};
-
 type SerializableOrderItem = Omit<
   OrderItem,
-  "price" | "total" | "createdAt"
+  "price" | "total" | "createdAt" | "productVariant"
 > & {
   price: string;
   total: string;
   createdAt: string;
-  productVariant: SerializableProductVariant;
+  product: { images: ProductImage[] };
+  productVariant: Pick<ProductVariant, "color" | "size"> | null;
 };
 
 type SerializableOrder = Omit<

@@ -8,7 +8,6 @@ import { NavigationLink } from "@/components/navigation-link";
 import type { LucideIcon } from "lucide-react";
 import { useTheme } from "@/contexts/theme-context";
 import { useHeroSettings, useBannerSettings } from "@/contexts/settings-context";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 // Feature cards data
 interface FeatureCard {
@@ -106,16 +105,6 @@ export function Hero() {
           : "bg-black/50";
         return <div className={`absolute inset-0 ${overlayClass}`} />;
       })()}
-
-      {/* Theme Toggle - Right side floating */}
-      <ThemeToggle
-        variant="absolute"
-        position="right-4 md:right-8 top-1/2 -translate-y-1/2"
-        animationType="slide"
-        animationDelay={0.6}
-        zIndex={20}
-        className="p-3 md:p-3.5 shadow-[0_10px_28px_rgba(0,0,0,0.28)]"
-      />
 
       {/* Floating light accents */}
       {particles.map((particle) => (

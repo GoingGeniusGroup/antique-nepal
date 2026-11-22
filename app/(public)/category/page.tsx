@@ -4,9 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
 import paperTexture from "@/public/paper-texture.jpg";
 import { useEffect, useState } from "react";
+import { orderCategories } from "@/data/category-options";
 interface Category {
   id: string;
   name: string;
@@ -49,6 +49,7 @@ const pageData = {
 
 const CategoriesPage = () => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const orderedCategories = orderCategories(categories);
 
   useEffect(() => {
     fetch("/api/categories")
@@ -59,8 +60,6 @@ const CategoriesPage = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Theme Toggle */}
-      <ThemeToggle variant="fixed" position="right-4 top-24" />
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 opacity-30">
@@ -92,7 +91,7 @@ const CategoriesPage = () => {
           />
         </div>
         <div className="container px-4 relative z-10 mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8">
-          {categories.map((category) => (
+          {orderedCategories.map((category) => (
             <Link
               key={category.slug}
               href={`/category/${category.slug}`} // Use slug for dynamic routing

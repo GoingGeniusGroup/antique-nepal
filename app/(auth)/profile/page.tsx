@@ -17,14 +17,13 @@ export default async function ProfilePage() {
         include: {
           items: {
             include: {
-              productVariant: {
+              product: {
                 include: {
-                  product: {
-                    include: {
-                      images: true,
-                    },
-                  },
+                  images: true,
                 },
+              },
+              productVariant: {
+                select: { color: true, size: true },
               },
             },
           },
@@ -62,23 +61,8 @@ export default async function ProfilePage() {
         createdAt: item.createdAt.toISOString(),
         price: item.price.toString(),
         total: item.total.toString(),
-        productVariant: {
-          ...item.productVariant,
-          price: item.productVariant.price
-            ? item.productVariant.price.toString()
-            : null,
-          weight: item.productVariant.weight
-            ? item.productVariant.weight.toString()
-            : null,
-          createdAt: item.productVariant.createdAt.toISOString(),
-          updatedAt: item.productVariant.updatedAt.toISOString(),
-          product: {
-            ...item.productVariant.product,
-            price: item.productVariant.product.price.toString(),
-            createdAt: item.productVariant.product.createdAt.toISOString(),
-            updatedAt: item.productVariant.product.updatedAt.toISOString(),
-          },
-        },
+        product: { images: item.product.images },
+        productVariant: item.productVariant,
       })),
     })),
     addresses: user.addresses.map((address) => ({

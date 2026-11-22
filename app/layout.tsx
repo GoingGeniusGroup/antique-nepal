@@ -10,6 +10,7 @@ import { ClientRoot } from "../components/client-root";
 import { auth } from "@/lib/auth";
 import { ThemeAwareTopLoader } from "@/components/theme-aware-toploader";
 import { AuthSuccessHandler } from "@/components/auth-success-handler";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
   title: {
@@ -68,7 +69,7 @@ export default async function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className="font-sans antialiased bg-background text-foreground"
+        className="font-sans antialiased bg-background text-foreground relative min-h-screen"
       >
         <SessionProvider session={session}>
           <ThemeProvider>
@@ -76,6 +77,12 @@ export default async function RootLayout({
               <ThemeAwareTopLoader />
               <AuthSuccessHandler />
               <ClientRoot>{children}</ClientRoot>
+              
+              {/* Floating Global Theme Toggle */}
+              <div className="fixed bottom-6 right-6 z-50">
+                <ThemeToggle />
+              </div>
+
               <Toaster
                 position="bottom-right"
                 toastOptions={{

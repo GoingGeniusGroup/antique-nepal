@@ -7,17 +7,7 @@ import toast from "react-hot-toast";
 
 interface ProductGridProps {
   products: ProductData[];
-  productVariants?: Record<
-    string,
-    Array<{
-      id: string;
-      name: string;
-      sku: string;
-      price?: number;
-      color?: string;
-      size?: string;
-    }>
-  >;
+  productVariants?: Record<string, ProductData["variants"]>;
 }
 
 interface WishlistItem {

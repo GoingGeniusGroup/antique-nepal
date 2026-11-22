@@ -9,7 +9,10 @@ import { CategorySelect } from "../category/category-select";
 
 type Props = {
   product: ProductData;
-  onChange: (field: keyof ProductData, value: any) => void;
+  onChange: (
+    field: keyof ProductData,
+    value: ProductData[keyof ProductData]
+  ) => void;
 };
 
 export function ProductForm({ product, onChange }: Props) {
@@ -51,6 +54,36 @@ export function ProductForm({ product, onChange }: Props) {
           value={product.price}
           onChange={(e) => onChange("price", parseFloat(e.target.value))}
           placeholder="Enter price"
+          className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+        />
+      </div>
+
+      <div>
+        <Label className="text-gray-700 dark:text-gray-300">
+          Base stock (used when there are no active variants)
+        </Label>
+        <Input
+          type="number"
+          min="0"
+          step="1"
+          value={product.stockQuantity}
+          onChange={(e) => onChange("stockQuantity", Number(e.target.value))}
+          className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+        />
+      </div>
+
+      <div>
+        <Label className="text-gray-700 dark:text-gray-300">
+          Base low-stock threshold
+        </Label>
+        <Input
+          type="number"
+          min="0"
+          step="1"
+          value={product.lowStockThreshold}
+          onChange={(e) =>
+            onChange("lowStockThreshold", Number(e.target.value))
+          }
           className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
         />
       </div>

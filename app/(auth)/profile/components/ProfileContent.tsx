@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, Plus } from "lucide-react";
 import Link from "next/link";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { formatNpr } from "@/lib/utils";
 import type {
   Order,
   User as PrismaUser,
   Address,
   OrderItem,
   ProductVariant,
-  Product,
   ProductImage,
 } from "@prisma/client";
 
@@ -27,6 +27,15 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   MapPin,
   Calendar,
@@ -42,14 +51,14 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 // Define the type for the user with relations
 export type UserWithRelations = PrismaUser & {
   orders?: (Order & {
     items: (OrderItem & {
-      productVariant: ProductVariant & {
-        product: Product & { images: ProductImage[] };
-      };
+      product: { images: ProductImage[] };
+      productVariant: Pick<ProductVariant, "color" | "size"> | null;
     })[];
     payments?: { paymentMethod: string; status: string }[];
   })[];
@@ -60,6 +69,44 @@ type ProfileContentProps = {
   user: UserWithRelations;
   onEdit: () => void;
 };
+
+type SavedAddress = Pick<
+  Address,
+  | "id"
+  | "type"
+  | "fullName"
+  | "phone"
+  | "addressLine1"
+  | "addressLine2"
+  | "city"
+  | "state"
+  | "postalCode"
+  | "country"
+  | "isDefault"
+>;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isSavedAddress(value: unknown): value is SavedAddress {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    (value.type === "SHIPPING" ||
+      value.type === "BILLING" ||
+      value.type === "BOTH") &&
+    typeof value.fullName === "string" &&
+    typeof value.phone === "string" &&
+    typeof value.addressLine1 === "string" &&
+    (typeof value.addressLine2 === "string" || value.addressLine2 === null) &&
+    typeof value.city === "string" &&
+    typeof value.state === "string" &&
+    typeof value.postalCode === "string" &&
+    typeof value.country === "string" &&
+    typeof value.isDefault === "boolean"
+  );
+}
 
 const getStatusBadge = (status: string) => {
   switch (status) {
@@ -139,11 +186,84 @@ const getStatusBadge = (status: string) => {
 };
 
 export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>(
+    user.addresses || []
+  );
+  const [isAddAddressOpen, setIsAddAddressOpen] = useState(false);
+  const [isSavingAddress, setIsSavingAddress] = useState(false);
   const ORDERS_PER_PAGE = 5;
   
   const recentOrders = user.orders || [];
-  const savedAddresses = user.addresses || [];
+
+  useEffect(() => {
+    setSavedAddresses(user.addresses || []);
+  }, [user.addresses]);
+
+  const handleAddAddress = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isSavingAddress) return;
+
+    const formData = new FormData(event.currentTarget);
+    const addressData = {
+      fullName: String(formData.get("fullName") || ""),
+      phone: String(formData.get("phone") || ""),
+      addressLine1: String(formData.get("addressLine1") || ""),
+      addressLine2: String(formData.get("addressLine2") || ""),
+      city: String(formData.get("city") || ""),
+      state: String(formData.get("state") || ""),
+      postalCode: String(formData.get("postalCode") || ""),
+      country: String(formData.get("country") || ""),
+      type: String(formData.get("type") || "BOTH"),
+      isDefault: formData.get("isDefault") === "on",
+    };
+
+    setIsSavingAddress(true);
+    try {
+      const response = await fetch("/api/addresses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(addressData),
+      });
+      const result: unknown = await response.json();
+
+      if (!response.ok) {
+        const message =
+          isRecord(result) && typeof result.error === "string"
+            ? result.error
+            : "Failed to save address.";
+        toast.error(message);
+        return;
+      }
+
+      if (!isRecord(result)) {
+        throw new Error("The server returned an invalid address.");
+      }
+
+      const createdAddress = result.address;
+      if (!isSavedAddress(createdAddress)) {
+        throw new Error("The server returned an invalid address.");
+      }
+
+      setSavedAddresses((addresses) => [
+        createdAddress,
+        ...addresses.map((address) =>
+          createdAddress.isDefault ? { ...address, isDefault: false } : address
+        ),
+      ]);
+      setIsAddAddressOpen(false);
+      toast.success("Address added successfully.");
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to add address:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save address."
+      );
+    } finally {
+      setIsSavingAddress(false);
+    }
+  };
   
   const totalPages = Math.ceil(recentOrders.length / ORDERS_PER_PAGE);
   const paginatedOrders = recentOrders.slice(
@@ -153,8 +273,6 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      {/* Theme Toggle */}
-      <ThemeToggle variant="fixed" position="right-4 top-24" />
       {/* Hero Section */}
       <section className="pt-32 pb-12 px-4">
         <div className="container">
@@ -290,7 +408,7 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                         </div>
                         <div className="text-right space-y-2">
                           <p className="text-2xl font-bold text-primary">
-                            ${parseFloat(order.total.toString()).toFixed(2)}
+                            {formatNpr(Number(order.total))}
                           </p>
                           {order.payments && order.payments.length > 0 && (
                             <div className="text-xs text-muted-foreground">
@@ -362,10 +480,10 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                         Manage your delivery locations
                       </CardDescription>
                     </div>
-                    {/* <Button>
-                      <MapPin className="w-4 h-4 mr-2" />
-                      Add Address
-                    </Button> */}
+                    <Button type="button" onClick={() => setIsAddAddressOpen(true)}>
+                      <Plus className="h-4 w-4" />
+                      Add New Address
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -405,11 +523,16 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                           </div>
                         </div>
                         <div className="pl-13 space-y-1 text-muted-foreground">
+                          <p className="font-medium text-foreground">
+                            {address.fullName}
+                          </p>
                           <p>{address.addressLine1}</p>
+                          {address.addressLine2 && <p>{address.addressLine2}</p>}
                           <p>
-                            {address.city}, {address.postalCode}
+                            {address.city}, {address.state} {address.postalCode}
                           </p>
                           <p>{address.country}</p>
+                          <p>{address.phone}</p>
                         </div>
                         {!address.isDefault && (
                           <Button
@@ -425,6 +548,119 @@ export default function ProfileContent({ user, onEdit }: ProfileContentProps) {
                   ))}
                 </CardContent>
               </Card>
+
+              <Dialog
+                open={isAddAddressOpen}
+                onOpenChange={setIsAddAddressOpen}
+              >
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Add a delivery address</DialogTitle>
+                    <DialogDescription>
+                      Save an address to use for delivery and checkout.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleAddAddress} className="space-y-5">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <label className="space-y-2 text-sm font-medium">
+                        Full name
+                        <Input name="fullName" autoComplete="name" required />
+                      </label>
+                      <label className="space-y-2 text-sm font-medium">
+                        Phone
+                        <Input
+                          name="phone"
+                          type="tel"
+                          autoComplete="tel"
+                          required
+                        />
+                      </label>
+                      <label className="space-y-2 text-sm font-medium sm:col-span-2">
+                        Address line 1
+                        <Input
+                          name="addressLine1"
+                          autoComplete="address-line1"
+                          required
+                        />
+                      </label>
+                      <label className="space-y-2 text-sm font-medium sm:col-span-2">
+                        Address line 2 <span className="text-muted-foreground">(optional)</span>
+                        <Input
+                          name="addressLine2"
+                          autoComplete="address-line2"
+                        />
+                      </label>
+                      <label className="space-y-2 text-sm font-medium">
+                        City
+                        <Input
+                          name="city"
+                          autoComplete="address-level2"
+                          required
+                        />
+                      </label>
+                      <label className="space-y-2 text-sm font-medium">
+                        State / Province
+                        <Input
+                          name="state"
+                          autoComplete="address-level1"
+                          required
+                        />
+                      </label>
+                      <label className="space-y-2 text-sm font-medium">
+                        Postal code
+                        <Input
+                          name="postalCode"
+                          autoComplete="postal-code"
+                          required
+                        />
+                      </label>
+                      <label className="space-y-2 text-sm font-medium">
+                        Country
+                        <Input
+                          name="country"
+                          autoComplete="country-name"
+                          defaultValue="Nepal"
+                          required
+                        />
+                      </label>
+                      <label className="space-y-2 text-sm font-medium">
+                        Address type
+                        <select
+                          name="type"
+                          defaultValue="BOTH"
+                          className="border-input bg-background h-9 w-full rounded-md border px-3 text-sm"
+                        >
+                          <option value="BOTH">Shipping & Billing</option>
+                          <option value="SHIPPING">Shipping</option>
+                          <option value="BILLING">Billing</option>
+                        </select>
+                      </label>
+                    </div>
+                    <label className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        name="isDefault"
+                        defaultChecked={savedAddresses.length === 0}
+                        className="h-4 w-4 rounded border-input accent-primary"
+                      />
+                      Set as my default address
+                    </label>
+                    <DialogFooter>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsAddAddressOpen(false)}
+                        disabled={isSavingAddress}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit" disabled={isSavingAddress}>
+                        {isSavingAddress ? "Saving..." : "Save Address"}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </TabsContent>
 
             {/* Security Tab */}

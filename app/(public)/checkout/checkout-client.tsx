@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import { createOrder, getCart, getUserAddresses } from "@/actions/checkout";
 import { useSession } from "next-auth/react";
+import { formatNpr } from "@/lib/utils";
 
 interface CartItem {
   id: string;
@@ -37,7 +38,32 @@ interface Address {
   isDefault: boolean;
 }
 
-export default function CheckoutClient() {
+type EsewaInitiationResponse = {
+  formUrl: string;
+  payload: Record<string, string>;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isEsewaInitiationResponse(
+  value: unknown
+): value is EsewaInitiationResponse {
+  if (!isRecord(value) || typeof value.formUrl !== "string" || !isRecord(value.payload)) {
+    return false;
+  }
+
+  return Object.values(value.payload).every(
+    (fieldValue) => typeof fieldValue === "string"
+  );
+}
+
+export default function CheckoutClient({
+  showDevPaymentSimulation,
+}: {
+  showDevPaymentSimulation: boolean;
+}) {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [loading, setLoading] = useState(true);
@@ -47,9 +73,22 @@ export default function CheckoutClient() {
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
   const [orderNote, setOrderNote] = useState("");
+  const [paymentError, setPaymentError] = useState("");
+  const [paymentSuccessOrderId, setPaymentSuccessOrderId] = useState("");
 
   // Fetch data on client side for instant page load
   useEffect(() => {
+    const callbackStatus = new URLSearchParams(window.location.search).get("status");
+    if (callbackStatus === "failed" || callbackStatus === "error") {
+      setPaymentError(
+        "Your eSewa payment was not completed, and the order remains pending. Check your orders, or contact support if you were charged."
+      );
+    } else if (callbackStatus === "success") {
+      setPaymentSuccessOrderId(
+        new URLSearchParams(window.location.search).get("orderId") || ""
+      );
+    }
+
     const fetchData = async () => {
       if (status === "loading") return;
       
@@ -89,7 +128,7 @@ export default function CheckoutClient() {
   const shipping = subtotal > 100 ? 0 : 10;
   const total = subtotal + shipping;
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (simulateEsewa = false) => {
     if (!selectedAddressId) {
       toast.error("Please select a delivery address");
       return;
@@ -101,6 +140,7 @@ export default function CheckoutClient() {
     }
 
     setSubmitting(true);
+    setPaymentError("");
     try {
       const result = await createOrder({
         shippingAddressId: selectedAddressId,
@@ -110,14 +150,73 @@ export default function CheckoutClient() {
       });
 
       if (result.success && result.order) {
-        // Clear local cart count
+        // The existing order action clears the server cart after creating an order.
         localStorage.setItem("cartCount", "0");
         localStorage.removeItem("cartVisited");
         window.dispatchEvent(new Event("storage"));
 
+        if (paymentMethod === "eSewa") {
+          if (simulateEsewa) {
+            const response = await fetch("/api/payment/esewa/simulate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ orderId: result.order.id }),
+            });
+
+            if (!response.ok) {
+              throw new Error("Could not simulate eSewa payment.");
+            }
+
+            const simulationData: unknown = await response.json();
+            if (
+              !isRecord(simulationData) ||
+              typeof simulationData.redirectUrl !== "string"
+            ) {
+              throw new Error("The eSewa simulation response was invalid.");
+            }
+
+            window.location.assign(simulationData.redirectUrl);
+            return;
+          }
+
+          const response = await fetch("/api/payment/initiate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId: result.order.id,
+              totalAmount: result.order.total,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Could not start eSewa payment.");
+          }
+
+          const initiationData: unknown = await response.json();
+          if (!isEsewaInitiationResponse(initiationData)) {
+            throw new Error("The eSewa payment response was invalid.");
+          }
+
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = initiationData.formUrl;
+          form.style.display = "none";
+
+          for (const [name, value] of Object.entries(initiationData.payload)) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+          }
+
+          document.body.appendChild(form);
+          form.submit();
+          return;
+        }
+
         toast.success(`Order placed successfully! Order #${result.order.orderNumber}`);
 
-        // Redirect to profile page to view orders
         setTimeout(() => {
           router.push("/profile");
         }, 1500);
@@ -126,7 +225,12 @@ export default function CheckoutClient() {
       }
     } catch (error) {
       console.error("Checkout error:", error);
-      toast.error("Failed to place order");
+      const message =
+        paymentMethod === "eSewa"
+          ? "Your order was created, but we couldn't start eSewa payment. Please contact support before placing another order."
+          : "Failed to place order";
+      setPaymentError(message);
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -150,12 +254,35 @@ export default function CheckoutClient() {
     return (
       <div className="min-h-screen pt-24 pb-16">
         <div className="container mx-auto max-w-2xl px-3 text-center sm:px-4">
-          <ShoppingBag className="mx-auto h-24 w-24 text-muted-foreground mb-6" />
-          <h1 className="font-serif text-2xl font-bold mb-4 sm:text-3xl">Your cart is empty</h1>
-          <p className="text-muted-foreground mb-8">Add some items to proceed with checkout</p>
-          <Button asChild>
-            <Link href="/products">Browse Products</Link>
-          </Button>
+          {paymentSuccessOrderId ? (
+            <div className="mb-8 rounded-md border border-green-500/30 bg-green-500/10 p-6">
+              <h1 className="mb-2 text-2xl font-bold text-green-700 dark:text-green-400">
+                Payment successful
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Order {paymentSuccessOrderId} is confirmed and paid.
+              </p>
+              <Button asChild className="mt-4">
+                <Link href={`/orders/${encodeURIComponent(paymentSuccessOrderId)}`}>
+                  View order confirmation
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <>
+              {paymentError && (
+                <p className="mb-6 rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive" role="alert">
+                  {paymentError}
+                </p>
+              )}
+              <ShoppingBag className="mx-auto h-24 w-24 text-muted-foreground mb-6" />
+              <h1 className="font-serif text-2xl font-bold mb-4 sm:text-3xl">Your cart is empty</h1>
+              <p className="text-muted-foreground mb-8">Add some items to proceed with checkout</p>
+              <Button asChild>
+                <Link href="/products">Browse Products</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     );
@@ -165,6 +292,11 @@ export default function CheckoutClient() {
     <div className="min-h-screen pt-24 pb-16 bg-background">
       <div className="container mx-auto max-w-6xl px-3 sm:px-4">
         <h1 className="font-serif text-3xl font-bold mb-6 sm:mb-8 sm:text-4xl">Checkout</h1>
+        {paymentError && (
+          <p className="mb-6 rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive" role="alert">
+            {paymentError}
+          </p>
+        )}
 
         <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
           {/* Left Column - Address & Payment */}
@@ -259,6 +391,15 @@ export default function CheckoutClient() {
                       <div className="text-sm text-muted-foreground mt-1">Coming soon</div>
                     </Label>
                   </div>
+                  <div className="flex items-start space-x-3 border rounded-lg p-4 mt-4">
+                    <RadioGroupItem value="eSewa" id="esewa" className="mt-1" />
+                    <Label htmlFor="esewa" className="flex-1 cursor-pointer">
+                      <div className="font-semibold">eSewa</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        Pay securely through eSewa
+                      </div>
+                    </Label>
+                  </div>
                 </RadioGroup>
               </CardContent>
             </Card>
@@ -306,7 +447,7 @@ export default function CheckoutClient() {
                         </p>
                         <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                       </div>
-                      <div className="shrink-0 text-right text-xs font-medium sm:text-sm">${item.price * item.quantity}</div>
+                      <div className="shrink-0 text-right text-xs font-medium sm:text-sm">{formatNpr(item.price * item.quantity)}</div>
                     </div>
                   ))}
                 </div>
@@ -317,11 +458,11 @@ export default function CheckoutClient() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>{formatNpr(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Shipping</span>
-                    <span>{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
+                    <span>{shipping === 0 ? "Free" : formatNpr(shipping)}</span>
                   </div>
                   {subtotal > 100 && (
                     <p className="text-xs text-green-600 dark:text-green-400">
@@ -331,14 +472,14 @@ export default function CheckoutClient() {
                   <Separator />
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>{formatNpr(total)}</span>
                   </div>
                 </div>
 
                 <Button
                   className="w-full"
                   size="lg"
-                  onClick={handlePlaceOrder}
+                  onClick={() => handlePlaceOrder()}
                   disabled={submitting || !selectedAddressId || cartItems.length === 0}
                 >
                   {submitting ? (
@@ -353,6 +494,17 @@ export default function CheckoutClient() {
                     </>
                   )}
                 </Button>
+
+                {showDevPaymentSimulation && paymentMethod === "eSewa" && (
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={() => handlePlaceOrder(true)}
+                    disabled={submitting || !selectedAddressId || cartItems.length === 0}
+                  >
+                    Simulate eSewa Payment Success
+                  </Button>
+                )}
 
                 <p className="text-xs text-center text-muted-foreground">
                   By placing an order, you agree to our terms and conditions

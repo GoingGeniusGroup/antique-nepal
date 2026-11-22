@@ -57,7 +57,21 @@ export async function GET(
     }
 
     if (inStockOnly) {
-      whereClause.isActive = true; // Assuming isActive indicates stock
+      whereClause.AND = [
+        {
+          OR: [
+            { stockQuantity: { gt: 0 } },
+            {
+              variants: {
+                some: {
+                  isActive: true,
+                  inventory: { quantity: { gt: 0 } },
+                },
+              },
+            },
+          ],
+        },
+      ];
     }
 
     let orderBy: Prisma.ProductOrderByWithRelationInput = {};
@@ -87,11 +101,26 @@ export async function GET(
         description: true,
         price: true,
         isActive: true,
+        stockQuantity: true,
         images: {
           select: {
             url: true,
             altText: true,
             isPrimary: true,
+          },
+        },
+        variants: {
+          where: { isActive: true },
+          select: {
+            id: true,
+            sku: true,
+            name: true,
+            price: true,
+            color: true,
+            size: true,
+            inventory: {
+              select: { quantity: true, reservedQuantity: true },
+            },
           },
         },
       },
@@ -102,6 +131,28 @@ export async function GET(
     const formattedProducts = products.map((p) => ({
       ...p,
       price: Number(p.price),
+      inStock:
+        p.variants.length > 0
+          ? p.variants.some(
+              (variant) =>
+                variant.inventory &&
+                variant.inventory.quantity -
+                  variant.inventory.reservedQuantity >
+                  0
+            )
+          : p.stockQuantity > 0,
+      variants: p.variants.map((variant) => ({
+        id: variant.id,
+        sku: variant.sku,
+        name: variant.name,
+        price: variant.price ? Number(variant.price) : undefined,
+        color: variant.color || undefined,
+        size: variant.size || undefined,
+        inStock: Boolean(
+          variant.inventory &&
+            variant.inventory.quantity - variant.inventory.reservedQuantity > 0
+        ),
+      })),
     }));
 
     return NextResponse.json({

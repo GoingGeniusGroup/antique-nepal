@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { Prisma } from "@prisma/client";
 
 const MONTHS_TO_SHOW = 12;
 
@@ -94,12 +95,12 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
     ),
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const productSalesQuery: Promise<any[]> = prisma.orderItem.groupBy({
-    by: ["productVariantId"],
+  const productSalesArgs = {
+    by: ["productId"],
     where: { order: { paymentStatus: "PAID" } },
     _sum: { quantity: true, total: true },
-  });
+  } satisfies Prisma.OrderItemGroupByArgs;
+  const productSalesQuery = prisma.orderItem.groupBy(productSalesArgs);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const customerSalesQuery: Promise<any[]> = prisma.order.groupBy({
     by: ["userId"],
@@ -121,6 +122,7 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
     newActiveProducts,
     productSales,
     lowStockInventory,
+    baseStockProducts,
     customerSales,
   ] = await Promise.all([
     prisma.order.aggregate({
@@ -173,6 +175,19 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
         },
       },
     }),
+    prisma.product.findMany({
+      where: {
+        isActive: true,
+        variants: { none: { isActive: true } },
+      },
+      select: {
+        id: true,
+        name: true,
+        sku: true,
+        stockQuantity: true,
+        lowStockThreshold: true,
+      },
+    }),
     customerSalesQuery,
   ]);
 
@@ -209,30 +224,27 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
   const activeProductCountFor = (start: Date, end: Date) =>
     newActiveProducts.filter((product) => product.createdAt >= start && product.createdAt < end).length;
 
-  const salesByVariant = new Map(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    productSales.map((sale: any) => [
-      sale.productVariantId,
+  const salesByProduct = new Map<
+    string,
+    { unitsSold: number; revenue: number }
+  >(
+    productSales.map((sale) => [
+      sale.productId,
       {
         unitsSold: sale._sum.quantity ?? 0,
         revenue: decimalToNumber(sale._sum.total),
       },
     ]),
   );
-  const variants = salesByVariant.size
-    ? await prisma.productVariant.findMany({
-        where: { id: { in: Array.from(salesByVariant.keys()) } },
+  const productsWithSales = salesByProduct.size
+    ? await prisma.product.findMany({
+        where: { id: { in: Array.from(salesByProduct.keys()) } },
         select: {
           id: true,
-          product: {
-            select: {
-              id: true,
-              name: true,
-              sku: true,
-              categories: {
-                select: { category: { select: { id: true, name: true } } },
-              },
-            },
+          name: true,
+          sku: true,
+          categories: {
+            select: { category: { select: { id: true, name: true } } },
           },
         },
       })
@@ -242,21 +254,21 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
     { name: string; sku: string; unitsSold: number; revenue: number }
   >();
   const categoryTotals = new Map<string, { name: string; revenue: number }>();
-  for (const variant of variants) {
-    const sale = salesByVariant.get(variant.id);
+  for (const product of productsWithSales) {
+    const sale = salesByProduct.get(product.id);
     if (!sale) continue;
 
-    const currentProduct = productTotals.get(variant.product.id) ?? {
-      name: variant.product.name,
-      sku: variant.product.sku,
+    const currentProduct = productTotals.get(product.id) ?? {
+      name: product.name,
+      sku: product.sku,
       unitsSold: 0,
       revenue: 0,
     };
     currentProduct.unitsSold += sale.unitsSold;
     currentProduct.revenue += sale.revenue;
-    productTotals.set(variant.product.id, currentProduct);
+    productTotals.set(product.id, currentProduct);
 
-    const categories = variant.product.categories;
+    const categories = product.categories;
     if (categories.length === 0) {
       addGrowthValue(categoryTotals, "uncategorized", "Uncategorized", sale.revenue);
     } else {
@@ -287,6 +299,17 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
       sku: inventory.productVariant.sku,
       available,
       threshold: inventory.lowStockThreshold,
+    });
+  }
+  for (const product of baseStockProducts) {
+    if (product.stockQuantity > product.lowStockThreshold) continue;
+
+    lowStockItems.push({
+      id: product.id,
+      name: product.name,
+      sku: product.sku,
+      available: product.stockQuantity,
+      threshold: product.lowStockThreshold,
     });
   }
 

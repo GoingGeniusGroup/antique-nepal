@@ -2,35 +2,17 @@
 
 import React from 'react';
 import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
-import type { Order, OrderItem, ProductVariant, Product, ProductImage, Address } from '@prisma/client';
+import type { Order, OrderItem, ProductVariant, ProductImage, Address } from '@prisma/client';
 
-// Define serializable types
-type SerializableProduct = Omit<Product, "price" | "createdAt" | "updatedAt"> & {
-    price: string;
-    createdAt: string;
-    updatedAt: string;
-    images: ProductImage[];
-  };
-  
-type SerializableProductVariant = Omit<
-    ProductVariant,
-    "price" | "weight" | "createdAt" | "updatedAt"
-  > & {
-    price: string | null;
-    weight: string | null;
-    createdAt: string;
-    updatedAt: string;
-    product: SerializableProduct;
-  };
-  
 type SerializableOrderItem = Omit<
     OrderItem,
-    "price" | "total" | "createdAt"
+    "price" | "total" | "createdAt" | "productVariant"
   > & {
     price: string;
     total: string;
     createdAt: string;
-    productVariant: SerializableProductVariant;
+    product: { images: ProductImage[] };
+    productVariant: Pick<ProductVariant, "color" | "size"> | null;
   };
   
 type SerializableOrder = Omit<
@@ -204,10 +186,10 @@ const OrderDetailPDF = ({ order }: { order: SerializableOrder }) => (
             <View style={styles.cardContent}>
                 {order.items.map((item) => (
                     <View key={item.id} style={styles.itemRow}>
-                        <Image style={styles.itemImage} src={item.productVariant.product.images[0]?.url || "/product_placeholder.jpeg"} />
+                        <Image style={styles.itemImage} src={item.product.images[0]?.url || "/product_placeholder.jpeg"} />
                         <View style={styles.itemDetails}>
                             <Text style={styles.itemName}>{item.productName}</Text>
-                            <Text style={styles.itemVariant}>Color: {item.productVariant.color || 'N/A'}, Size: {item.productVariant.size || 'N/A'}</Text>
+                            <Text style={styles.itemVariant}>Color: {item.productVariant?.color || 'N/A'}, Size: {item.productVariant?.size || 'N/A'}</Text>
                             <Text style={styles.itemVariant}>Quantity: {item.quantity}</Text>
                             <Text style={styles.itemPrice}>NPR {Number(item.price).toLocaleString()}</Text>
                         </View>

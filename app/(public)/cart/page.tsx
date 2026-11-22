@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { ChevronLeft, Trash2, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { useState } from "react";
 
 import { Pagination } from "@/components/products/pagination";
+import { formatNpr } from "@/lib/utils";
 
 const cartItems = [
   {
@@ -76,8 +76,6 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Theme Toggle */}
-      <ThemeToggle variant="fixed" position="right-4 top-24" />
       {/* Breadcrumb */}
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-4">
@@ -139,7 +137,7 @@ export default function CartPage() {
                               {item.name}
                             </h3>
                             <p className="text-lg font-bold text-primary">
-                              ₹{item.price}
+                              {formatNpr(item.price)}
                             </p>
                           </div>
                         </div>
@@ -162,7 +160,7 @@ export default function CartPage() {
                           </div>
 
                           <p className="text-sm font-semibold">
-                            ₹{item.price * item.quantity}
+                            {formatNpr(item.price * item.quantity)}
                           </p>
                         </div>
                       </div>
@@ -190,7 +188,7 @@ export default function CartPage() {
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Subtotal</span>
-                        <span className="font-medium">₹{subtotal}</span>
+                        <span className="font-medium">{formatNpr(subtotal)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">
@@ -200,12 +198,12 @@ export default function CartPage() {
                           )}
                         </span>
                         <span className="font-medium">
-                          {shipping === 0 ? "Free" : `₹${shipping}`}
+                          {shipping === 0 ? "Free" : formatNpr(shipping)}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Tax (18%)</span>
-                        <span className="font-medium">₹{tax}</span>
+                        <span className="font-medium">{formatNpr(tax)}</span>
                       </div>
                     </div>
 
@@ -213,7 +211,7 @@ export default function CartPage() {
 
                     <div className="flex justify-between text-lg font-bold">
                       <span>Total</span>
-                      <span className="text-primary">₹{total}</span>
+                      <span className="text-primary">{formatNpr(total)}</span>
                     </div>
 
                     <Button
@@ -235,7 +233,7 @@ export default function CartPage() {
 
                     {shipping > 0 && (
                       <div className="p-3 bg-amber-50 dark:bg-slate-800 border border-amber-200 dark:border-slate-600 rounded-md text-xs text-amber-800 dark:text-slate-200">
-                        Add ₹{999 - subtotal} more for free shipping!
+                        Add {formatNpr(999 - subtotal)} more for free shipping!
                       </div>
                     )}
                   </CardContent>

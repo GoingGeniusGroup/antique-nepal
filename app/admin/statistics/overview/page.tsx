@@ -22,12 +22,10 @@ export default async function StatisticsOverviewPage() {
       where: { order: { paymentStatus: "PAID" } },
       select: {
         total: true,
-        productVariant: {
+        product: {
           select: {
-            product: {
-              select: {
-                categories: { select: { category: { select: { id: true, name: true } } } },
-              },
+            categories: {
+              select: { category: { select: { id: true, name: true } } },
             },
           },
         },
@@ -50,7 +48,7 @@ export default async function StatisticsOverviewPage() {
   const categoryRevenue = new Map<string, { name: string; revenue: number }>();
   for (const item of paidOrderItems) {
     const itemRevenue = decimalToNumber(item.total);
-    const categories = item.productVariant.product.categories;
+    const categories = item.product.categories;
     if (categories.length === 0) {
       const existing = categoryRevenue.get("uncategorized") ?? { name: "Uncategorized", revenue: 0 };
       existing.revenue += itemRevenue;

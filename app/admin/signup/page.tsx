@@ -9,16 +9,33 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import toast from "react-hot-toast";
+import { z } from "zod";
 
-export default function AdminSignupPage() {
+const signupSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+type SignupFormData = z.infer<typeof signupSchema>;
+
+export default function SignupForm() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [formData, setFormData] = useState({
-    name : "",
+  const [formData, setFormData] = useState<SignupFormData>({
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,21 +49,27 @@ export default function AdminSignupPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (errors[e.target.name]) {
+      setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
+    const validationResult = signupSchema.safeParse(formData);
+    if (!validationResult.success) {
+      const fieldErrors: Record<string, string> = {};
+      validationResult.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
       return;
     }
 
-    if (formData.password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
-
+    setErrors({});
     setLoading(true);
 
     try {
@@ -54,7 +77,7 @@ export default function AdminSignupPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name : formData.name,
+          name: formData.name,
           email: formData.email,
           password: formData.password,
           role: "ADMIN",
@@ -109,12 +132,16 @@ export default function AdminSignupPage() {
                 Alena Collection
               </span>
             </motion.div>
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-1 text-center">Admin Portal</h1>
-            <p className="text-gray-600 dark:text-slate-300 text-center text-sm mb-6">Create your admin account</p>
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-1 text-center">
+              Admin Portal
+            </h1>
+            <p className="text-gray-600 dark:text-slate-300 text-center text-sm mb-6">
+              Create your admin account
+            </p>
+            <form onSubmit={handleSubmit} className="space-y-3" noValidate>
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-gray-700 dark:text-slate-300">
-                   Name
+                  Name
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-slate-500" />
@@ -124,13 +151,16 @@ export default function AdminSignupPage() {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="John"
-                    required
                     className="pl-10 h-9 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 focus:border-gray-500 dark:focus:border-slate-400"
                   />
                 </div>
+                {errors.name && (
+                  <p className="text-xs text-red-500 font-medium mt-1">
+                    {errors.name}
+                  </p>
+                )}
               </div>
 
-            
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-gray-700 dark:text-slate-300">
                   Email Address
@@ -143,10 +173,14 @@ export default function AdminSignupPage() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="admin@example.com"
-                    required
                     className="pl-10 h-9 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 focus:border-gray-500 dark:focus:border-slate-400"
                   />
                 </div>
+                {errors.email && (
+                  <p className="text-xs text-red-500 font-medium mt-1">
+                    {errors.email}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-1.5">
@@ -161,7 +195,6 @@ export default function AdminSignupPage() {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="Minimum 6 characters"
-                    required
                     className="pl-10 pr-12 h-11 bg-gray-50 dark:bg-slate-900 border-gray-300 dark:border-slate-600 focus:border-gray-500 dark:focus:border-slate-400"
                   />
                   <button
@@ -169,9 +202,18 @@ export default function AdminSignupPage() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
                   >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-xs text-red-500 font-medium mt-1">
+                    {errors.password}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-1.5">
@@ -186,7 +228,6 @@ export default function AdminSignupPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     placeholder="Re-enter password"
-                    required
                     className="pl-10 pr-12 h-11 bg-gray-50 dark:bg-slate-900 border-gray-300 dark:border-slate-600 focus:border-gray-500 dark:focus:border-slate-400"
                   />
                   <button
@@ -194,9 +235,18 @@ export default function AdminSignupPage() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
                   >
-                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
                   </button>
                 </div>
+                {errors.confirmPassword && (
+                  <p className="text-xs text-red-500 font-medium mt-1">
+                    {errors.confirmPassword}
+                  </p>
+                )}
               </div>
 
               <Button

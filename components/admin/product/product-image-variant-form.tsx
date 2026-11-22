@@ -47,6 +47,8 @@ export function ProductWithImagesForm({
     shortDescription: product?.shortDescription || "",
     sku: product?.sku || "",
     price: product?.price || 0,
+    stockQuantity: product?.stockQuantity ?? 0,
+    lowStockThreshold: product?.lowStockThreshold ?? 5,
     isActive: product?.isActive ?? true,
     isFeatured: product?.isFeatured ?? false,
     metaTitle: product?.metaTitle || "",

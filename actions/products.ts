@@ -81,9 +81,21 @@ export const getProducts = unstable_cache(
 
         ...(inStockOnly
           ? {
-              variants: {
-                some: { inventory: { quantity: { gt: 0 } } },
-              },
+              AND: [
+                {
+                  OR: [
+                    { stockQuantity: { gt: 0 } },
+                    {
+                      variants: {
+                        some: {
+                          isActive: true,
+                          inventory: { quantity: { gt: 0 } },
+                        },
+                      },
+                    },
+                  ],
+                },
+              ],
             }
           : {}),
       };
@@ -108,7 +120,9 @@ export const getProducts = unstable_cache(
         orderBy,
         include: {
           categories: {
-            select: { category: { select: { id: true, name: true } } },
+            select: {
+              category: { select: { id: true, name: true, image: true } },
+            },
           },
           images: {
             where: { url: { not: "" } },
@@ -116,6 +130,7 @@ export const getProducts = unstable_cache(
             select: { url: true, isPrimary: true },
           },
           variants: {
+            where: { isActive: true },
             select: {
               id: true,
               sku: true,
@@ -123,7 +138,9 @@ export const getProducts = unstable_cache(
               price: true,
               color: true,
               size: true,
-              inventory: { select: { quantity: true } },
+              inventory: {
+                select: { quantity: true, reservedQuantity: true },
+              },
             },
           },
         },
@@ -141,11 +158,17 @@ export const getProducts = unstable_cache(
 
         const imageUrl =
           product.images.find((img) => img.isPrimary)?.url ||
-          product.images.find((img) => img.url)?.url;
+          product.images.find((img) => img.url)?.url ||
+          product.image ||
+          product.categories[0]?.category.image;
         let image = "/product_placeholder.jpeg";
         if (imageUrl) {
-          const clean = imageUrl.trim().replace(/^\/+|["']/g, "");
-          image = clean.startsWith("http") ? clean : `/${clean}`;
+          const clean = imageUrl.trim();
+          image = /^https?:\/\//i.test(clean)
+            ? clean
+            : clean.startsWith("/")
+              ? clean
+              : `/${clean}`;
         }
 
         const variants = product.variants.map((v) => ({
@@ -156,11 +179,15 @@ export const getProducts = unstable_cache(
           color: v.color || undefined,
           size: v.size || undefined,
           inStock:
-            v.inventory?.quantity && v.inventory.quantity > 0 ? true : false,
+            v.inventory
+              ? v.inventory.quantity - v.inventory.reservedQuantity > 0
+              : false,
         }));
 
         const hasStock =
-          variants.length === 0 ? true : variants.some((v) => v.inStock);
+          variants.length === 0
+            ? product.stockQuantity > 0
+            : variants.some((v) => v.inStock);
 
         return {
           id: product.id,
@@ -217,6 +244,28 @@ export async function getProductById(id: string) {
 
   return {
     ...product,
+    images:
+      product.images.length > 0
+        ? product.images
+        : product.image
+          ? [
+              {
+                id: `${product.id}-image`,
+                url: product.image,
+                altText: product.name,
+                isPrimary: true,
+              },
+            ]
+          : product.categories[0]?.category.image
+            ? [
+                {
+                  id: `${product.id}-category-image`,
+                  url: product.categories[0].category.image,
+                  altText: product.name,
+                  isPrimary: true,
+                },
+              ]
+            : [],
     price: Number(product.price),
   };
 }

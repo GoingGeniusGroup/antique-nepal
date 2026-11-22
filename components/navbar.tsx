@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 
 import { useGeneralSettings } from "@/contexts/settings-context";
+import { orderCategories } from "@/data/category-options";
 import navigationData from "@/data/navigation.json";
 import { signOut, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
@@ -73,6 +74,7 @@ export const Navbar = () => {
   const userId = session?.user?.id;
 
   const [categories, setCategories] = useState<Category[]>([]);
+  const orderedCategories = orderCategories(categories);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [showCartBadge, setShowCartBadge] = useState(false);
@@ -248,26 +250,8 @@ export const Navbar = () => {
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[500px] gap-2 p-6 md:w-[600px] md:grid-cols-2 lg:w-[700px]">
-                      {categories.length > 4 && (
-                        <li className="md:col-span-2">
-                          <NavigationMenuLink asChild>
-                            <Link
-                              href="/category"
-                              className="block select-none space-y-1 rounded-lg p-4 leading-none no-underline outline-none transition-all hover:shadow-soft border-2 border-primary/20 hover:border-primary/40 bg-gradient-subtle group"
-                            >
-                              <div className="text-base font-bold leading-none text-primary group-hover:scale-105 transition-transform inline-block">
-                                View All Categories
-                              </div>
-                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-2">
-                                Explore dresses, co-ord sets, outerwear, and more
-                              </p>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      )}
-
-                      {categories.slice(0, 4).map((category) => (
-                        <li key={category.id}>
+                      {orderedCategories.map((category) => (
+                        <li key={category.slug}>
                           <NavigationMenuLink asChild>
                             <Link
                               href={`/category/${category.slug}`}
@@ -495,7 +479,7 @@ export const Navbar = () => {
                       Categories
                     </p>
                     <div className="pl-4 space-y-2">
-                      {categories.slice(0, 4).map((cat) => (
+                      {orderedCategories.map((cat) => (
                         <Link
                           key={cat.slug}
                           href={`/category/${cat.slug}`}
@@ -505,15 +489,6 @@ export const Navbar = () => {
                           {cat.name}
                         </Link>
                       ))}
-                      {categories.length > 4 && (
-                        <Link
-                          href="/category"
-                          onClick={() => setIsOpen(false)}
-                          className="block text-sm text-primary hover:text-primary/80 py-1 font-semibold"
-                        >
-                          View All Categories
-                        </Link>
-                      )}
                     </div>
                   </div>
 

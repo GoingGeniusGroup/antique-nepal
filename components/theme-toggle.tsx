@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 interface ThemeToggleProps {
   /** Position variant */
-  variant?: "fixed" | "absolute" | "relative";
+  variant?: "fixed" | "absolute" | "relative" | "static";
   /** Position classes */
   position?: string;
   /** Custom animation delay */
@@ -27,12 +27,12 @@ interface ThemeToggleProps {
 }
 
 export function ThemeToggle({
-  variant = "fixed",
-  position = "right-4 md:right-8 top-24 md:top-28",
+  variant,
+  position,
   animationDelay = 0.3,
   animationType = "scale",
   className,
-  zIndex = 30,
+  zIndex,
 }: ThemeToggleProps = {}) {
   const { theme, isReady, toggleTheme } = useTheme();
   const isDark = isReady && theme === "dark";
@@ -62,13 +62,13 @@ export function ThemeToggle({
               variant === "absolute" && "absolute",
               variant === "relative" && "relative",
               position,
-              "rounded-full p-3 backdrop-blur-md shadow-lg border transition-all",
+              "rounded-full p-3 backdrop-blur-md shadow-lg border transition-all cursor-pointer",
               isDark
-                ? "bg-white/20 border-white/30 hover:bg-white/30"
-                : "bg-[#f7f5f2]/80 border-[#e8e0d8] hover:bg-white/90",
+                ? "bg-white/20 border-white/30 hover:bg-white/30 text-white"
+                : "bg-[#f7f5f2]/80 border-[#e8e0d8] hover:bg-white/90 text-[#2d2520]",
               className
             )}
-            style={{ zIndex }}
+            style={zIndex ? { zIndex } : undefined}
             aria-label={
               isDark ? "Switch to light mode" : "Switch to dark mode"
             }
@@ -99,4 +99,3 @@ export function ThemeToggle({
     </TooltipProvider>
   );
 }
-

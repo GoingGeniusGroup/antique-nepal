@@ -7,6 +7,7 @@ import { useTheme } from "@/contexts/theme-context";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { orderCategories } from "@/data/category-options";
 import {
   Select,
   SelectContent,
@@ -61,7 +62,7 @@ export function ProductControls({
         const data: Category[] = await res.json();
         setCategories([
           { id: "all", name: "All", slug: "all", displayOrder: 0, count: 0 },
-          ...data,
+          ...orderCategories(data),
         ]);
       } catch (err) {
         console.error("Failed to fetch categories:", err);

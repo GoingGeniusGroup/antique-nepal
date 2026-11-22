@@ -6,11 +6,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Pagination } from "@/components/products/pagination";
 import { Spinner } from "@/components/ui/spinner";
 import toast from "react-hot-toast";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { formatNpr } from "@/lib/utils";
 
 // ---------------------- TYPES ----------------------
 interface CartItem {
@@ -27,20 +27,20 @@ interface CartApiItem {
   id: string;
   price: number;
   quantity: number;
-  productVariant: {
-    color: string;
-    size: string;
-    product: {
-      name: string;
-      images: { url: string }[];
-    };
+  product: {
+    name: string;
+    images: { url: string }[];
   };
+  productVariant: {
+    color: string | null;
+    size: string | null;
+  } | null;
 }
 
 interface CartApiResponse {
   cart: {
     items: CartApiItem[];
-  };
+  } | null;
 }
 
 const ITEMS_PER_PAGE = 2;
@@ -53,12 +53,12 @@ const fetcher = async (url: string): Promise<{ items: CartItem[] }> => {
   const items: CartItem[] =
     json.cart?.items.map((ci) => ({
       id: ci.id,
-      name: ci.productVariant.product.name,
+      name: ci.product.name,
       price: ci.price,
       quantity: ci.quantity,
-      color: ci.productVariant.color,
-      size: ci.productVariant.size,
-      image: ci.productVariant.product.images[0]?.url || "",
+      color: ci.productVariant?.color || "",
+      size: ci.productVariant?.size || "",
+      image: ci.product.images[0]?.url || "",
     })) || [];
 
   return { items };
@@ -210,8 +210,6 @@ const Cart = ({ userId }: { userId: string }) => {
   return (
     <>
       <div className="min-h-screen flex flex-col bg-background">
-        <ThemeToggle variant="fixed" position="right-4 top-24" />
-
         <main className="flex-1 pt-24 pb-16">
           <div className="container mx-auto max-w-7xl px-3 sm:px-4">
             <div className="mb-8">
@@ -265,25 +263,33 @@ const Cart = ({ userId }: { userId: string }) => {
                                 <h3 className="font-serif text-base font-semibold break-words sm:text-xl">
                                   {item.name}
                                 </h3>
-                                <div className="flex flex-wrap gap-3 text-sm">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-muted-foreground">
-                                      Color:
-                                    </span>
-                                    <span className="font-medium">
-                                      {item.color}
-                                    </span>
+                                {(item.color || item.size) && (
+                                  <div className="flex flex-wrap gap-3 text-sm">
+                                    {item.color && (
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-muted-foreground">
+                                          Color:
+                                        </span>
+                                        <span className="font-medium">
+                                          {item.color}
+                                        </span>
+                                      </div>
+                                    )}
+                                    {item.color && item.size && (
+                                      <span className="text-border">|</span>
+                                    )}
+                                    {item.size && (
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-muted-foreground">
+                                          Size:
+                                        </span>
+                                        <span className="font-medium">
+                                          {item.size}
+                                        </span>
+                                      </div>
+                                    )}
                                   </div>
-                                  <span className="text-border">|</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-muted-foreground">
-                                      Size:
-                                    </span>
-                                    <span className="font-medium">
-                                      {item.size}
-                                    </span>
-                                  </div>
-                                </div>
+                                )}
                               </div>
 
                               <Button
@@ -345,10 +351,10 @@ const Cart = ({ userId }: { userId: string }) => {
 
                               <div className="text-right">
                                 <p className="text-lg font-bold text-primary sm:text-2xl">
-                                  ${(item.price * item.quantity).toFixed(2)}
+                                  {formatNpr(item.price * item.quantity)}
                                 </p>
                                 <p className="text-sm text-muted-foreground">
-                                  ${item.price} each
+                                  {formatNpr(item.price)} each
                                 </p>
                               </div>
                             </div>
@@ -378,14 +384,14 @@ const Cart = ({ userId }: { userId: string }) => {
                       <div className="flex justify-between text-base">
                         <span className="text-muted-foreground">Subtotal</span>
                         <span className="font-semibold">
-                          ${subtotal.toFixed(2)}
+                          {formatNpr(subtotal)}
                         </span>
                       </div>
 
                       <div className="flex justify-between text-base">
                         <span className="text-muted-foreground">Shipping</span>
                         <span className="font-semibold">
-                          {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                          {shipping === 0 ? "Free" : formatNpr(shipping)}
                         </span>
                       </div>
 
@@ -394,7 +400,7 @@ const Cart = ({ userId }: { userId: string }) => {
                           <p className="text-sm text-muted-foreground">
                             Add{" "}
                             <span className="font-semibold text-primary">
-                              ${(100 - subtotal).toFixed(2)}
+                              {formatNpr(100 - subtotal)}
                             </span>{" "}
                             more for free shipping
                           </p>
@@ -406,7 +412,7 @@ const Cart = ({ userId }: { userId: string }) => {
                       <div className="flex justify-between text-xl">
                         <span className="font-bold">Total</span>
                         <span className="font-bold text-primary">
-                          ${total.toFixed(2)}
+                          {formatNpr(total)}
                         </span>
                       </div>
                     </div>
@@ -433,7 +439,7 @@ const Cart = ({ userId }: { userId: string }) => {
                       <div className="flex items-start gap-3">
                         <div className="mt-0.5 text-primary">✓</div>
                         <p className="text-muted-foreground">
-                          Free shipping on orders over $100
+                          Free shipping on orders over {formatNpr(100)}
                         </p>
                       </div>
                       <div className="flex items-start gap-3">

@@ -4,7 +4,11 @@ import type React from "react";
 
 import Link from "next/link";
 import { Heart, ShoppingCart } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatNpr } from "@/lib/utils";
+import {
+  getCategoryDisplayName,
+  getCategoryImage,
+} from "@/data/category-options";
 import toast from "react-hot-toast";
 import { useTheme } from "@/contexts/theme-context";
 import { motion } from "framer-motion";
@@ -20,14 +24,7 @@ interface ProductCardProps {
   isWishlisted: boolean;
   toggleWishlist: (productId: string) => Promise<void>;
   wishlistLoaded?: boolean;
-  productVariants?: Array<{
-    id: string;
-    name: string;
-    sku: string;
-    price?: number;
-    color?: string;
-    size?: string;
-  }>;
+  productVariants?: ProductData["variants"];
 }
 
 export function ProductCard({
@@ -36,15 +33,21 @@ export function ProductCard({
   isWishlisted,
   toggleWishlist,
   wishlistLoaded,
-  productVariants = [],
+  productVariants,
 }: ProductCardProps) {
   const { theme, isReady } = useTheme();
   const isDark = isReady && theme === "dark";
+  const productImage =
+    product.image && product.image !== "/product_placeholder.jpeg"
+      ? product.image
+      : getCategoryImage(product.category) ?? "/product_placeholder.jpeg";
   const { data: session } = useSession();
   const userRole = (session?.user as { role?: string })?.role;
   const isAdmin = userRole === "ADMIN";
   const [loading, setLoading] = useState(false);
   const [showVariantModal, setShowVariantModal] = useState(false);
+  const activeVariants =
+    productVariants?.length ? productVariants : product.variants;
 
   const handleWishlistToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -88,16 +91,32 @@ export function ProductCard({
     }
 
     // If product has variants, show modal
-    if (productVariants.length > 0) {
+    if (activeVariants.length > 0) {
       setShowVariantModal(true);
     } else {
-      toast.error("No variants available for this product");
+      void handleAddToCart(null, 1);
     }
   };
 
-  const handleAddToCart = async (variantId: string, quantity: number) => {
+  const handleAddToCart = async (
+    variantId: string | null,
+    quantity: number
+  ) => {
     if (!session?.user?.id) {
       toast.error("Please sign in to add items to cart");
+      return;
+    }
+
+    if (
+      activeVariants.length > 0 &&
+      (!variantId || !activeVariants.some((variant) => variant.id === variantId))
+    ) {
+      toast.error("Please select an available product option.");
+      return;
+    }
+
+    if (activeVariants.length === 0 && variantId !== null) {
+      toast.error("This product does not have selectable options.");
       return;
     }
 
@@ -106,8 +125,8 @@ export function ProductCard({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: session.user.id,
-          productVariantId: variantId,
+          productId: product.id,
+          variantId,
           quantity,
         }),
       });
@@ -118,7 +137,7 @@ export function ProductCard({
 
       // Instantly update count in localStorage
       const currentCount = parseInt(localStorage.getItem("cartCount") || "0");
-      localStorage.setItem("cartCount", (currentCount + 1).toString());
+      localStorage.setItem("cartCount", (currentCount + quantity).toString());
       localStorage.removeItem("cartVisited"); // Reset badge
       window.dispatchEvent(new Event("storage")); // Trigger navbar update
 
@@ -146,7 +165,7 @@ export function ProductCard({
         <Link href={`/products/${product.id}`} className="flex flex-col h-full">
           <div className="relative w-full aspect-square bg-muted overflow-hidden">
             <Image
-              src={product.image || "/product_placeholder.jpeg"}
+              src={productImage}
               alt={product.name}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -208,7 +227,7 @@ export function ProductCard({
                       : "bg-emerald-500/20 text-emerald-700"
                   )}
                 >
-                  {product.badge}
+                  {getCategoryDisplayName(product.badge)}
                 </span>
               </div>
             )}
@@ -234,7 +253,7 @@ export function ProductCard({
                   isDark ? "text-slate-200" : "text-primary"
                 )}
               >
-                ${product.price.toFixed(2)}
+                {formatNpr(product.price)}
               </span>
 
               {!isAdmin && (
@@ -265,7 +284,7 @@ export function ProductCard({
         isOpen={showVariantModal}
         onClose={() => setShowVariantModal(false)}
         productName={product.name}
-        variants={productVariants}
+        variants={activeVariants}
         basePrice={product.price}
         onAddToCart={handleAddToCart}
       />
