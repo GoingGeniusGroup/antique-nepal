@@ -4,10 +4,12 @@ import { ProductCard } from "./product-card";
 import type { ProductData } from "@/actions/products";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
+import { cn } from "@/lib/utils";
 
 interface ProductGridProps {
   products: ProductData[];
   productVariants?: Record<string, ProductData["variants"]>;
+  className?: string;
 }
 
 interface WishlistItem {
@@ -23,6 +25,7 @@ interface WishlistItem {
 export function ProductGrid({
   products,
   productVariants = {},
+  className,
 }: ProductGridProps) {
   const [wishlistItems, setWishlistItems] = useState<string[]>([]);
   const [wishlistLoaded, setWishlistLoaded] = useState(false);
@@ -132,7 +135,12 @@ export function ProductGrid({
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
+    <div
+      className={cn(
+        "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5",
+        className
+      )}
+    >
       {products.map((product, index) => (
         <ProductCard
           key={product.id}

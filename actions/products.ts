@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { revalidatePath, unstable_cache } from "next/cache";
 import { auth } from "@/lib/auth";
+import { CATEGORY_OPTIONS } from "@/data/category-options";
 
 export interface GetProductsParams {
   searchQuery?: string;
@@ -31,6 +32,81 @@ export interface ProductData {
     size?: string;
     inStock: boolean;
   }[];
+}
+
+const productCardInclude = {
+  categories: {
+    select: {
+      category: { select: { id: true, name: true, image: true } },
+    },
+  },
+  images: {
+    where: { url: { not: "" } },
+    orderBy: [{ isPrimary: "desc" }, { displayOrder: "asc" }],
+    select: { url: true, isPrimary: true },
+  },
+  variants: {
+    where: { isActive: true },
+    select: {
+      id: true,
+      sku: true,
+      name: true,
+      price: true,
+      color: true,
+      size: true,
+      inventory: {
+        select: { quantity: true, reservedQuantity: true },
+      },
+    },
+  },
+} satisfies Prisma.ProductInclude;
+
+type ProductWithCardRelations = Prisma.ProductGetPayload<{
+  include: typeof productCardInclude;
+}>;
+
+function toProductData(product: ProductWithCardRelations): ProductData {
+  const category = product.categories[0]?.category?.name || "Uncategorized";
+  const imageUrl =
+    product.images.find((img) => img.isPrimary)?.url ||
+    product.images.find((img) => img.url)?.url ||
+    product.image ||
+    product.categories[0]?.category.image;
+  let image = "/product_placeholder.jpeg";
+  if (imageUrl) {
+    const clean = imageUrl.trim();
+    image = /^https?:\/\//i.test(clean)
+      ? clean
+      : clean.startsWith("/")
+        ? clean
+        : `/${clean}`;
+  }
+
+  const variants = product.variants.map((variant) => ({
+    id: variant.id,
+    sku: variant.sku,
+    name: variant.name,
+    price: variant.price ? Number(variant.price) : undefined,
+    color: variant.color || undefined,
+    size: variant.size || undefined,
+    inStock: variant.inventory
+      ? variant.inventory.quantity - variant.inventory.reservedQuantity > 0
+      : false,
+  }));
+
+  return {
+    id: product.id,
+    name: product.name,
+    category,
+    price: Number(product.price),
+    image,
+    inStock:
+      variants.length === 0
+        ? product.stockQuantity > 0
+        : variants.some((variant) => variant.inStock),
+    badge: product.isFeatured ? "Featured" : category,
+    variants,
+  };
 }
 
 export const getProducts = unstable_cache(
@@ -119,88 +195,14 @@ export const getProducts = unstable_cache(
         skip: (page - 1) * perPage,
         take: perPage,
         orderBy,
-        include: {
-          categories: {
-            select: {
-              category: { select: { id: true, name: true, image: true } },
-            },
-          },
-          images: {
-            where: { url: { not: "" } },
-            orderBy: [{ isPrimary: "desc" }, { displayOrder: "asc" }],
-            select: { url: true, isPrimary: true },
-          },
-          variants: {
-            where: { isActive: true },
-            select: {
-              id: true,
-              sku: true,
-              name: true,
-              price: true,
-              color: true,
-              size: true,
-              inventory: {
-                select: { quantity: true, reservedQuantity: true },
-              },
-            },
-          },
-        },
+        include: productCardInclude,
       } satisfies Prisma.ProductFindManyArgs;
 
       type ProductWithRelations = Prisma.ProductGetPayload<typeof productsQuery>;
       const products: ProductWithRelations[] = await prisma.product.findMany(productsQuery);
 
       const totalPages = Math.ceil(totalCount / perPage);
-
-      // ✅ Map products safely
-      const formattedProducts: ProductData[] = products.map((product) => {
-        const category =
-          product.categories[0]?.category?.name || "Uncategorized";
-
-        const imageUrl =
-          product.images.find((img) => img.isPrimary)?.url ||
-          product.images.find((img) => img.url)?.url ||
-          product.image ||
-          product.categories[0]?.category.image;
-        let image = "/product_placeholder.jpeg";
-        if (imageUrl) {
-          const clean = imageUrl.trim();
-          image = /^https?:\/\//i.test(clean)
-            ? clean
-            : clean.startsWith("/")
-              ? clean
-              : `/${clean}`;
-        }
-
-        const variants = product.variants.map((v) => ({
-          id: v.id,
-          sku: v.sku,
-          name: v.name,
-          price: v.price ? Number(v.price) : undefined,
-          color: v.color || undefined,
-          size: v.size || undefined,
-          inStock:
-            v.inventory
-              ? v.inventory.quantity - v.inventory.reservedQuantity > 0
-              : false,
-        }));
-
-        const hasStock =
-          variants.length === 0
-            ? product.stockQuantity > 0
-            : variants.some((v) => v.inStock);
-
-        return {
-          id: product.id,
-          name: product.name,
-          category,
-          price: Number(product.price),
-          image,
-          inStock: hasStock,
-          badge: product.isFeatured ? "Featured" : category,
-          variants,
-        };
-      });
+      const formattedProducts = products.map(toProductData);
 
       return {
         products: formattedProducts,
@@ -280,6 +282,58 @@ export async function getProductById(id: string) {
             : [],
     price: Number(product.price),
   };
+}
+
+export async function getRelatedProducts(
+  productId: string,
+  categoryId?: string,
+  categorySlug?: string
+): Promise<ProductData[]> {
+  const related: ProductWithCardRelations[] = [];
+
+  if (categoryId) {
+    related.push(
+      ...(await prisma.product.findMany({
+        where: {
+          isActive: true,
+          id: { not: productId },
+          categories: { some: { categoryId } },
+        },
+        take: 4,
+        orderBy: { createdAt: "desc" },
+        include: productCardInclude,
+      }))
+    );
+  }
+
+  const selectedIds = new Set([productId, ...related.map(({ id }) => id)]);
+  const remaining = 4 - related.length;
+  if (remaining <= 0) return related.map(toProductData);
+
+  const fallbackSlugs = CATEGORY_OPTIONS.map(({ slug }) => slug).filter(
+    (slug) => slug !== categorySlug
+  );
+  if (fallbackSlugs.length === 0) return related.map(toProductData);
+
+  const fallback = await prisma.product.findMany({
+    where: {
+      isActive: true,
+      id: { notIn: [...selectedIds] },
+      categories: {
+        some: {
+          category: {
+            isActive: true,
+            slug: { in: fallbackSlugs },
+          },
+        },
+      },
+    },
+    take: remaining,
+    orderBy: { createdAt: "desc" },
+    include: productCardInclude,
+  });
+
+  return [...related, ...fallback].map(toProductData);
 }
 
 export async function incrementProductView(productId: string) {

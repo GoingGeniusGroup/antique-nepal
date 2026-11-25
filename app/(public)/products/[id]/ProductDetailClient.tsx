@@ -8,11 +8,15 @@ import { useTheme } from "@/contexts/theme-context";
 import { ProductImageGallery } from "@/components/products/ProductImageGallery";
 import { ProductInfo } from "@/components/products/ProductInfo";
 import { ProductTabs } from "@/components/products/ProductTabs";
+import { ProductGrid } from "@/components/products/product-grid";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { VariantModal } from "@/components/products/variant-modal";
 import toast from "react-hot-toast";
 import type { Product } from "@/lib/product";
-import { incrementProductView } from "@/actions/products";
+import {
+  incrementProductView,
+  type ProductData,
+} from "@/actions/products";
 
 interface Wishlist {
   id: string;
@@ -30,8 +34,10 @@ interface ProductVariant {
 
 const ProductDetailClient = ({
   product: initialProduct,
+  relatedProducts,
 }: {
   product: Product;
+  relatedProducts: ProductData[];
 }) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -325,6 +331,33 @@ const ProductDetailClient = ({
           />
         </div>
       </section>
+
+      {relatedProducts.length > 0 && (
+        <section className="pb-12">
+          <div className="container mx-auto px-3 sm:px-4">
+            <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="mb-1 text-sm font-medium uppercase tracking-[0.18em] text-[#AD8259]">
+                  A few more favorites
+                </p>
+                <h2 className="font-cinzel text-2xl font-semibold sm:text-3xl">
+                  You May Also Like
+                </h2>
+              </div>
+              <Link
+                href="/products"
+                className="text-sm font-medium text-[#8F6948] underline-offset-4 hover:underline"
+              >
+                Browse the full collection
+              </Link>
+            </div>
+            <ProductGrid
+              products={relatedProducts}
+              className="grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 md:gap-6 lg:gap-6"
+            />
+          </div>
+        </section>
+      )}
 
       <ConfirmationDialog
         open={showDeleteDialog}

@@ -1,4 +1,4 @@
-import { getProductById } from "@/actions/products";
+import { getProductById, getRelatedProducts } from "@/actions/products";
 import ProductDetailClient from "./ProductDetailClient";
 import ProductNotFound from "@/components/products/product-notfound";
 
@@ -17,5 +17,17 @@ export default async function ProductPage({
     );
   }
 
-  return <ProductDetailClient product={product} />;
+  const category = product.categories[0]?.category;
+  const relatedProducts = await getRelatedProducts(
+    product.id,
+    category?.id,
+    category?.slug
+  );
+
+  return (
+    <ProductDetailClient
+      product={product}
+      relatedProducts={relatedProducts}
+    />
+  );
 }
