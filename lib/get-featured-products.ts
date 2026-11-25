@@ -96,23 +96,17 @@ export async function getPopularProduct() {
 
 export async function getBestSellerProduct() {
     try {
-        type BestSellerGroup = Pick<
-          Prisma.OrderItemGroupByOutputType,
-          "productId"
-        >;
-        // Accelerate widens groupBy results, so type the selected key explicitly.
         const bestSeller = (await prisma.orderItem.groupBy({
           by: ["productId"] as const,
           _sum: {
             quantity: true,
           },
-          orderBy: {
-            _sum: {
-              quantity: "desc",
-            },
-          },
-          take: 1,
-        })) as BestSellerGroup[];
+        }))
+          .sort(
+            (a, b) =>
+              (b._sum.quantity ?? 0) - (a._sum.quantity ?? 0),
+          )
+          .slice(0, 1);
     
         if (bestSeller.length > 0 && bestSeller[0].productId) {
           const productQuery = {

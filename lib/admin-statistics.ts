@@ -101,14 +101,11 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
     _sum: { quantity: true, total: true },
   } satisfies Prisma.OrderItemGroupByArgs;
   const productSalesQuery = prisma.orderItem.groupBy(productSalesArgs);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const customerSalesQuery: Promise<any[]> = prisma.order.groupBy({
+  const customerSalesQuery = prisma.order.groupBy({
     by: ["userId"],
     where: { paymentStatus: "PAID" },
     _sum: { total: true },
     _count: { _all: true },
-    orderBy: { _sum: { total: "desc" } },
-    take: 5,
   });
 
   const [
@@ -190,6 +187,13 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
     }),
     customerSalesQuery,
   ]);
+
+  const topCustomerSales = customerSales
+    .sort(
+      (a, b) =>
+        decimalToNumber(b._sum.total) - decimalToNumber(a._sum.total),
+    )
+    .slice(0, 5);
 
   const revenueByDate = new Map<string, { revenue: number; orders: number }>();
   const monthlyRevenue = new Map<string, { revenue: number; orders: number }>();
@@ -278,8 +282,7 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const customerIds = customerSales.map((customer: any) => customer.userId);
+  const customerIds = topCustomerSales.map((customer) => customer.userId);
   const customers = customerIds.length
     ? await prisma.user.findMany({
         where: { id: { in: customerIds } },
@@ -359,8 +362,7 @@ export async function getStatisticsDashboardData(): Promise<StatisticsDashboardD
       .sort((a, b) => b.unitsSold - a.unitsSold || b.revenue - a.revenue)
       .slice(0, 5),
     lowStock: lowStockItems.sort((a, b) => a.available - b.available),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    topCustomers: customerSales.flatMap((sale: any) => {
+    topCustomers: topCustomerSales.flatMap((sale) => {
       const customer = customerById.get(sale.userId);
       return customer
         ? [{
