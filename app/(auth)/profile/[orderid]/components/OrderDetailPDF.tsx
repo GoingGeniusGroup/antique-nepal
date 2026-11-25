@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
 import type { Order, OrderItem, ProductVariant, ProductImage, Address } from '@prisma/client';
@@ -14,7 +12,7 @@ type SerializableOrderItem = Omit<
     product: { images: ProductImage[] };
     productVariant: Pick<ProductVariant, "color" | "size"> | null;
   };
-  
+
 type SerializableOrder = Omit<
     Order,
     "subtotal" | "shippingCost" | "tax" | "total" | "createdAt" | "updatedAt"
@@ -29,6 +27,62 @@ type SerializableOrder = Omit<
     shippingAddress: Address;
     billingAddress: Address;
   };
+
+function getPdfSafeImageUrl(rawUrl?: string | null): string | null {
+  if (!rawUrl) return null;
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return null;
+
+  const baseUrl =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : process.env.NEXT_PUBLIC_BASE_URL;
+  let baseOrigin: string | null = null;
+  if (baseUrl) {
+    try {
+      baseOrigin = new URL(baseUrl).origin;
+    } catch {
+      baseOrigin = null;
+    }
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    if (!baseUrl || !trimmed.startsWith("/") || trimmed.startsWith("//")) {
+      return null;
+    }
+    try {
+      parsed = new URL(trimmed, baseUrl);
+    } catch {
+      return null;
+    }
+  }
+
+  if (parsed.protocol !== "https:" && parsed.origin !== baseOrigin) {
+    return null;
+  }
+
+  const pathname = parsed.pathname;
+  const isUploadcareHost =
+    parsed.hostname === "ucarecdn.com" ||
+    parsed.hostname.endsWith(".ucarecdn.com") ||
+    parsed.hostname === "ucarecd.net" ||
+    parsed.hostname.endsWith(".ucarecd.net");
+
+  if (/\.(jpe?g|png)$/i.test(pathname)) {
+    return parsed.toString();
+  }
+
+  if (!isUploadcareHost) return null;
+
+  const uploadcarePath = pathname.endsWith("/")
+    ? pathname
+    : `${pathname}/`;
+  parsed.pathname = `${uploadcarePath}-/format/png/product.png`;
+  return parsed.toString();
+}
 
 const styles = StyleSheet.create({
     page: {
@@ -100,6 +154,13 @@ const styles = StyleSheet.create({
         height: 80,
         borderRadius: 8,
         marginRight: 15,
+    },
+    itemImagePlaceholder: {
+        width: 80,
+        height: 80,
+        borderRadius: 8,
+        marginRight: 15,
+        backgroundColor: '#F3F4F6',
     },
     itemDetails: {
         flexDirection: 'column',
@@ -184,17 +245,25 @@ const OrderDetailPDF = ({ order }: { order: SerializableOrder }) => (
                 <Text style={styles.cardTitle}>Items Ordered</Text>
             </View>
             <View style={styles.cardContent}>
-                {order.items.map((item) => (
-                    <View key={item.id} style={styles.itemRow}>
-                        <Image style={styles.itemImage} src={item.product.images[0]?.url || "/product_placeholder.jpeg"} />
-                        <View style={styles.itemDetails}>
-                            <Text style={styles.itemName}>{item.productName}</Text>
-                            <Text style={styles.itemVariant}>Color: {item.productVariant?.color || 'N/A'}, Size: {item.productVariant?.size || 'N/A'}</Text>
-                            <Text style={styles.itemVariant}>Quantity: {item.quantity}</Text>
-                            <Text style={styles.itemPrice}>NPR {Number(item.price).toLocaleString()}</Text>
+                {order.items.map((item) => {
+                    const safeImageUrl = getPdfSafeImageUrl(item.product.images[0]?.url);
+
+                    return (
+                        <View key={item.id} style={styles.itemRow}>
+                            {safeImageUrl ? (
+                                <Image style={styles.itemImage} src={safeImageUrl} />
+                            ) : (
+                                <View style={styles.itemImagePlaceholder} />
+                            )}
+                            <View style={styles.itemDetails}>
+                                <Text style={styles.itemName}>{item.productName}</Text>
+                                <Text style={styles.itemVariant}>Color: {item.productVariant?.color || 'N/A'}, Size: {item.productVariant?.size || 'N/A'}</Text>
+                                <Text style={styles.itemVariant}>Quantity: {item.quantity}</Text>
+                                <Text style={styles.itemPrice}>NPR {Number(item.price).toLocaleString()}</Text>
+                            </View>
                         </View>
-                    </View>
-                ))}
+                    );
+                })}
             </View>
         </View>
 

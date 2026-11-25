@@ -383,6 +383,7 @@ model Review {
   @@index([productId])
   @@index([userId])
   @@index([status])
+  @@unique([productId, userId])
   @@map("reviews")
 }
 

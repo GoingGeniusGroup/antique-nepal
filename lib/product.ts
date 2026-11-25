@@ -12,6 +12,7 @@ export interface ProductReview {
   title?: string | null;
   createdAt: Date;
   userId: string;
+  status?: "PENDING" | "APPROVED" | "REJECTED";
   user?: { name?: string | null; id?: string };
 }
 

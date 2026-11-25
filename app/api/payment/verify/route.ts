@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "node:crypto";
 import prisma from "@/lib/prisma";
+import { sendOrderReceiptEmail } from "@/lib/mailer";
 
 type EsewaCallback = {
   transaction_uuid: string;
@@ -224,7 +225,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const result = await prisma.$transaction(async (tx) => {
+    const confirmation = await prisma.$transaction(async (tx) => {
       const order = await tx.order.findUnique({
         where: { id: orderId },
         include: { payments: true },
@@ -247,10 +248,10 @@ export async function GET(request: NextRequest) {
       }
 
       if (order.paymentStatus === "PAID" && payment.status === "PAID") {
-        return (
+        const isSameTransaction =
           getEsewaTransactionUuid(payment.metadata) ===
-          callback.transaction_uuid
-        );
+          callback.transaction_uuid;
+        return isSameTransaction ? "already-paid" : false;
       }
 
       if (
@@ -291,11 +292,77 @@ export async function GET(request: NextRequest) {
         throw new Error("Order or payment status changed during verification");
       }
 
-      return true;
+      return "newly-confirmed";
     });
 
-    if (!result) {
+    if (!confirmation) {
       return redirectToCheckout(request);
+    }
+
+    if (confirmation === "newly-confirmed") {
+      try {
+        const fullOrder = await prisma.order.findUnique({
+          where: { id: orderId },
+          include: {
+            user: true,
+            shippingAddress: true,
+            billingAddress: true,
+            items: {
+              include: {
+                product: {
+                  include: {
+                    images: {
+                      where: { isPrimary: true },
+                    },
+                  },
+                },
+                productVariant: {
+                  select: {
+                    color: true,
+                    size: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const customerEmail = fullOrder?.user?.email;
+        if (fullOrder && customerEmail) {
+          const serializedOrder = {
+            ...fullOrder,
+            subtotal: fullOrder.subtotal.toString(),
+            shippingCost: fullOrder.shippingCost.toString(),
+            tax: fullOrder.tax.toString(),
+            total: fullOrder.total.toString(),
+            createdAt: fullOrder.createdAt.toISOString(),
+            updatedAt: fullOrder.updatedAt.toISOString(),
+            items: fullOrder.items.map((item) => ({
+              ...item,
+              price: item.price.toString(),
+              total: item.total.toString(),
+              createdAt: item.createdAt.toISOString(),
+            })),
+          };
+
+          await sendOrderReceiptEmail({
+            order: serializedOrder,
+            customerEmail,
+            customerName:
+              fullOrder.shippingAddress?.fullName || fullOrder.user?.name,
+          });
+        } else {
+          console.error(
+            "Unable to send order receipt: order or customer email is missing",
+            { orderId }
+          );
+        }
+      } catch (emailError) {
+        console.error(
+          `Order ${orderId} is confirmed, but its receipt email failed; payment response remains successful.`,
+          emailError
+        );
+      }
     }
 
     const successUrl = new URL("/checkout", baseUrl);

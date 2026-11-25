@@ -225,8 +225,17 @@ export const Navbar = () => {
         <div className="container px-4 mx-auto">
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Logo */}
-            <Link href="/" className="group min-w-0 max-w-[calc(100vw-6rem)] truncate font-cinzel text-base font-semibold tracking-wide transition-opacity hover:opacity-80 sm:text-xl xl:max-w-none">
-              {general?.siteName || "Alena Collection"}
+            <Link href="/" className="group flex min-w-0 max-w-[calc(100vw-6rem)] items-center gap-2 font-cinzel text-base font-semibold tracking-wide transition-opacity hover:opacity-80 sm:text-xl xl:max-w-none">
+              <Image
+                src="/logo/alena-collection-logo.jpg"
+                alt=""
+                width={40}
+                height={40}
+                className="h-9 w-9 shrink-0 object-contain"
+              />
+              <span className="truncate">
+                {general?.siteName || "Alena Collection"}
+              </span>
             </Link>
 
             {/* Desktop Navigation */}

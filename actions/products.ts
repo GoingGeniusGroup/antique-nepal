@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { revalidatePath, unstable_cache } from "next/cache";
+import { auth } from "@/lib/auth";
 
 export interface GetProductsParams {
   searchQuery?: string;
@@ -220,6 +221,16 @@ export const getProducts = unstable_cache(
 );
 
 export async function getProductById(id: string) {
+  const session = await auth();
+  const reviewsWhere: Prisma.ReviewWhereInput = session?.user?.id
+    ? {
+        OR: [
+          { status: "APPROVED" },
+          { status: "PENDING", userId: session.user.id },
+        ],
+      }
+    : { status: "APPROVED" };
+
   const productQuery = {
     where: { id },
     include: {
@@ -229,6 +240,7 @@ export async function getProductById(id: string) {
       },
       categories: { include: { category: true } },
       reviews: {
+        where: reviewsWhere,
         include: {
           user: { select: { name: true } },
         },

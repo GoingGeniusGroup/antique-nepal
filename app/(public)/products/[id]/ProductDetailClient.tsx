@@ -320,7 +320,6 @@ const ProductDetailClient = ({
             product={product}
             setProduct={setProduct}
             userId={userId}
-            session={session}
             setReviewToDelete={setReviewToDelete}
             setShowDeleteDialog={setShowDeleteDialog}
           />

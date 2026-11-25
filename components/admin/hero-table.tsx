@@ -81,6 +81,8 @@ export interface HeroTableProps<T extends { id: string }> {
   onEdit?: (item: T) => void;
   /** Callback for delete item */
   onDelete?: (item: T) => void;
+  /** Custom renderer for each row's Actions cell */
+  renderActions?: (item: T) => React.ReactNode;
 }
 
 export function HeroTable<T extends { id: string }>({
@@ -93,6 +95,7 @@ export function HeroTable<T extends { id: string }>({
   onAdd,
   onEdit,
   onDelete,
+  renderActions,
 }: HeroTableProps<T>) {
   // State management
   const [q, setQ] = useState("");
@@ -220,7 +223,9 @@ export function HeroTable<T extends { id: string }>({
       key: col.key,
       label: col.label,
     })),
-    ...(onEdit || onDelete ? [{ key: "actions", label: "Actions" }] : []),
+    ...(onEdit || onDelete || renderActions
+      ? [{ key: "actions", label: "Actions" }]
+      : []),
   ];
 
   return (
@@ -325,7 +330,9 @@ export function HeroTable<T extends { id: string }>({
       {loading ? (
         <TableSkeleton
           rows={pageSize}
-          columns={columns.length + (onEdit || onDelete ? 1 : 0)}
+          columns={
+            columns.length + (onEdit || onDelete || renderActions ? 1 : 0)
+          }
         />
       ) : error ? (
         <div className="rounded-lg border border-border dark:border-slate-600 bg-card dark:!bg-slate-800 overflow-hidden shadow-sm">
@@ -418,6 +425,14 @@ export function HeroTable<T extends { id: string }>({
                       {(columnKey) => {
                         // Handle Actions column
                         if (columnKey === "actions") {
+                          if (renderActions) {
+                            return (
+                              <TableCell className="px-2 py-1.5">
+                                {renderActions(row as T)}
+                              </TableCell>
+                            );
+                          }
+
                           const actionLinks = [];
 
                           if (onEdit) {

@@ -289,8 +289,8 @@ export default function CheckoutClient({
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-16 bg-background">
-      <div className="container mx-auto max-w-6xl px-3 sm:px-4">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden pt-24 pb-24 bg-background">
+      <div className="container mx-auto w-full max-w-6xl px-3 sm:px-6">
         <h1 className="font-serif text-3xl font-bold mb-6 sm:mb-8 sm:text-4xl">Checkout</h1>
         {paymentError && (
           <p className="mb-6 rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive" role="alert">
@@ -298,9 +298,9 @@ export default function CheckoutClient({
           </p>
         )}
 
-        <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
+        <div className="grid min-w-0 gap-6 sm:gap-8 lg:grid-cols-3">
           {/* Left Column - Address & Payment */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="min-w-0 space-y-6 lg:col-span-2">
             {/* Delivery Address */}
             <Card>
               <CardHeader>
@@ -331,27 +331,29 @@ export default function CheckoutClient({
                           }`}
                           onClick={() => setSelectedAddressId(address.id)}
                         >
-                          <div className="flex items-start space-x-3">
+                          <div className="flex min-w-0 items-start space-x-3">
                             <RadioGroupItem value={address.id} id={address.id} className="mt-1" />
-                            <Label htmlFor={address.id} className="flex-1 cursor-pointer">
-                              <div className="font-semibold">{address.fullName}</div>
-                              <div className="text-sm text-muted-foreground mt-1">
-                                {address.addressLine1}
-                                {address.addressLine2 && `, ${address.addressLine2}`}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                {address.city}, {address.state} {address.postalCode}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                Phone: {address.phone}
-                              </div>
-                              {address.isDefault && (
-                                <div className="mt-2">
-                                  <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                            <Label htmlFor={address.id} className="min-w-0 flex-1 cursor-pointer">
+                              <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="w-full min-w-0 break-words">
+                                  <div className="font-semibold">{address.fullName}</div>
+                                  <div className="mt-1 text-sm text-muted-foreground">
+                                    {address.addressLine1}
+                                    {address.addressLine2 && `, ${address.addressLine2}`}
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">
+                                    {address.city}, {address.state} {address.postalCode}
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">
+                                    Phone: {address.phone}
+                                  </div>
+                                </div>
+                                {address.isDefault && (
+                                  <span className="inline-flex shrink-0 self-start items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary sm:self-center">
                                     Default Address
                                   </span>
-                                </div>
-                              )}
+                                )}
+                              </div>
                             </Label>
                           </div>
                         </div>
@@ -372,9 +374,9 @@ export default function CheckoutClient({
               </CardHeader>
               <CardContent>
                 <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-                  <div className="flex items-start space-x-3 border rounded-lg p-4 bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
+                  <div className="flex min-w-0 items-start space-x-3 border rounded-lg p-4 bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
                     <RadioGroupItem value="Cash on Delivery" id="cod" className="mt-1" />
-                    <Label htmlFor="cod" className="flex-1 cursor-pointer">
+                    <Label htmlFor="cod" className="min-w-0 flex-1 cursor-pointer">
                       <div className="font-semibold flex items-center gap-2">
                         <Truck className="h-4 w-4" />
                         Cash on Delivery
@@ -384,16 +386,16 @@ export default function CheckoutClient({
                       </div>
                     </Label>
                   </div>
-                  <div className="flex items-start space-x-3 border rounded-lg p-4 mt-4 opacity-50">
+                  <div className="flex min-w-0 items-start space-x-3 border rounded-lg p-4 mt-4 opacity-50">
                     <RadioGroupItem value="CARD" id="card" disabled className="mt-1" />
-                    <Label htmlFor="card" className="flex-1 cursor-not-allowed">
+                    <Label htmlFor="card" className="min-w-0 flex-1 cursor-not-allowed">
                       <div className="font-semibold">Credit/Debit Card</div>
                       <div className="text-sm text-muted-foreground mt-1">Coming soon</div>
                     </Label>
                   </div>
-                  <div className="flex items-start space-x-3 border rounded-lg p-4 mt-4">
+                  <div className="flex min-w-0 items-start space-x-3 border rounded-lg p-4 mt-4">
                     <RadioGroupItem value="eSewa" id="esewa" className="mt-1" />
-                    <Label htmlFor="esewa" className="flex-1 cursor-pointer">
+                    <Label htmlFor="esewa" className="min-w-0 flex-1 cursor-pointer">
                       <div className="font-semibold">eSewa</div>
                       <div className="text-sm text-muted-foreground mt-1">
                         Pay securely through eSewa
@@ -421,17 +423,17 @@ export default function CheckoutClient({
           </div>
 
           {/* Right Column - Order Summary */}
-          <div className="lg:col-span-1">
-            <Card className="lg:sticky lg:top-24">
+          <div className="min-w-0 lg:col-span-1">
+            <Card className="min-w-0 lg:sticky lg:top-24">
               <CardHeader>
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="min-w-0 space-y-4">
                 {/* Cart Items */}
                 <div className="space-y-3">
                   {cartItems.map((item) => (
                     <div key={item.id} className="flex min-w-0 gap-2 sm:gap-3">
-                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                      <div className="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-muted">
                         {item.image && (
                           <img
                             src={item.image}
@@ -447,7 +449,7 @@ export default function CheckoutClient({
                         </p>
                         <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                       </div>
-                      <div className="shrink-0 text-right text-xs font-medium sm:text-sm">{formatNpr(item.price * item.quantity)}</div>
+                      <div className="shrink-0 whitespace-nowrap text-right text-xs font-medium sm:text-sm">{formatNpr(item.price * item.quantity)}</div>
                     </div>
                   ))}
                 </div>
@@ -456,13 +458,13 @@ export default function CheckoutClient({
 
                 {/* Totals */}
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotal</span>
-                    <span>{formatNpr(subtotal)}</span>
+                  <div className="flex min-w-0 justify-between gap-2 text-sm">
+                    <span className="min-w-0 text-muted-foreground">Subtotal</span>
+                    <span className="shrink-0 whitespace-nowrap">{formatNpr(subtotal)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Shipping</span>
-                    <span>{shipping === 0 ? "Free" : formatNpr(shipping)}</span>
+                  <div className="flex min-w-0 justify-between gap-2 text-sm">
+                    <span className="min-w-0 text-muted-foreground">Shipping</span>
+                    <span className="shrink-0 whitespace-nowrap">{shipping === 0 ? "Free" : formatNpr(shipping)}</span>
                   </div>
                   {subtotal > 100 && (
                     <p className="text-xs text-green-600 dark:text-green-400">
@@ -470,9 +472,9 @@ export default function CheckoutClient({
                     </p>
                   )}
                   <Separator />
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>Total</span>
-                    <span>{formatNpr(total)}</span>
+                  <div className="flex min-w-0 justify-between gap-2 text-lg font-bold">
+                    <span className="min-w-0">Total</span>
+                    <span className="shrink-0 whitespace-nowrap">{formatNpr(total)}</span>
                   </div>
                 </div>
 
