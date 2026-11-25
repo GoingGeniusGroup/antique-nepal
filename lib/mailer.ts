@@ -2,7 +2,7 @@ import React from "react";
 import nodemailer from "nodemailer";
 import { renderToBuffer } from "@react-pdf/renderer";
 import type { DocumentProps } from "@react-pdf/renderer";
-import { resend } from "@/lib/resend";
+import { getResendClient } from "@/lib/resend";
 import OrderDetailPDF from "@/app/(auth)/profile/[orderid]/components/OrderDetailPDF";
 
 export async function sendVerificationEmail(email: string, token: string) {
@@ -49,6 +49,7 @@ export async function sendOrderReceiptEmail({
   const recipientName =
     customerName || order.shippingAddress?.fullName || "Valued Customer";
   const formattedTotal = Number(order.total).toLocaleString();
+  const resend = getResendClient();
 
   const { data, error } = await resend.emails.send({
     from: fromAddress,
