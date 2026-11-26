@@ -1,10 +1,11 @@
 import prisma from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 
-export async function GET() {
-  try {
+const getActiveCategories = unstable_cache(
+  async () => {
     const categories = await prisma.category.findMany({
-      where: { isActive: true }, // only active categories
-      orderBy: { displayOrder: "asc" }, // order by displayOrder
+      where: { isActive: true },
+      orderBy: { displayOrder: "asc" },
       select: {
         id: true,
         name: true,
@@ -12,15 +13,22 @@ export async function GET() {
         description: true,
         image: true,
         displayOrder: true,
-        _count: { select: { products: true } }, // count the products
+        _count: { select: { products: true } },
       },
     });
 
-    // Map the count to a simpler property for frontend
-    const formatted = categories.map((cat) => ({
+    return categories.map((cat) => ({
       ...cat,
       count: cat._count.products,
     }));
+  },
+  ["active-storefront-categories"],
+  { revalidate: 3600, tags: ["categories"] }
+);
+
+export async function GET() {
+  try {
+    const formatted = await getActiveCategories();
 
     return new Response(JSON.stringify(formatted), {
       headers: { "Content-Type": "application/json" },

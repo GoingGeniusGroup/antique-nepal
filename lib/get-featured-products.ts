@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 
 // Adjust these weights to change the importance of each metric
 const WEIGHTS = {
@@ -16,7 +17,8 @@ const formatImageUrl = (url: string | undefined) => {
 };
 
 export async function getPopularProduct() {
-  try {
+  return unstable_cache(async () => {
+    try {
     const productsQuery = {
       where: {
         isActive: true,
@@ -88,13 +90,18 @@ export async function getPopularProduct() {
     };
 
     return topProduct;
-  } catch (error) {
-    console.error("[GET_POPULAR_PRODUCT_ERROR]", error);
-    return null;
-  }
+    } catch (error) {
+      console.error("[GET_POPULAR_PRODUCT_ERROR]", error);
+      return null;
+    }
+  }, ["featured-product", "popular"], {
+    revalidate: 3600,
+    tags: ["products"],
+  })();
 }
 
 export async function getBestSellerProduct() {
+  return unstable_cache(async () => {
     try {
         const bestSeller = (await prisma.orderItem.groupBy({
           by: ["productId"] as const,
@@ -148,9 +155,14 @@ export async function getBestSellerProduct() {
         console.error("[GET_BEST_SELLER_PRODUCT_ERROR]", error);
         return null;
       }
+  }, ["featured-product", "best-seller"], {
+    revalidate: 3600,
+    tags: ["products"],
+  })();
 }
 
 export async function getLatestProduct() {
+  return unstable_cache(async () => {
   try {
     const latestProductQuery = {
       where: {
@@ -190,4 +202,8 @@ export async function getLatestProduct() {
     console.error("[GET_LATEST_PRODUCT_ERROR]", error);
     return null;
   }
+  }, ["featured-product", "latest"], {
+    revalidate: 3600,
+    tags: ["products"],
+  })();
 }

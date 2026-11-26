@@ -40,8 +40,7 @@ export async function PUT(
         isPrimary: parsed.data.isPrimary ?? undefined,
       },
     });
-    revalidateTag("products", { expire: 0 });
-    revalidateTag("featured-products", { expire: 0 });
+    revalidateTag("products", "max");
 
     return NextResponse.json(updatedImage, { status: 200 });
   } catch (error: any) {
@@ -83,8 +82,7 @@ export async function DELETE(
 
     // Delete from database
     await prisma.productImage.delete({ where: { id } });
-    revalidateTag("products", { expire: 0 });
-    revalidateTag("featured-products", { expire: 0 });
+    revalidateTag("products", "max");
 
     return NextResponse.json(
       { message: "Image deleted successfully" },

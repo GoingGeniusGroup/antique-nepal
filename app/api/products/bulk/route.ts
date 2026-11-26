@@ -207,7 +207,8 @@ export async function POST(req: Request) {
       return products.length;
     }, { maxWait: 10_000, timeout: 30_000 });
 
-    revalidateTag("products", { expire: 0 });
+    revalidateTag("products", "max");
+    revalidateTag("categories", "max");
     return NextResponse.json({
       success: true,
       count: result,

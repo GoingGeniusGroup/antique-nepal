@@ -45,7 +45,7 @@ export async function PATCH(req: Request, { params }: ReviewRouteContext) {
       where: { id },
       data: { status: parsed.data.status },
     });
-    revalidateTag("reviews", { expire: 0 });
+    revalidateTag("products", "max");
     revalidatePath("/admin/reviews");
     revalidatePath(`/products/${existing.productId}`);
 
@@ -74,7 +74,7 @@ export async function DELETE(_req: Request, { params }: ReviewRouteContext) {
     }
 
     await prisma.review.delete({ where: { id } });
-    revalidateTag("reviews", { expire: 0 });
+    revalidateTag("products", "max");
     revalidatePath("/admin/reviews");
     revalidatePath(`/products/${existing.productId}`);
 

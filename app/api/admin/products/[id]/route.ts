@@ -33,7 +33,7 @@ export async function PUT(
       where: { id },
       data,
     });
-    revalidateTag("products", { expire: 0 });
+    revalidateTag("products", "max");
     return NextResponse.json(
       { success: true, product: updated },
       { status: 200 }
@@ -98,7 +98,7 @@ export async function DELETE(
 
     // Delete product record
     await prisma.product.delete({ where: { id } });
-    revalidateTag("products", { expire: 0 });
+    revalidateTag("products", "max");
 
     return NextResponse.json({
       success: true,

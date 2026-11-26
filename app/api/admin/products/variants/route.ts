@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const data = parsed.data;
 
     const variant = await prisma.productVariant.create({ data });
-    revalidateTag("products", { expire: 0 });
+    revalidateTag("products", "max");
 
     return NextResponse.json({ variant }, { status: 201 });
   } catch (error) {

@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
         slug,
       },
     });
-    revalidateTag("products", { expire: 0 });
+    revalidateTag("products", "max");
     return NextResponse.json({ success: true, product }, { status: 201 });
   } catch (error) {
     console.error("Product create error:", error);

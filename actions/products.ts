@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { revalidatePath, unstable_cache } from "next/cache";
+import { revalidatePath, unstable_cache, updateTag } from "next/cache";
 import { auth } from "@/lib/auth";
 import { CATEGORY_OPTIONS } from "@/data/category-options";
 
@@ -109,18 +109,28 @@ function toProductData(product: ProductWithCardRelations): ProductData {
   };
 }
 
-export const getProducts = unstable_cache(
-  async (params: GetProductsParams) => {
+export async function getProducts(params: GetProductsParams) {
+  const cacheParams = {
+    searchQuery: params.searchQuery ?? "",
+    selectedCategory: params.selectedCategory ?? null,
+    inStockOnly: params.inStockOnly ?? false,
+    sortBy: params.sortBy ?? "newest",
+    page: params.page ?? 1,
+    perPage: params.perPage ?? 8,
+  };
+
+  return unstable_cache(
+    async () => {
     try {
       console.log("🔥🔥I am in fetching from db🔥🔥 :)");
       const {
-        searchQuery = "",
-        selectedCategory = null,
-        inStockOnly = false,
-        sortBy = "newest",
-        page = 1,
-        perPage = 8,
-      } = params;
+        searchQuery,
+        selectedCategory,
+        inStockOnly,
+        sortBy,
+        page,
+        perPage,
+      } = cacheParams;
 
       // ✅ Build WHERE clause safely
       const where: Prisma.ProductWhereInput = {
@@ -214,47 +224,84 @@ export const getProducts = unstable_cache(
       console.error("[getProducts Error]:", error);
       throw new Error("Failed to fetch products");
     }
-  },
-  ["products"],
-  {
-    revalidate: 30,
-    tags: ["products"],
-  }
-);
+    },
+    [
+      "storefront-products",
+      cacheParams.searchQuery,
+      cacheParams.selectedCategory ?? "",
+      String(cacheParams.inStockOnly),
+      cacheParams.sortBy,
+      String(cacheParams.page),
+      String(cacheParams.perPage),
+    ],
+    {
+      revalidate: 3600,
+      tags: ["products"],
+    }
+  )();
+}
 
 export async function getProductById(id: string) {
   const session = await auth();
-  const reviewsWhere: Prisma.ReviewWhereInput = session?.user?.id
-    ? {
-        OR: [
-          { status: "APPROVED" },
-          { status: "PENDING", userId: session.user.id },
-        ],
-      }
-    : { status: "APPROVED" };
-
-  const productQuery = {
-    where: { id },
-    include: {
-      images: {
-        where: { url: { not: "" } },
-        orderBy: [{ isPrimary: "desc" }, { displayOrder: "asc" }],
-      },
-      categories: { include: { category: true } },
-      reviews: {
-        where: reviewsWhere,
-        include: {
-          user: { select: { name: true } },
+  const product = await unstable_cache(
+    async () => {
+      const cachedProduct = await prisma.product.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          price: true,
+          image: true,
+          isFeatured: true,
+          images: {
+            where: { url: { not: "" } },
+            orderBy: [{ isPrimary: "desc" }, { displayOrder: "asc" }],
+            select: { id: true, url: true, altText: true, isPrimary: true },
+          },
+          categories: {
+            select: {
+              category: {
+                select: { id: true, name: true, slug: true, image: true },
+              },
+            },
+          },
+          reviews: {
+            where: { status: "APPROVED" },
+            include: { user: { select: { name: true } } },
+            orderBy: { createdAt: "desc" },
+          },
         },
-        orderBy: { createdAt: "desc" },
-      },
-    },
-  } satisfies Prisma.ProductFindUniqueArgs;
+      });
 
-  type ProductWithFullDetails = Prisma.ProductGetPayload<typeof productQuery>;
-  const product: ProductWithFullDetails | null = await prisma.product.findUnique(productQuery);
+      if (!cachedProduct) return null;
+
+      return {
+        ...cachedProduct,
+        price: Number(cachedProduct.price),
+        reviews: cachedProduct.reviews.map((review) => ({
+          ...review,
+          createdAt: review.createdAt.toISOString(),
+        })),
+      };
+    },
+    ["storefront-product-detail", id],
+    { revalidate: 3600, tags: ["products"] }
+  )();
 
   if (!product) return null;
+
+  const pendingReviews = session?.user?.id
+    ? await prisma.review.findMany({
+        where: {
+          productId: id,
+          userId: session.user.id,
+          status: "PENDING",
+        },
+        include: { user: { select: { name: true } } },
+        orderBy: { createdAt: "desc" },
+      })
+    : [];
 
   return {
     ...product,
@@ -280,7 +327,16 @@ export async function getProductById(id: string) {
                 },
               ]
             : [],
-    price: Number(product.price),
+    reviews: [
+      ...product.reviews,
+      ...pendingReviews.map((review) => ({
+        ...review,
+        createdAt: review.createdAt.toISOString(),
+      })),
+    ].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    ),
   };
 }
 
@@ -289,6 +345,8 @@ export async function getRelatedProducts(
   categoryId?: string,
   categorySlug?: string
 ): Promise<ProductData[]> {
+  return unstable_cache(
+    async () => {
   const related: ProductWithCardRelations[] = [];
 
   if (categoryId) {
@@ -334,6 +392,16 @@ export async function getRelatedProducts(
   });
 
   return [...related, ...fallback].map(toProductData);
+    },
+    [
+      "storefront-related-products",
+      productId,
+      categoryId ?? "",
+      categorySlug ?? "",
+      "limit-4",
+    ],
+    { revalidate: 3600, tags: ["products"] }
+  )();
 }
 
 export async function incrementProductView(productId: string) {
@@ -348,6 +416,7 @@ export async function incrementProductView(productId: string) {
         },
       },
     });
+    updateTag("products");
 
     revalidatePath(`/products/${productId}`);
   } catch (error) {

@@ -25,7 +25,7 @@ export async function PUT(
       where: { id },
       data: parsed.data,
     });
-    revalidateTag("products", { expire: 0 });
+    revalidateTag("products", "max");
     return NextResponse.json({ updated });
   } catch (error) {
     console.log(error);
@@ -47,7 +47,7 @@ export async function DELETE(
     await prisma.productVariant.delete({
       where: { id },
     });
-    revalidateTag("products", { expire: 0 });
+    revalidateTag("products", "max");
     return NextResponse.json(
       { message: "Variant deleted successfully" },
       { status: 200 }

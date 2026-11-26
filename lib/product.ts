@@ -10,14 +10,19 @@ export interface ProductReview {
   rating: number;
   comment: string;
   title?: string | null;
-  createdAt: Date;
+  createdAt: Date | string;
   userId: string;
   status?: "PENDING" | "APPROVED" | "REJECTED";
   user?: { name?: string | null; id?: string };
 }
 
 export interface ProductCategory {
-  category: { id: string; name: string };
+  category: {
+    id: string;
+    name: string;
+    slug?: string;
+    image?: string | null;
+  };
 }
 
 export interface Product {

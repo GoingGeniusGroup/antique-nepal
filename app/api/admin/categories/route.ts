@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
+import { revalidateTag } from "next/cache";
 
 // Fetch all categories
 export async function GET(req: NextRequest) {
@@ -89,6 +90,8 @@ export async function POST(req: NextRequest) {
                 image: imageUrl,
             },
         });
+        revalidateTag("categories", "max");
+        revalidateTag("products", "max");
         return NextResponse.json({ success: true, category }, { status: 201 });
     } catch (error) {
         console.error("Category create error:", error);
@@ -151,6 +154,8 @@ export async function PUT(req: NextRequest) {
             data: { name, slug, description, image: imageUrl },
         });
 
+        revalidateTag("categories", "max");
+        revalidateTag("products", "max");
         return NextResponse.json({ success: true, category });
     } catch (error) {
         console.error(`Category update error:`, error);
@@ -181,6 +186,8 @@ export async function DELETE(req: NextRequest) {
             await tx.productCategory.deleteMany({ where: { categoryId: id } });
             await tx.category.delete({ where: { id } });
         });
+        revalidateTag("categories", "max");
+        revalidateTag("products", "max");
 
         if (existing.image) {
             const imagePath = path.join(process.cwd(), "public", existing.image);

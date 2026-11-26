@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { revalidateTag } from "next/cache";
 
 export async function GET(req: NextRequest) {
   try {
@@ -41,6 +42,8 @@ export async function POST(req: NextRequest) {
       skipDuplicates: true,
     });
 
+    revalidateTag("products", "max");
+    revalidateTag("categories", "max");
     return NextResponse.json({ message: "Categories assigned successfully" });
   } catch (err) {
     console.error(err);

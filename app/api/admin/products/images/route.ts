@@ -71,8 +71,7 @@ export async function POST(req: NextRequest) {
 
       return results;
     });
-    revalidateTag("products", { expire: 0 });
-    revalidateTag("featured-products", { expire: 0 });
+    revalidateTag("products", "max");
 
     return NextResponse.json(
       {

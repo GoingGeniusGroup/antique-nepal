@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { Prisma, ReviewStatus } from "@prisma/client";
-import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { requireAdminApi } from "@/lib/admin-api-auth";
 
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
       },
       include: { user: { select: { name: true } } },
     });
-    revalidateTag("reviews", { expire: 0 });
+    revalidateTag("products", "max");
     revalidatePath(`/products/${productId}`);
     revalidatePath("/admin/reviews");
     return NextResponse.json(review, { status: 201 });
@@ -147,7 +147,7 @@ export async function PUT(req: Request) {
       data: parsed.data,
       include: { user: { select: { name: true } } },
     });
-    revalidateTag("reviews", { expire: 0 });
+    revalidateTag("products", "max");
     revalidatePath(`/products/${existing.productId}`);
     revalidatePath("/admin/reviews");
     return NextResponse.json(updated);
@@ -186,7 +186,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     await prisma.review.delete({ where: { id: parsed.data.reviewId } });
-    revalidateTag("reviews", { expire: 0 });
+    revalidateTag("products", "max");
     revalidatePath(`/products/${existing.productId}`);
     revalidatePath("/admin/reviews");
     return NextResponse.json({ success: true });
@@ -259,12 +259,6 @@ async function fetchReviews({
   return { reviews, total, page: effectivePage };
 }
 
-// cached function
-const cachedFetchReviews = unstable_cache(fetchReviews, ["reviews"], {
-  revalidate: 3600,
-  tags: ["reviews"],
-});
-
 export async function GET(req: Request) {
   const admin = await requireAdminApi();
   if (admin.response) return admin.response;
@@ -285,7 +279,7 @@ export async function GET(req: Request) {
   const order = url.searchParams.get("order") === "asc" ? "asc" : "desc";
   const search = url.searchParams.get("q") || "";
 
-  const { reviews, total, page: effectivePage } = await cachedFetchReviews({
+  const { reviews, total, page: effectivePage } = await fetchReviews({
     page,
     pageSize,
     sort,

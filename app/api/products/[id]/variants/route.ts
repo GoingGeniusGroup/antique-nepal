@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 
 export async function GET(
   req: Request,
@@ -15,21 +16,34 @@ export async function GET(
       );
     }
 
-    const variants = await prisma.productVariant.findMany({
-      where: {
-        productId,
-        isActive: true,
+    const variants = await unstable_cache(
+      async () => {
+        const rows = await prisma.productVariant.findMany({
+          where: {
+            productId,
+            isActive: true,
+          },
+          orderBy: {
+            displayOrder: "asc",
+          },
+          select: {
+            id: true,
+            sku: true,
+            name: true,
+            price: true,
+            color: true,
+            size: true,
+          },
+        });
+
+        return rows.map((variant) => ({
+          ...variant,
+          price: variant.price === null ? null : Number(variant.price),
+        }));
       },
-      orderBy: {
-        displayOrder: "asc",
-      },
-      include: {
-        images: {
-          orderBy: { displayOrder: "asc" },
-        },
-        inventory: true,
-      },
-    });
+      ["storefront-product-variants", productId],
+      { revalidate: 3600, tags: ["products"] }
+    )();
 
     return NextResponse.json({ variants });
   } catch (error) {

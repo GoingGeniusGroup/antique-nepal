@@ -24,7 +24,7 @@ export async function DELETE(
     await prisma.review.delete({
       where: { id },
     });
-    revalidateTag("reviews", { expire: 0 });
+    revalidateTag("products", "max");
     revalidatePath("/admin/reviews");
     revalidatePath(`/products/${existing.productId}`);
 
